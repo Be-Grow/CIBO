@@ -7,5 +7,7 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
    traz o mapa de qual skill usar em cada etapa.
 2. Use a skill de cada etapa sem esperar o usuário apontar. Se nenhuma cobre, diga isso e
    proponha estender uma skill existente.
-3. Gaste pouco: filtre a saída dos comandos (`grep`/`tail`), uma folha de contato por decisão,
+3. Asset (burn, clique, trilha, fonte, logo, cartão): busque com a skill `acervo`
+   (`acervo.py find`) em vez de perguntar onde está; o que o editor apontar, registre com `add`.
+4. Gaste pouco: filtre a saída dos comandos (`grep`/`tail`), uma folha de contato por decisão,
    nunca leia a transcrição inteira (busque o trecho), QA de lote com `podcast-reels/scripts/qa_lote.py`.

@@ -15,6 +15,10 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   skill não conta: o valor está no SKILL.md, com as convenções e as falhas conhecidas. Se
   falta uma opção, estenda a skill e avise, em vez de escrever uma versão paralela. (Dr.
   Energia; Fernanda)
+- **Asset: busque no `acervo`, nunca pergunte onde está.** `acervo.py find` antes de qualquer
+  outra coisa; quando o editor apontar ou mandar um arquivo, `acervo.py add` na hora, com nota
+  de uso. Biblioteca fixa em `/Volumes/SSD/CIBO Acervo` ("já tive que apontar inúmeras vezes
+  onde ela deveria buscar os mesmos arquivos", 12/10/2026).
 - **Procure o efeito em `assets/` antes de criar.** Quando o cliente pede outra cor, tinja o
   asset (`hue=h=...`, `colorchannelmixer` em `format=gbrp`) em vez de recriar o efeito: o
   burn-in feito do zero com `geq` custou dois renders no Dr. Energia.

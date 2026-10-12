@@ -34,6 +34,11 @@ Cada skill é autocontida: lê seu próprio `SKILL.md` antes de qualquer coisa, 
 |---|---|
 | `briefing-criativo` | Antes de editar, pergunta ao editor só as decisões artísticas e de estilo que o perfil do cliente não responde, grava o brief do projeto e pede aprovação no mapa de cortes e num piloto. |
 
+### Assets
+| Skill | O que faz |
+|---|---|
+| `acervo` | Biblioteca de assets com lugar fixo (escolhido uma vez pelo editor; neste Mac `/Volumes/SSD/CIBO Acervo`) e catálogo único: acha qualquer burn, clique, trilha, fonte ou logo sem perguntar, copia para o projeto registrando o uso, guarda o que o editor aponta, religa pelo hash o que mudou de pasta e acha duplicados. |
+
 ### Roteamento de cliente
 | Skill | O que faz |
 |---|---|

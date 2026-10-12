@@ -13,6 +13,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 |---|---|
 | Cliente e skill de corte | `client-router` (esta) |
 | Decisões de estilo, aprovação do mapa e do piloto | `briefing-criativo` |
+| Qualquer asset (burn, clique, SFX, trilha, fonte, logo, cartão, foto) | `acervo` — busque antes de perguntar; o que o editor apontar entra com `add` |
 | Pastas do projeto (início e fim) | `video-project-structure` |
 | Bruto longo com bastidores/retakes | `limpeza-gravacao-bruta` |
 | Transcrição de aula/live longa | `transcricao-aulas` |
