@@ -452,3 +452,11 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
     sorriso de pé em plano aberto) foi chamado de "horrível": rosto pequeno, mão cortada na
     borda ou braço disputando com o rosto. Confira a borda: dedo entrando no quadro reprova.
     Scripts em `scripts/cover_scan.py`.
+45. **Acabamento em cima do MP4 entregue não é idempotente.** Cartão/título (`overlay_card.sh`
+    ou `post.sh` do projeto), `burn_end.py` e troca de áudio sobrescrevem o arquivo final. Numa
+    fila "render → acabamento em todos", se um render falhar ou ficar em cache, o acabamento
+    roda de novo num arquivo que já tinha cartão e burn: dois cartões, dois burns. Rode o
+    acabamento só nos clipes cujo `final` foi refeito (linha `final:<clip> built` no log).
+    Um `final` do ffmpeg ficou parado com 0% de CPU e o `.part.mp4` quase pronto (palestra
+    do João); matar e rodar o clipe sozinho resolveu em 33 s. Se a fila parar sem progresso,
+    olhe `ps` (estado S e tempo de CPU parado) antes de esperar mais.

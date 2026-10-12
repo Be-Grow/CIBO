@@ -55,6 +55,9 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   escura. Se o falante aparece pequeno no plano aberto, use o aberto, não um "close" ampliado.
   Rode `video-delivery-safety-check` (nitidez contra a fonte) antes de entregar. (João/Begrow:
   "a qualidade já não tá perfeita e você ainda dá esse close no João", 09/10/2026)
+  Única exceção: tirar marca queimada de terceiros (logo da transmissão no rodapé) com um
+  recorte até ~9% mais baixo (`crop_h` no `podcast-reels`). Nunca `delogo`/borrão ("ao invés
+  de aplicar um blur estranho", João Campos, 12/10/2026).
 - **Burn no final: vídeo acaba seco e o burn passa do fim, sobre preto.** Como numa timeline
   com a trilha do vídeo e a do efeito por cima, terminando depois dela. O pico do burn cai no
   último quadro do vídeo; nada de fade nem de congelar a imagem. No `podcast-reels`:
@@ -66,6 +69,7 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   só o que tem direito de uso claro. (Rodrigo)
 - **Loudness por ganho fixo medido**, nunca `loudnorm` dinâmico no mix ou na voz: ele
   levanta a trilha nas pausas até ficar mais alta que a voz. (Dr. Energia)
+- **Clique (SFX de ênfase): sempre os dois sons do usuário**, `/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav` e `~/CIBO/skills/fernanda-produto/assets/camera_click.mp3`, alternados. Nunca o clique sintetizado ("click ridículo", 12/10/2026). Já é o padrão do `clicks.py` da podcast-reels.
 - **SFX só onde há mudança visual real** (entrada, saída e troca de referência), nunca no
   burn de abertura ou fechamento. Música e SFX em faixas separadas no arquivo editável.
   (Fernanda)
@@ -76,6 +80,13 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   palavra, e pode vir de qualquer momento do episódio. Olhe a folha de contatos rotulada com
   o tempo real antes de escolher. Título e degradê só na parte de baixo, nunca sobre o
   rosto. A capa tem um frame só. (Bombordo, Katia, Dr. Energia)
+  Close de rosto olhando para a câmera vence gesto: braço erguido, apontar, sorriso de pé em
+  plano aberto e dedo entrando na borda foram "horríveis"; "de rosto tá ótimo". Varra a
+  gravação inteira (`podcast-reels/scripts/cover_scan.py`), não pegue o primeiro quadro bom.
+  (João Campos, 12/10/2026)
+- **Cartão "Seguir"/@ do Instagram: a foto é a do perfil atual**, pedida ao usuário ou
+  baixada do perfil, nunca um quadro do vídeo ("meteu uma foto aleatória", João Campos).
+  Confira o @ no próprio Instagram.
 - **Cortar bastidores**: conversa com a equipe, contagem, "deixa eu gravar outra", no começo
   e no fim. (Fernanda, Katia)
 
