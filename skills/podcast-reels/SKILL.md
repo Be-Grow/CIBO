@@ -413,3 +413,40 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
     medidos por diferença entre um quadro com e outro sem o card). O card entra com fade só
     depois que a animação original formou a caixa. Depois apague `I_<clip>.mp4` e rode o
     `make_reels` de novo: o `cut` fica em cache e só a intro e o final são refeitos.
+38. **Troca de câmera 1 quadro atrasada (plano de 1 quadro).** O passA decodifica com `-ss a` +
+    `setpts=PTS-STARTPTS`: t=0 é o primeiro quadro real depois de `a`, não `a`. Com `a` fora da
+    grade de quadros (16,41 s), a troca do `cropx_timeline` caía um quadro depois do corte de
+    câmera: um quadro da câmera nova com o recorte antigo (abajur, almofada). O `crop_expr` agora
+    desconta esse deslocamento. Ponha cada ponto da timeline ~15 ms antes do primeiro quadro da
+    câmera nova (meça com diferença de quadros a partir de um tempo na grade, ex.: 16,0) e, depois
+    do render, procure planos de 1–9 quadros no MP4 fora do burn de entrada/saída.
+39. **Clique:** o padrão do `clicks.py` agora são os dois sons do usuário (`click lens.wav` e
+    `camera_click.mp3`, este dividido nas 4 batidas), alternados. O sintetizado só entra se os
+    arquivos sumirem. Ao trocar o som, apague `clicks_<clip>.wav` e o MP4: o cache do clique
+    depende só do tempo das legendas.
+40. **Capa `cover_style: "lpa"`** (LPA e Você): frame limpo, sem degradê, barra ou logo;
+    manchete em Montserrat Bold centralizada na vertical, alinhada à esquerda (margem 90 px),
+    sombra deslocada 12 px para baixo com blur 9.
+41. **`burn_end.py` recodifica o vídeo inteiro** só para pôr 1,4 s no fim: é a etapa mais lenta
+    depois do passA. O preset agora é `BURN_END_PRESET` (padrão `fast`). Pendente: integrar o
+    burn de saída no `final()` para uma codificação só.
+42. **Ganho de voz é por episódio, não por cliente.** O `voice_af` com +6 dB que deixou o
+    episódio da Carolina em −14 LUFS deixou o da Maria Rita (mesmo podcast) em −19,5. Meça o
+    LUFS do trecho mantido de cada fonte antes (`ebur128`) e calcule o ganho. Se já renderizou,
+    corrija só o áudio com `-c:v copy` (sem recodificar o vídeo).
+43. **Logo de transmissão queimado no bruto (Marandu TV, João Campos 12/10/2026).** Não apague
+    com `delogo`/`removelogo`: o usuário reprovou o borrão ("ao invés de aplicar um blur
+    estranho"). Reenquadre: `crop_h` por clipe (opt-in) faz um recorte mais baixo ancorado no
+    topo (`crop_h*9/16` de largura) que deixa o rodapé de fora, no vídeo e na capa. 992 tira
+    um logo que começa em y=998 (+8,9% de escala, dentro do aceitável). Só travar o `cropx`
+    longe do logo não serve quando a pessoa anda até o canto do logo: o rosto encosta na
+    borda. Ao trocar a largura, converta a timeline mantendo o centro:
+    `novo = (antigo*(1920-608)+304-cw/2)/(1920-cw)`. Ache a caixa do logo pelo desvio
+    temporal baixo em ~60 quadros espalhados (é a única coisa que não muda).
+44. **Capa: varra a gravação, não pegue o primeiro quadro bom** ("as capas dos cortes não
+    ficaram boas", João Campos). Rosto neutro, mão em posição estranha ou plano aberto
+    reprovam. YuNet a 2 qps na gravação inteira (descarte telas estáticas: mesma caixa
+    repetida), filtre por rosto grande, nítido e de frente, monte folhas de contato e depois
+    amostre 5 qps ±1,6 s em volta das melhores. Escolha expressão viva (sorriso, gesto que
+    ilustra a manchete: pinça para "átomos", apontar para "você") e não repita pose entre
+    capas do mesmo lote. Scripts em `scripts/cover_scan.py`.

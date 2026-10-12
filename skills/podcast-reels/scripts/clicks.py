@@ -21,16 +21,18 @@ def shutter():
     z[:24]*=np.linspace(0,1,24)
     z[-200:]*=np.linspace(1,0,200)
     return z.astype(np.float32)
+# Cliques aprovados pelo usuario (12/10/2026: "sempre use esses aqui"). CLICK aceita
+# varios arquivos separados por '|' e alterna entre eles; vazio = estes dois.
+DEFAULT_CLICKS='/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav|/Users/bruno/CIBO/skills/fernanda-produto/assets/camera_click.mp3'
+def _load(fp):
+    raw=subprocess.run(f'ffmpeg -v error -i "{fp}" -f s16le -ar {SR} -ac 1 -',
+                       shell=True,capture_output=True).stdout
+    a=np.frombuffer(raw,dtype='<i2').astype(np.float32)/32768.0
+    pk=float(np.abs(a).max()) or 1.0
+    return (a/pk*float(os.environ.get('CLICK_GAIN','0.22'))).astype(np.float32)
 def load_click():
-    fp=os.environ.get('CLICK','')
-    if fp and os.path.exists(fp):
-        raw=subprocess.run(f'ffmpeg -v error -i "{fp}" -f s16le -ar {SR} -ac 1 -',
-                           shell=True,capture_output=True).stdout
-        a=np.frombuffer(raw,dtype='<i2').astype(np.float32)/32768.0
-        pk=float(np.abs(a).max()) or 1.0
-        a=a/pk*float(os.environ.get('CLICK_GAIN','0.22'))
-        return a.astype(np.float32)
-    return shutter()
+    fps=[f for f in (os.environ.get('CLICK') or DEFAULT_CLICKS).split('|') if f and os.path.exists(f)]
+    return [_load(f) for f in fps] or [shutter()]
 CL=load_click()
 def variants(a):
     """CLICK_VARIANTS=1: o arquivo traz varias batidas (ex.: camera_click.mp3 com 4); separa
@@ -45,7 +47,8 @@ def variants(a):
             if (i-on)*h>0.02*SR: out.append(a[max(0,on*h-int(0.01*SR)):i*h])
             on=None
     return out or [a]
-VARS=variants(CL) if os.environ.get('CLICK_VARIANTS') else [CL]
+# cada arquivo vira uma ou mais batidas (o camera_click.mp3 traz 4); alterna entre todas
+VARS=[v for a in CL for v in (variants(a) if len(a)>2*SR and os.environ.get('CLICK_VARIANTS','1')!='0' else [a])]  # so arquivo longo (varias batidas) e dividido
 MIN_GAP=float(os.environ.get('CLICK_MIN_GAP','0'))   # s entre cliques; 0 = sem limite (padrao antigo)
 def build(clip,out):
     dur=clip['total']+0.2

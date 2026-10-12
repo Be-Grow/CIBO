@@ -32,14 +32,16 @@ def grab_master(c):
     src=c['cover_src']; t=float(c['cover_src_t'])
     sw,shh=[int(v) for v in subprocess.run(f'ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0:s=x "{src}"',
              shell=True,capture_output=True,text=True).stdout.strip().split('x')]
-    cw=int(round(shh*9/16))//2*2
+    ch=int(c.get('crop_h',shh))          # mesmo recorte mais baixo do video, se houver
+    cw=int(round(ch*9/16))//2*2
     x=int(max(0,min(sw-cw,float(c.get('cover_src_x',sw/2))-cw/2)))
-    raw=subprocess.run(f'ffmpeg -v error -ss {t} -i "{src}" -frames:v 1 -vf "crop={cw}:{shh}:{x}:0,scale={W}:{H}:flags=lanczos" '
+    raw=subprocess.run(f'ffmpeg -v error -ss {t} -i "{src}" -frames:v 1 -vf "crop={cw}:{ch}:{x}:0,scale={W}:{H}:flags=lanczos" '
                        f'-f rawvideo -pix_fmt rgb24 -',shell=True,capture_output=True).stdout
     return Image.frombytes('RGB',(W,H),raw[:W*H*3])
 
 def build(c,src,out):
     im=(grab_master(c) if c.get('cover_src') else grab(src,c['cover_t'])).convert('RGB')
+    if c.get('cover_style')=='lpa': return build_lpa(c,im,out)
     # vignette / bottom scrim
     sc=Image.new('L',(1,H))
     for y in range(H):
@@ -76,6 +78,24 @@ def build(c,src,out):
         lw=150; lg=lg.resize((lw,int(lg.height*lw/lg.width)),Image.LANCZOS)
         im.paste(lg,((W-lw)//2,90),lg)
     except Exception as e: print('logo skip',e)
+    im.save(out)
+
+def build_lpa(c,im,out):
+    """Capa do LPA e Voce (Lilian): frame limpo, sem degrade, sem barra e sem logo. So a
+    manchete em Montserrat Bold no meio da tela, alinhada a esquerda, com sombra projetada
+    para baixo e um pouco de blur (pedido do usuario, 12/10/2026)."""
+    M=90
+    lines=c['headline'].split('\n')
+    ft,s=fit(c['headline'],W-2*M,112)
+    lh=int(s*1.14); total=lh*len(lines)
+    y0=H//2-total//2
+    sh=Image.new('RGBA',(W,H),(0,0,0,0)); ds=ImageDraw.Draw(sh)
+    for i,l in enumerate(lines):
+        bb=ft.getbbox(l); ds.text((M-bb[0],y0+i*lh-bb[1]+12),l,font=ft,fill=(0,0,0,170))
+    sh=sh.filter(ImageFilter.GaussianBlur(9))
+    im=Image.alpha_composite(im.convert('RGBA'),sh).convert('RGB'); d=ImageDraw.Draw(im)
+    for i,l in enumerate(lines):
+        bb=ft.getbbox(l); d.text((M-bb[0],y0+i*lh-bb[1]),l,font=ft,fill=(255,255,255))
     im.save(out)
 
 if __name__=='__main__':

@@ -41,7 +41,7 @@ COLOR = (['-color_range', 'tv', '-colorspace', 'bt709', '-color_primaries', 'bt7
          if os.environ.get('BURN_END_BT709') else [])
 tmp = out + '.tmp.mp4'
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-i', tail, '-filter_complex', fc, '-map', '[vo]', '-map', '[ao]',
-                '-t', f'{tot:.3f}', '-c:v', 'libx264', '-preset', 'slow', '-crf', '16', *COLOR, '-c:a', 'aac', '-b:a', '160k',
+                '-t', f'{tot:.3f}', '-c:v', 'libx264', '-preset', os.environ.get('BURN_END_PRESET', 'fast'), '-crf', '16', *COLOR, '-c:a', 'aac', '-b:a', '160k',
                 '-movflags', '+faststart', tmp], check=True)
 subprocess.run(['ffmpeg', '-v', 'error', '-i', tmp, '-f', 'null', '-'], check=True)
 os.replace(tmp, out); os.remove(tail); print('ok', out, f'{tot:.2f}s')

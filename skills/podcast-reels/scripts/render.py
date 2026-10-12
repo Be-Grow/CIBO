@@ -33,7 +33,11 @@ def passA(c,out):
     # oversample relative to the FINAL output size (not the native crop size) so the zoom
     # only ever crops+lightly-downscales from an already-adequate source instead of upscaling.
     OS=int(H*(1+ZOOM+0.02)); OSW=int(W*(1+ZOOM+0.02))//2*2
-    cw=1920 if HORIZ else 608; x=int((1920-cw)*c['cropx']); x=max(0,min(1920-cw,x))
+    # `crop_h` (opt-in): recorte mais baixo que 1080, ancorado no topo, para deixar de fora
+    # uma marca queimada no rodape do bruto (logo da transmissao). Largura = crop_h*9/16.
+    ch=int(c.get('crop_h',1080))
+    cw=1920 if HORIZ else (608 if ch==1080 else int(round(ch*9/16))//2*2)
+    x=int((1920-cw)*c['cropx']); x=max(0,min(1920-cw,x))
     # Reenquadramento por plano de camera. Uma gravacao que alterna close e plano
     # aberto nao pode usar um recorte fixo: no plano aberto o corte fixo aponta
     # para o meio da mesa. `cropx_timeline` e uma lista [[tempo_no_fonte, cropx]]
@@ -56,10 +60,15 @@ def passA(c,out):
             for (t0,v0),(t1,v1) in reversed(list(zip(pts,pts[1:]))):
                 expr=f'if(lt(t,{t1:.4f}),{v0:.5f}+({v1-v0:.5f})*(t-{t0:.4f})/{max(t1-t0,1e-3):.4f},{expr})'
             return f"'(iw-{cw})*clip({expr},0,1)'"
+        # O decoder entra com -ss a + setpts=PTS-STARTPTS: t=0 e o primeiro quadro REAL
+        # depois de `a` (ceil(a*fps)/fps), nao `a`. Sem descontar esse deslocamento a troca
+        # de recorte saia 1 quadro atrasada: um quadro da camera nova com o recorte antigo
+        # (LPA e Voce, 12/10/2026). Fonte CFR com quadros em k/fps.
+        off=math.ceil(a*FPS-1e-6)/FPS-a
         atual=float(c['cropx']); mudancas=[]
         for t,v in timeline:
             if t<=a+1e-6: atual=v
-            elif t<b-1e-6: mudancas.append((t-a,v))
+            elif t<b-1e-6: mudancas.append((t-a-off,v))
         vals=[atual]+[v for _,v in mudancas]
         expr=f'{vals[-1]:.5f}'
         for j in range(len(mudancas)-1,-1,-1):
@@ -90,7 +99,7 @@ def passA(c,out):
         # -ss na entrada: antes o trim decodificava o arquivo desde o inicio para cada keep
         # (custo quadratico; 35 keeps numa janela de 9 min levaram 18 min).
         dec=subprocess.Popen(['ffmpeg','-v','error','-ss',f'{a:.3f}','-i',src,'-filter_complex',
-            f'[0:v]trim=duration={b-a:.3f},setpts=PTS-STARTPTS,crop={cw}:1080:x={crop_expr(a,b)}:y=0,'
+            f'[0:v]trim=duration={b-a:.3f},setpts=PTS-STARTPTS,crop={cw}:{1080 if HORIZ else ch}:x={crop_expr(a,b)}:y=0,'
             f'scale={OSW}:{OS}:flags=lanczos,format=rgb24[v]','-map','[v]','-f','rawvideo','-'],
             stdout=subprocess.PIPE)
         for k in range(nframes):

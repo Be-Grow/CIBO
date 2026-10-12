@@ -36,10 +36,11 @@ def run(k):
     stage(f'clicks:{k}',  fp([x['s'] for x in c['caps'] if x.get('any')]), f'{B}/clicks_{k}.wav',
           lambda: CK.build(c,f'{B}/clicks_{k}.wav'))
     cutkey=fp(c['keeps'],c['cropx'],c.get('cropx_timeline'),c.get('cropx_interp'),c['src'],os.environ.get('FORMAT'))
+    if c.get('crop_h'): cutkey=fp(cutkey,c['crop_h'])   # so entra quando usado: caches antigos seguem validos
     recut=stage(f'cut:{k}', cutkey, f'{B}/A_{k}.mp4', lambda: render.passA(c,f'{B}/A_{k}.mp4'))
     stage(f'intro:{k}',   cutkey, f'{B}/I_{k}.mp4', lambda: render.make_intro(f'{B}/A_{k}.mp4',f'{B}/I_{k}.mp4'))
     horiz=os.environ.get('FORMAT')=='16x9'   # YouTube: sem capa no 1o frame (thumbnail sobe a parte)
-    if not horiz: stage(f'cover:{k}',   fp(cutkey,c['headline'],c['cover_t'],c.get('cover_src'),c.get('cover_src_t'),c.get('cover_src_x')), f'{B}/capa_{k}.png',
+    if not horiz: stage(f'cover:{k}',   fp(cutkey,c['headline'],c['cover_t'],c.get('cover_src'),c.get('cover_src_t'),c.get('cover_src_x'),c.get('cover_style')), f'{B}/capa_{k}.png',
           lambda: cover.build(c,f'{B}/A_{k}.mp4',f'{B}/capa_{k}.png'))
     basename=c.get('filename',k)
     out=os.path.join(JOB.get('outdir',B),f'{basename}.mp4'); os.makedirs(os.path.dirname(out) or '.',exist_ok=True)
@@ -55,7 +56,7 @@ def run(k):
         import shutil; shutil.copy(f'{B}/capa_{k}.png',os.path.join(JOB.get('outdir',B),f'CAPA - {basename}.png'))
     # cover_src/_t/_x entram aqui tambem: sem eles, trocar o frame da capa refazia o PNG
     # mas o MP4 ficava em cache com a capa antiga no primeiro quadro.
-    stage(f'final:{k}', fp(cutkey,CAPS,c['headline'],c['cover_t'],c.get('cover_src'),c.get('cover_src_t'),c.get('cover_src_x'),os.environ['FILMBURN'],
+    stage(f'final:{k}', fp(cutkey,CAPS,c['headline'],c['cover_t'],c.get('cover_src'),c.get('cover_src_t'),c.get('cover_src_x'),c.get('cover_style'),os.environ['FILMBURN'],
                            JOB.get('preset'),JOB.get('crf'),JOB.get('extra_v'),c.get('burn_at'),c.get('voice_af'),c.get('music'),c.get('mix'),os.environ.get('BURN_OUT'),os.environ.get('BAND_Y'),os.environ.get('FORMAT')), out, _final)
     print(k,'DONE ->',out,flush=True)
 for k in (sys.argv[1:] or list(JOB['clips'])): run(k)
