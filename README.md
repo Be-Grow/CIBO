@@ -4,6 +4,15 @@ CIBO é um agente de edição de vídeo construído como uma coleção de skills
 
 O nome vem de *BLAME!* (Tsutomu Nihei): Cibo é uma inteligência que sobrevive migrando de corpo em corpo, carregando conhecimento adiante. É a mesma lógica deste repositório — o agente não é uma skill fixa, é a soma de tudo que ele já aprendeu, e cresce a cada skill nova ou correção que entra aqui.
 
+## Instalação numa máquina
+
+1. Copie `skills/*` para `~/.claude/skills/`.
+2. Copie `CLAUDE.md` para `~/.claude/CLAUDE.md`: é o que faz o Claude abrir o `client-router`
+   e seguir o mapa de skills em todo pedido de edição, sem o usuário precisar apontar.
+3. Rode `python3 ~/.claude/skills/video-render-optimizer/scripts/hw_profile.py env` (perfil de
+   hardware: encoder escolhido por benchmark) e, no macOS, `... hw_profile.py install-schedule`
+   (teste semanal do encoder).
+
 ## Como está organizado
 
 ```
@@ -20,6 +29,11 @@ CIBO/
 Cada skill é autocontida: lê seu próprio `SKILL.md` antes de qualquer coisa, e não mistura assets/identidade com outro cliente.
 
 ## Skills
+
+### Roteamento e briefing
+| Skill | O que faz |
+|---|---|
+| `briefing-criativo` | Antes de editar, pergunta ao editor só as decisões artísticas e de estilo que o perfil do cliente não responde, grava o brief do projeto e pede aprovação no mapa de cortes e num piloto. |
 
 ### Roteamento de cliente
 | Skill | O que faz |
@@ -58,7 +72,7 @@ Cada skill é autocontida: lê seu próprio `SKILL.md` antes de qualquer coisa, 
 | Skill | O que faz |
 |---|---|
 | `video-project-structure` | Cria e audita a estrutura fixa de pastas de um projeto de edição (fontes, transcrições, QA, entregas). |
-| `video-render-optimizer` | Detecta CPU/GPU/encoders FFmpeg disponíveis e escolhe o mais eficiente sem perder qualidade perceptível. |
+| `video-render-optimizer` | Detecta CPU/GPU/encoders FFmpeg, escolhe o encoder mais eficiente por benchmark e revalida sozinho (`hw_profile.py`: refaz quando a máquina muda ou a cada 30 dias, teste semanal, cai para CPU se o hardware falhar). |
 | `talking-head-music` | Escolhe, compara e mixa trilha de fundo para vídeos de talking head sem atropelar a inteligibilidade da fala. |
 | `clickup-thumb-podcast` | Cria a demanda de thumb de episódio de podcast no ClickUp (ContentHub > Max > Edição) no padrão da equipe; o token fica fora do repositório. |
 | `limpeza-gravacao-bruta` | Tira bastidores, pausas, retakes, bip e assuntos que a equipe pediu para cortar de gravações longas, com emendas pelo sinal de áudio e trava de duração do áudio. |

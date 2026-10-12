@@ -275,4 +275,6 @@ if __name__=='__main__':
     print('review sheet:',review(B,P))
     for k,v in P.items():
         print('='*10,k,'total=%.2f'%v['total'],'caps=%d'%len(v['caps']))
-        for c in v['caps']: print('  %6.2f %6.2f %-20s %s'%(c['s'],c['e'],c['t'],''.join('^' if f else '.' for f in c['em'])))
+        # a lista inteira de legendas so com PLAN_VERBOSE=1: ela gastava milhares de tokens por job
+        if os.environ.get('PLAN_VERBOSE')=='1':
+            for c in v['caps']: print('  %6.2f %6.2f %-20s %s'%(c['s'],c['e'],c['t'],''.join('^' if f else '.' for f in c['em'])))

@@ -5,6 +5,11 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 
 ## Antes de começar
 
+- **Briefing antes de editar** (`briefing-criativo`). O fluxo estava automático demais: a IA
+  decidia gancho, capa, cartão, trilha e cliques sozinha e o editor só via no render. Pergunte
+  o que o perfil do cliente não responde, com opções do histórico, registre o brief e peça
+  aprovação no mapa de cortes e no piloto. ("a ia deveria questionar o editor para que o
+  máximo de detalhes seja fornecido", 12/10/2026)
 - **Procure a skill antes de fazer.** "Procura skill ao invés de tentar fazer algo que já
   tá resolvido pela skill, faça isso sempre." Rodar um script solto de dentro da pasta de uma
   skill não conta: o valor está no SKILL.md, com as convenções e as falhas conhecidas. Se
@@ -21,6 +26,13 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   amostra de 2–3 arquivos), mostre, e só depois faça triagem e diagnóstico. (fotos CONFEA)
 
 ## Durante o job
+
+- **Economia de tokens** (fluxo longo de várias edições precisa ser sustentável, 12/10/2026):
+  saída de comando sempre filtrada (`grep`/`tail`, plano de legendas só com `PLAN_VERBOSE=1`);
+  uma folha de contato pequena (≤ 2000 px de largura) por decisão, nunca quadro a quadro;
+  transcrição longa nunca lida inteira, só o trecho buscado; QA de lote numa chamada
+  (`qa_lote.py`); nada de reler arquivo que acabou de ser escrito. Um projeto por sessão:
+  ao trocar de projeto, comece sessão nova (o contexto do anterior só custa).
 
 - **Baixe e transcreva só a minutagem pedida**, com ~10 s de folga de cada lado, nunca o
   episódio inteiro; um Whisper grande por vez ("pra ser mais econômico... transcreve só essa
