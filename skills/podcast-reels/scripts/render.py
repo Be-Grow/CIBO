@@ -25,15 +25,28 @@ ZOOM=float(os.environ.get('ZOOM_AMT','0.055'))   # 0 disables
 # video-render-optimizer (12/10/2026): 4,2x mais rapido, SSIM 0,9941 x 0,9952 do x264 slow
 # crf18, 6,9 Mb/s. Hardware precisa de alvo e teto de bitrate, nao CRF: VT_MBPS/VT_MAX_MBPS.
 VENC=os.environ.get('VENC','x264')
+if VENC=='auto':
+    # VENC=auto: a skill video-render-optimizer (hw_profile.py) detecta o hardware, escolhe o
+    # encoder por benchmark e revalida de tempos em tempos. Sem ela ou com erro: x264.
+    _hp=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..','video-render-optimizer','scripts','hw_profile.py')
+    try:
+        _p=json.loads(subprocess.run([sys.executable,_hp,'env','--json'],capture_output=True,text=True,timeout=900).stdout)
+        VENC=_p['VENC']
+        for _k in ('VT_MBPS','VT_MAX_MBPS'): os.environ.setdefault(_k,_p[_k])
+    except Exception as _e:
+        print('VENC=auto: perfil de hardware indisponivel, usando x264:',_e); VENC='x264'
+    os.environ['VENC']=VENC          # o make_reels usa o valor resolvido na chave de cache
+_HW={'videotoolbox':('h264_videotoolbox',['-realtime','false']),'nvenc':('h264_nvenc',['-preset','p5','-rc','vbr']),
+     'qsv':('h264_qsv',['-preset','medium']),'amf':('h264_amf',['-quality','balanced'])}
 def venc_final(preset,crf):
-    if VENC=='videotoolbox':
-        b=float(os.environ.get('VT_MBPS','8')); m=float(os.environ.get('VT_MAX_MBPS','10'))
-        return f'-c:v h264_videotoolbox -b:v {b:g}M -maxrate {m:g}M -bufsize {2*m:g}M -realtime false -profile:v high'
+    if VENC in _HW:
+        b=float(os.environ.get('VT_MBPS','8')); m=float(os.environ.get('VT_MAX_MBPS','10')); n,x=_HW[VENC]
+        return f'-c:v {n} -b:v {b:g}M -maxrate {m:g}M -bufsize {2*m:g}M {" ".join(x)} -profile:v high'
     return f'-c:v libx264 -preset {preset} -crf {crf}'
 def venc_mid(preset,crf):
     """Intermediarios (passA, intro): na GPU com bitrate alto, ja que serao recodificados."""
-    if VENC=='videotoolbox':
-        return ['-c:v','h264_videotoolbox','-b:v','40M','-realtime','false','-profile:v','high']
+    if VENC in _HW:
+        n,x=_HW[VENC]; return ['-c:v',n,'-b:v','40M',*x,'-profile:v','high']
     return ['-c:v','libx264','-preset',preset,'-crf',crf]
 # PASSA_DIRECT=1 (opt-in, so com ZOOM_AMT=0): o ffmpeg ja entrega o quadro em W x H e o
 # Python so repassa os bytes. Sem zoom, o resize por quadro no PIL era tempo perdido.
@@ -257,9 +270,15 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
         if os.environ.get('BURN_END_BT709'):
             tail+=('-color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 '
                    '-bsf:v h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1:video_full_range_flag=0 ')
-    sh(f'ffmpeg -y -v error {ins} -filter_complex "{f}" -map "[{vl}]" -map "[{al}]" '
-       f'{venc_final(preset,crf)} -pix_fmt yuv420p -c:a aac -b:a 160k '
-       f'{tail}{extra} -movflags +faststart "{out}"')
+    cmd=lambda v: (f'ffmpeg -y -v error {ins} -filter_complex "{f}" -map "[{vl}]" -map "[{al}]" '
+                   f'{v} -pix_fmt yuv420p -c:a aac -b:a 160k '
+                   f'{tail}{extra} -movflags +faststart "{out}"')
+    try:
+        sh(cmd(venc_final(preset,crf)))
+    except SystemExit:
+        if VENC not in _HW: raise
+        # encoder de hardware falhou nesta maquina/sessao (ex.: sem acesso a GPU): refaz em CPU
+        print(f'AVISO: {VENC} falhou no final, refazendo em libx264'); sh(cmd(f'-c:v libx264 -preset {preset} -crf {crf}'))
 
 if __name__=='__main__':
     P=json.load(open(os.path.join(B,'plan.json'))); k=sys.argv[1]; c=P[k]

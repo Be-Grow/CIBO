@@ -464,8 +464,10 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
     codificava o vídeo três vezes (final → cartão/título → `burn_end.py`) e redimensionava cada
     quadro no PIL mesmo sem zoom: ~3–4 min por corte. Tudo opt-in (sem as chaves, a saída é
     idêntica quadro a quadro):
-    - `VENC=videotoolbox`: x264 → `h264_videotoolbox` (alvo `VT_MBPS`=8, teto `VT_MAX_MBPS`=10;
-      intermediários a 40 Mb/s). No M4: 4,2× mais rápido, SSIM 0,9941 × 0,9952, aprovado pela
+    - `VENC=auto` (recomendado): escolhe pelo perfil de hardware da `video-render-optimizer`
+      (`hw_profile.py`), que revalida sozinho; se o hardware falhar no `final()`, refaz em x264.
+      `VENC=videotoolbox|nvenc|qsv|amf` força um encoder (alvo `VT_MBPS`=8, teto
+      `VT_MAX_MBPS`=10; intermediários a 40 Mb/s). No M4: 4,2× mais rápido, SSIM 0,9941 × 0,9952, aprovado pela
       `video-render-optimizer` e na comparação visual de pele, barba e letra.
     - `PASSA_DIRECT=1` (só com `ZOOM_AMT=0`): o ffmpeg já entrega o quadro em 1080×1920 e o
       Python só repassa os bytes.

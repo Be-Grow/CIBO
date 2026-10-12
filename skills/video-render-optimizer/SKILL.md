@@ -7,6 +7,33 @@ description: Detecte CPU, GPU e encoders FFmpeg, compare CPU versus aceleração
 
 Escolha encoder e bitrate por evidência no dispositivo atual. Não presuma que GPU é sempre mais rápida ou que hardware encoding produz o melhor arquivo.
 
+## Perfil automático de hardware (`scripts/hw_profile.py`)
+
+Para não decidir encoder no chute em cada job, o CIBO mantém um perfil por máquina em
+`~/.cache/cibo/hw/profile.json`:
+
+- `hw_profile.py detect`: CPU (núcleos de desempenho e de eficiência), RAM, GPU, encoders de
+  hardware do FFmpeg (VideoToolbox, NVENC, QSV, AMF, VAAPI), hwaccels de decodificação, disco
+  livre e quantos renders 1080p cabem em paralelo (~5 GB de RAM cada, no máximo 3).
+- `hw_profile.py env`: garante o perfil e imprime `VENC`, `VT_MBPS`, `VT_MAX_MBPS` e
+  `CIBO_MAX_PARALLEL`. Refaz o benchmark sozinho quando a máquina, o FFmpeg ou os encoders
+  mudam, quando o benchmark tem mais de 30 dias (`CIBO_HW_REBENCH_DAYS`) ou depois de uma
+  falha; roda o teste rápido quando o último tem mais de 7 dias (`CIBO_HW_CHECK_DAYS`).
+- `hw_profile.py check`: codifica 4 s com o encoder escolhido, decodifica inteiro, mede SSIM e
+  velocidade contra o próprio benchmark. Falha ou qualidade abaixo de max(0,96; SSIM da CPU
+  − 0,01) → o perfil cai para `libx264` e o próximo `env` refaz o benchmark. Lentidão (< 60%
+  da velocidade do benchmark) só gera aviso: costuma ser calor ou prioridade baixa.
+- `hw_profile.py bench --sample TRECHO.mp4`: benchmark completo agora. Sem `--sample`, usa o
+  último trecho real ou um sintético 1080×1920 gerado uma vez.
+- `hw_profile.py install-schedule`: no macOS, agenda no launchd o teste semanal (segunda,
+  10h; log em `~/.cache/cibo/hw/scheduled.log`). `uninstall-schedule` remove. Fora do macOS
+  o comando imprime a linha do cron.
+
+No motor `podcast-reels`, `VENC=auto` consulta este perfil; se o encoder de hardware falhar
+no meio do render, o `final()` refaz em `libx264` e avisa. Instalado e validado no M4 em
+12/10/2026: VideoToolbox 3,6× mais rápido que x264 slow, SSIM 0,9937 × 0,995; com um
+encoder quebrado simulado, o teste caiu para CPU e o benchmark seguinte voltou para a GPU.
+
 ## Procedimento obrigatório
 
 1. Leia [references/decision-policy.md](references/decision-policy.md).

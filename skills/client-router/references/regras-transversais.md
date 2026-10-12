@@ -67,6 +67,10 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   (AMBIENTAÇÃO, IMPACTO, RISERS, HITS, ATMOSFERA, WHOOSHS). Escolha e nível pela skill
   `talking-head-music`. A biblioteca mistura faixas comerciais protegidas: para cliente,
   só o que tem direito de uso claro. (Rodrigo)
+- **Render: deixe o hardware escolher.** Rode com `VENC=auto` (perfil da
+  `video-render-optimizer`, revalidado toda semana) e uma codificação só (`overlays`,
+  `BURN_END_INLINE`). Nunca recodifique o MP4 entregue para pôr cartão ou burn. ("demora
+  muito", 12/10/2026)
 - **Loudness por ganho fixo medido**, nunca `loudnorm` dinâmico no mix ou na voz: ele
   levanta a trilha nas pausas até ficar mais alta que a voz. (Dr. Energia)
 - **Clique (SFX de ênfase): sempre os dois sons do usuário**, `/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav` e `~/CIBO/skills/fernanda-produto/assets/camera_click.mp3`, alternados. Nunca o clique sintetizado ("click ridículo", 12/10/2026). Já é o padrão do `clicks.py` da podcast-reels.
