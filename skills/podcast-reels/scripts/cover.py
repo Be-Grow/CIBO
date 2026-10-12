@@ -55,7 +55,7 @@ def build(c,src,out):
     lines=c['headline'].split('\n')
     ft,s=fit(c['headline'],W-150,110)
     lh=int(s*1.16); total=lh*len(lines)
-    y=int(H*0.735)-total//2
+    y=int(H*float(os.environ.get('COVER_Y','0.735')))-total//2   # COVER_Y: perfil do cliente (Katia 0.775)
     for i,l in enumerate(lines):
         bb=ft.getbbox(l); w=bb[2]-bb[0]; x=(W-w)//2-bb[0]
         yy=y+i*lh
@@ -64,9 +64,10 @@ def build(c,src,out):
         sh=sh.filter(ImageFilter.GaussianBlur(14))
         im.paste(Image.alpha_composite(im.crop((0,yy-10,W,yy+lh+50)).convert('RGBA'),sh).convert('RGB'),(0,yy-10))
         d.text((x,yy-bb[1]),l,font=ft,fill=(255,255,255))
-    # blue accent bar
-    bw=int(W*0.16)
-    d.rounded_rectangle([(W-bw)//2,y-58,(W+bw)//2,y-46],6,fill=BLUE)
+    # blue accent bar (COVER_BAR=0 tira: a Katia nao usa barra)
+    if os.environ.get('COVER_BAR','1')!='0':
+        bw=int(W*0.16)
+        d.rounded_rectangle([(W-bw)//2,y-58,(W+bw)//2,y-46],6,fill=BLUE)
     # logo
     try:
         lg=Image.open(LOGO).convert('RGBA')

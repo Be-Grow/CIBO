@@ -31,6 +31,12 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 
 ## Durante o job
 
+- **Toda correção do editor vai para o registro** (`client-router/scripts/feedback.py add
+  --cliente --categoria --texto --acao`), além de virar atualização de skill. `feedback.py
+  resumo` mostra onde o CIBO mais erra.
+- **Mudança em motor de corte só sobe para o CIBO com `~/CIBO/tests/regressao.py check`
+  passando.** Diferença intencional: grave de novo com `record` e explique no commit.
+
 - **Economia de tokens** (fluxo longo de várias edições precisa ser sustentável, 12/10/2026):
   saída de comando sempre filtrada (`grep`/`tail`, plano de legendas só com `PLAN_VERBOSE=1`);
   uma folha de contato pequena (≤ 2000 px de largura) por decisão, nunca quadro a quadro;

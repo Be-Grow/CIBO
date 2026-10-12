@@ -1,0 +1,79 @@
+{
+ "_doc": "Perfil da Katia no motor podcast-reels (antes era uma copia do motor). Prioridade: env > job > perfil.",
+ "env": {
+  "FONT_WEIGHT": "Bold",
+  "COVER_Y": "0.775",
+  "COVER_BAR": "0"
+ },
+ "job": {
+  "font": "{SKILL}/assets/Montserrat-VariableFont_wght.ttf",
+  "filmburn": "{SKILL}/assets/filmburn_blue.mp4",
+  "fix": [
+   [
+    "\\bBesos\\b",
+    "berços"
+   ],
+   [
+    "\\bserbo\\b",
+    "sebo"
+   ],
+   [
+    "\\bsó da cálcica\\b",
+    "soda cáustica"
+   ],
+   [
+    "\\bquem daí de vocês\\b",
+    "quem aí de vocês"
+   ],
+   [
+    "\\bda granel\\b",
+    "da Granel"
+   ],
+   [
+    "\\bgranel\\b",
+    "Granel"
+   ],
+   [
+    "\\bCoca-Cola\\b",
+    "Coca-Cola"
+   ],
+   [
+    "\\bpo r\\b",
+    "por"
+   ],
+   [
+    "\\bteraprima\\b",
+    "matéria-prima"
+   ],
+   [
+    "\\bvódica\\b",
+    "vodka"
+   ],
+   [
+    "\\bfaço parte\\b",
+    "faço parte"
+   ],
+   [
+    "Porto, gente",
+    "porto, gente"
+   ],
+   [
+    "dentro do Porto",
+    "dentro do porto"
+   ],
+   [
+    "\\bvai só da cálcica\\b",
+    "vai soda cáustica"
+   ],
+   [
+    "\\bsó da cálcica\\b",
+    "soda cáustica"
+   ],
+   [
+    "\\bEla não tem lá um\\b",
+    "Ela não tem lá um"
+   ]
+  ],
+  "emph": "80% mundo portuário portuário. risco risco. altíssimo gasolina moeda moeda? banho banho. sabonete sabonete? sebo sebo, cáustica cáustica, coca-cola pigmento vermelha navios navios. 42 anos enorme granel granel. econômica econômica. oportunidade oportunidade. incidente segurança segurança? líquida líquida."
+ }
+}

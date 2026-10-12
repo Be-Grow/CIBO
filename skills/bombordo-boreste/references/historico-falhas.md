@@ -134,3 +134,4 @@ It is especially useful for review iterations; start around `VT_BITRATE=16M` for
 1080×1920. On an M4 Air benchmark, a 12 s encode fell from 10.09 s with
 `libx264 slow` to 2.37 s with VideoToolbox. Hardware encoding needs more bitrate
 for comparable quality, so keep `libx264` as the default for compact final masters.
+- **Encode travado com 0% de CPU (12/10/2026)**: a trilha entrava em loop infinito (`-stream_loop -1` sem `-t`) e o áudio do passA saía do mesmo demuxer que o vídeo. Corrigido como na `podcast-reels` (item 23); o teste `~/CIBO/tests/regressao.py` pegou o travamento no Bombordo.

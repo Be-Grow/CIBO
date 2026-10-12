@@ -14,8 +14,14 @@ via Homebrew).
 
 Builds finished vertical cuts from a master video + SRT. Everything is driven by one
 `job.json`; the scripts do transcription-free caption timing (reused from the SRT),
-silence-snapped trimming, caption rendering, audio sweetening and the cover. Forked
-from `podcast-reels` for this client — same engine, Katia-specific defaults below.
+silence-snapped trimming, caption rendering, audio sweetening and the cover.
+
+**Motor (12/10/2026):** a Katia não tem mais cópia do motor. `scripts/make_reels.py` e
+`scripts/tools.py` chamam o motor único `podcast-reels` com o perfil `assets/profile.json`
+(Montserrat Bold, manchete em 0,775 sem barra, correções e ênfases da cliente). Toda opção da
+`podcast-reels` vale aqui (`VENC=auto`, `PARALLEL=auto`, `overlays`, `BURN_END_INLINE`,
+`audio_qa.py`, `cover_rank.py`). A cópia antiga tinha bugs já corrigidos no motor: vídeo cortado
+acima de 2 min, trilha em loop infinito travando o encode, frase sumindo da legenda.
 
 ## Katia — client defaults
 
@@ -32,8 +38,8 @@ from `podcast-reels` for this client — same engine, Katia-specific defaults be
   override with `FONT_WEIGHT` env if a different weight is ever needed). Set
   `"font"` in `job.json` to this path; do not fall back to the bundled CalSans.
 - **Cover layout:** headline sits lower on the frame than the shared default
-  (`y = int(H*0.775) - total//2` in `cover.py`, vs `0.735` upstream) and has **no**
-  blue accent bar above it — Katia's cover is just scrim + headline + optional logo.
+  (`COVER_Y=0.775` no perfil, vs `0.735` no motor) and has **no**
+  blue accent bar above it (`COVER_BAR=0` no perfil) — Katia's cover is just scrim + headline + optional logo.
   Don't reintroduce the bar; it was removed on purpose for this client.
   **The 0.775 layout alone produced covers the user called "horríveis"**: in a tight
   9:16 crop the face sits low and the headline landed on her mouth. For every cover,

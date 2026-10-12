@@ -12,6 +12,12 @@ O nome vem de *BLAME!* (Tsutomu Nihei): Cibo é uma inteligência que sobrevive 
 3. Rode `python3 ~/.claude/skills/video-render-optimizer/scripts/hw_profile.py env` (perfil de
    hardware: encoder escolhido por benchmark). O teste do encoder roda sozinho a cada 10 renders.
 
+## Testes
+
+`tests/regressao.py check` renderiza o mesmo material sintético em cada motor de corte
+(podcast-reels, katia, bombordo-boreste, autismo-cast, content-hub) e compara vídeo, áudio e capa
+com `tests/golden/`. Rode antes de todo push que mexa em motor; travamento vira erro (240 s).
+
 ## Como está organizado
 
 ```

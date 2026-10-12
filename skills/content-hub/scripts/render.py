@@ -249,7 +249,7 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
     burn_delay=max(0,int(round((float(c['total'])-OUTRO_BURN)*1000)))
     fade_start=max(0.0,float(c['total'])-OUTRO_FADE)
     if music:
-        ins+=f' -stream_loop -1 -i "{music}"'
+        ins+=f' -stream_loop -1 -t {float(c["total"])+float((c.get("mix") or {}).get("music_offset",0))+3:.2f} -i "{music}"'  # entrada infinita travava o encode (podcast-reels item 23)
     f=(f"[0:v]trim=start={INTRO},setpts=PTS-STARTPTS[main];"
        f"[1:v][main]concat=n=2:v=1:a=0[vv];"
        f"[2:v]fps={FPS},setpts=PTS-STARTPTS,setsar=1,format=gbrp,split=2[fbi0][fbo0];"

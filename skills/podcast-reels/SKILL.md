@@ -98,7 +98,7 @@ Comece todo job assim (detalhes no item 46 do histórico):
 
 ```bash
 taskpolicy -B -t 0 -l 0 -p $$          # em background o macOS usa os núcleos lentos
-export JOB=job.json ZOOM_AMT=0 BURN_OUT=0 VENC=auto PASSA_DIRECT=1 \
+export JOB=job.json ZOOM_AMT=0 BURN_OUT=0 VENC=auto PASSA_DIRECT=1 PARALLEL=auto \
        BURN_END_INLINE=1 BURN_END_LIMIT=0.84 BURN_END_BT709=1
 ~/.claude/skills/podcast-reels/.venv/bin/python3 scripts/make_reels.py corte01 | grep -E "built|DONE|Error"
 ```
@@ -115,6 +115,13 @@ export JOB=job.json ZOOM_AMT=0 BURN_OUT=0 VENC=auto PASSA_DIRECT=1 \
 | `voice_af`, `music`, `mix` | clipe | cadeia da voz; trilha com ducking (`duck_ratio` 3, `duck_threshold` 0.1, `music_db` −18 em fala contínua) |
 | `burn_at`, `nosnap`, `cover_style` | clipe | burn no meio; emenda sem snap; estilo de capa (`lpa`) |
 | `REPLAN=1` | env | refaz o plano de legendas (senão `captions_<clip>.json` manda) |
+| `PARALLEL=auto` | env | vários cortes ao mesmo tempo (número pela RAM, perfil de hardware); 7 cortes: 400 → 236 s |
+| `PROFILE` / `profile` | env / job | perfil de cliente (`<skill>/assets/profile.json`): `env` + padrões do job; env > job > perfil |
+| `COVER_Y`, `COVER_BAR=0` | env | altura da manchete na capa; tira a barra azul (perfis) |
+
+**Clientes neste motor:** `podcast-reels` (genérico, João Campos) e `katia` (perfil). Bombordo,
+Autismo Cast e Content Hub ainda têm motor próprio (recursos a migrar: `impact_pulses`,
+`long_moves`, `punch`, saída com fade, letterings, B-roll); receberam as correções de travamento.
 
 Trilha: escolha com `talking-head-music` (por corte, com offset). Fim do corte: vídeo acaba seco
 e o burn passa do fim sobre preto, nunca fade.
@@ -126,6 +133,12 @@ e o burn passa do fim sobre preto, nunca fade.
 - QA de lote numa chamada: `scripts/qa_lote.py PASTA` (verify, LUFS, pico, cor, duração e uma
   folha de contato por corte numa imagem só).
 - Uma folha de contato por decisão, nunca quadro a quadro.
+- Capa: `cover_scan.py` (varredura) + `cover_rank.py SCAN VIDEO --crop-h ...` (nota do Vision da
+  Apple: qualidade do rosto, pose, olhos, mão acima do queixo, tamanho) → uma folha com os 8
+  melhores. Calibrado com as capas do João: as 6 aprovadas acima das 3 reprovadas.
+- Som: `audio_qa.py` (clique sobre fala ou alto, trilha sumindo ou alta, emenda cortando
+  palavra, última palavra engolida), uma linha por corte.
+- Antes de subir mudança de motor para o CIBO: `python3 ~/CIBO/tests/regressao.py check`.
 
 ## Rules that matter
 

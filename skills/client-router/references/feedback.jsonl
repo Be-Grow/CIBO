@@ -1,0 +1,12 @@
+{"data": "2026-10-12", "cliente": "cibo", "categoria": "skill", "texto": "skill de motion ruinzinha", "skill": "lettering-motion", "acao": "cartão e título em Remotion"}
+{"data": "2026-10-12", "cliente": "joao-campos", "categoria": "clique", "texto": "click bizarro no meio das falas do jg", "skill": "podcast-reels", "acao": "cliques do usuário, baixos, alternados"}
+{"data": "2026-10-12", "cliente": "joao-campos", "categoria": "asset", "texto": "foto aleatória no cartão Seguir, pegar a do insta", "skill": "lettering-motion", "acao": "avatar = foto atual do perfil"}
+{"data": "2026-10-12", "cliente": "joao-campos", "categoria": "enquadramento", "texto": "marandu tv no canto; reenquadrar em vez de blur estranho", "skill": "podcast-reels", "acao": "crop_h"}
+{"data": "2026-10-12", "cliente": "joao-campos", "categoria": "capa", "texto": "capas ruins, precisa de momentos melhores", "skill": "podcast-reels", "acao": "varredura de capa"}
+{"data": "2026-10-12", "cliente": "joao-campos", "categoria": "capa", "texto": "capas 1, 3 e 6 horríveis; de rosto tá ótimo", "skill": "podcast-reels", "acao": "close de rosto olhando para a câmera"}
+{"data": "2026-10-12", "cliente": "cibo", "categoria": "render", "texto": "render demora muito; usa a GPU?", "skill": "podcast-reels", "acao": "uma codificação, VideoToolbox, VENC=auto"}
+{"data": "2026-10-12", "cliente": "cibo", "categoria": "processo", "texto": "fluxo automático demais; perguntar decisões artísticas", "skill": "briefing-criativo", "acao": "briefing-criativo"}
+{"data": "2026-10-12", "cliente": "cibo", "categoria": "tokens", "texto": "edição usa tokens demais para fluxo longo", "skill": "client-router", "acao": "SKILL.md enxutos, qa_lote, saída filtrada"}
+{"data": "2026-10-12", "cliente": "cibo", "categoria": "skill", "texto": "skills não usadas sem eu apontar", "skill": "client-router", "acao": "CLAUDE.md global e mapa de etapas"}
+{"data": "2026-10-12", "cliente": "cibo", "categoria": "asset", "texto": "tive que apontar inúmeras vezes onde estão os mesmos arquivos", "skill": "acervo", "acao": "acervo com lugar fixo no SSD"}
+{"data": "2026-10-12", "cliente": "cibo", "categoria": "render", "texto": "teste do encoder por número de renders, não semanal", "skill": "video-render-optimizer", "acao": "CIBO_HW_CHECK_RUNS=10"}

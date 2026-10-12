@@ -125,7 +125,7 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
     burn_delay=max(0,int(round((float(c['total'])-OUTRO_BURN)*1000)))
     fade_start=max(0.0,float(c['total'])-OUTRO_FADE)
     if music:
-        ins+=f' -stream_loop -1 -i "{music}"'
+        ins+=f' -stream_loop -1 -t {float(c["total"])+float((c.get("mix") or {}).get("music_offset",0))+3:.2f} -i "{music}"'  # entrada infinita travava o encode (podcast-reels item 23)
     f=(f"[0:v]trim=start={INTRO},setpts=PTS-STARTPTS[main];"
        f"[1:v][main]concat=n=2:v=1:a=0[vv];"
        f"[2:v]fps={FPS},setpts=PTS-STARTPTS,setsar=1,format=gbrp,split=2[fbi0][fbo0];"
@@ -140,7 +140,7 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
        f"fade=t=out:st={fade_start:.6f}:d={OUTRO_FADE:.6f},format=yuv420p[bodyfade];"
        f"color=c=black:s={W}x{H}:r={FPS}:d={OUTRO_BLACK:.6f},setsar=1,format=yuv420p[endblack];"
        f"[bodyfade][endblack]concat=n=2:v=1:a=0[body];"
-       f"[0:a][5:a]amix=inputs=2:duration=first:normalize=0[voice]")
+       f"[{6+bool(music)+bool(cover)}:a][5:a]amix=inputs=2:duration=first:normalize=0[voice]")  # 2ª leitura do passA (item 23)
     if music:
         music_db=float(mix.get('music_db',-21))
         duck_threshold=float(mix.get('duck_threshold',0.08))
@@ -195,6 +195,7 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
         vopts=(f'-c:v libx264 -preset {preset} -crf {crf} -pix_fmt yuv420p '
                f'-x264-params "colorprim=bt709:transfer=bt709:colormatrix=bt709:fullrange=off" '
                f'-color_primaries bt709 -color_trc bt709 -colorspace bt709 -color_range tv')
+    ins+=f' -i "{passa}"'   # audio do passA em entrada propria (ver aidx acima)
     sh(f'ffmpeg -y -v error {ins} -filter_complex "{f}" -map "[vfin]" -map "[afin]" '
        f'{vopts} -c:a aac -b:a 160k '
        f'{extra} -movflags +faststart "{out}"')

@@ -23,7 +23,17 @@ def shutter():
     return z.astype(np.float32)
 # Cliques aprovados pelo usuario (12/10/2026: "sempre use esses aqui"). CLICK aceita
 # varios arquivos separados por '|' e alterna entre eles; vazio = estes dois.
-DEFAULT_CLICKS='/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav|/Users/bruno/CIBO/skills/fernanda-produto/assets/camera_click.mp3'
+def _acervo(i,fallback):
+    """Caminho do asset pelo ID no acervo do CIBO (skill `acervo`); sem acervo, o caminho antigo."""
+    try:
+        r=subprocess.run([sys.executable,os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..','acervo','scripts','acervo.py'),'path',i],
+                         capture_output=True,text=True,timeout=20)
+        p=r.stdout.strip()
+        if r.returncode==0 and os.path.exists(p): return p
+    except Exception: pass
+    return fallback
+DEFAULT_CLICKS=(_acervo('sfx-click-lens','/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav')+'|'+
+                _acervo('sfx-camera-click','/Users/bruno/CIBO/skills/fernanda-produto/assets/camera_click.mp3'))
 def _load(fp):
     raw=subprocess.run(f'ffmpeg -v error -i "{fp}" -f s16le -ar {SR} -ac 1 -',
                        shell=True,capture_output=True).stdout

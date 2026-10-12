@@ -24,7 +24,9 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Encoder e velocidade de render | `video-render-optimizer` (`VENC=auto`) |
 | Legenda: pente-fino | `caption-quality-gate` |
 | Legenda: retranscrição cruzada | `legenda-cruzada` |
-| Checagem final do MP4 | `video-delivery-safety-check` (`podcast-reels/scripts/qa_lote.py` no lote) |
+| Checagem final do MP4 | `video-delivery-safety-check` (`podcast-reels/scripts/qa_lote.py` no lote, `audio_qa.py` no som) |
+| Entrega no Drive (com links) | `scripts/entrega_drive.py` desta skill — simula sem `--confirmo`; confirme o destino |
+| Correção do editor | `scripts/feedback.py add` no mesmo turno em que a skill é corrigida; `resumo` mostra onde investir |
 | Cor de fotos | `foto-evento-cor` |
 | SEO / thumb do episódio / demanda ClickUp | `seo-youtube-podcast`, `clickup-thumb-podcast` |
 
