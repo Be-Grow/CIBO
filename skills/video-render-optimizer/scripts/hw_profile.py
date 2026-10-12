@@ -7,12 +7,12 @@ uso:
   hw_profile.py env [--json]           # garante o perfil e imprime as variáveis do motor
   hw_profile.py check                  # teste rápido do encoder escolhido (periódico)
   hw_profile.py bench [--sample F]     # benchmark completo agora
-  hw_profile.py install-schedule       # macOS: teste semanal via launchd
+  hw_profile.py install-schedule       # opcional (macOS): teste semanal via launchd, além do teste por uso
   hw_profile.py uninstall-schedule
 
 Quando `env` roda, o perfil é refeito sozinho se a máquina, o FFmpeg ou os encoders
 mudaram, ou se o benchmark tem mais de REBENCH_DAYS dias; e passa por um `check` se o
-último teste tem mais de CHECK_DAYS dias. Se o encoder de hardware falhar no teste, o
+último teste foi há CHECK_RUNS renders (padrão 10). Se o encoder de hardware falhar no teste, o
 perfil cai para CPU (libx264) até o próximo benchmark passar.
 Só usa a biblioteca padrão; ffmpeg/ffprobe no PATH.
 """
@@ -37,7 +37,8 @@ import benchmark_encoder as be  # noqa: E402
 CACHE = Path(os.environ.get("CIBO_HW_CACHE", Path.home() / ".cache" / "cibo" / "hw"))
 PROFILE = CACHE / "profile.json"
 REBENCH_DAYS = float(os.environ.get("CIBO_HW_REBENCH_DAYS", 30))
-CHECK_DAYS = float(os.environ.get("CIBO_HW_CHECK_DAYS", 7))
+# teste rápido a cada N renders (cada `env`, ou seja, cada vez que o motor resolve o encoder)
+CHECK_RUNS = int(os.environ.get("CIBO_HW_CHECK_RUNS", 10))
 # perfil de entrega padrão do CIBO (Reels 1080x1920/30): alvo e teto de bitrate
 TARGET_MBPS = float(os.environ.get("CIBO_TARGET_MBPS", 8))
 MAX_MBPS = float(os.environ.get("CIBO_MAX_MBPS", 10))
@@ -206,6 +207,7 @@ def check(prof: dict | None = None, quiet: bool = False) -> dict:
             # mas fica registrado e aparece no aviso
             problems.append(f"lento: {r['realtime_factor']}x tempo real contra {base['realtime_factor']}x no benchmark")
     fatal = [p for p in problems if not p.startswith("lento")]
+    prof["runs_since_check"] = 0
     prof["last_check"] = {"at": now(), "encoder": enc, "ok": not fatal, "problems": problems,
                           "realtime_factor": r.get("realtime_factor"), "ssim": r.get("ssim")}
     if fatal and enc != "libx264":
@@ -229,8 +231,10 @@ def ensure(sample: str | None = None) -> dict:
         return bench(sample, reason="revalidação depois de falha no teste periódico")
     if days(prof["benchmark"].get("at")) > REBENCH_DAYS:
         return bench(sample, reason=f"benchmark com mais de {REBENCH_DAYS:g} dias")
-    if days((prof.get("last_check") or {}).get("at")) > CHECK_DAYS:
+    prof["runs_since_check"] = prof.get("runs_since_check", 0) + 1
+    if prof["runs_since_check"] >= CHECK_RUNS:
         return check(prof, quiet=True)
+    save(prof)
     return prof
 
 

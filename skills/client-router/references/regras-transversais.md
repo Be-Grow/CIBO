@@ -80,7 +80,7 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   `talking-head-music`. A biblioteca mistura faixas comerciais protegidas: para cliente,
   só o que tem direito de uso claro. (Rodrigo)
 - **Render: deixe o hardware escolher.** Rode com `VENC=auto` (perfil da
-  `video-render-optimizer`, revalidado toda semana) e uma codificação só (`overlays`,
+  `video-render-optimizer`, testado de novo a cada 10 renders) e uma codificação só (`overlays`,
   `BURN_END_INLINE`). Nunca recodifique o MP4 entregue para pôr cartão ou burn. ("demora
   muito", 12/10/2026)
 - **Loudness por ganho fixo medido**, nunca `loudnorm` dinâmico no mix ou na voz: ele

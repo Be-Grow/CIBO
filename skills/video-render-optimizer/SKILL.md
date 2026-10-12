@@ -18,16 +18,18 @@ Para não decidir encoder no chute em cada job, o CIBO mantém um perfil por má
 - `hw_profile.py env`: garante o perfil e imprime `VENC`, `VT_MBPS`, `VT_MAX_MBPS` e
   `CIBO_MAX_PARALLEL`. Refaz o benchmark sozinho quando a máquina, o FFmpeg ou os encoders
   mudam, quando o benchmark tem mais de 30 dias (`CIBO_HW_REBENCH_DAYS`) ou depois de uma
-  falha; roda o teste rápido quando o último tem mais de 7 dias (`CIBO_HW_CHECK_DAYS`).
+  falha; roda o teste rápido **a cada 10 renders** (`CIBO_HW_CHECK_RUNS`; cada `env` conta um,
+  e o motor chama `env` uma vez por corte). Preferência do usuário: teste por uso, não por
+  calendário (12/10/2026).
 - `hw_profile.py check`: codifica 4 s com o encoder escolhido, decodifica inteiro, mede SSIM e
   velocidade contra o próprio benchmark. Falha ou qualidade abaixo de max(0,96; SSIM da CPU
   − 0,01) → o perfil cai para `libx264` e o próximo `env` refaz o benchmark. Lentidão (< 60%
   da velocidade do benchmark) só gera aviso: costuma ser calor ou prioridade baixa.
 - `hw_profile.py bench --sample TRECHO.mp4`: benchmark completo agora. Sem `--sample`, usa o
   último trecho real ou um sintético 1080×1920 gerado uma vez.
-- `hw_profile.py install-schedule`: no macOS, agenda no launchd o teste semanal (segunda,
-  10h; log em `~/.cache/cibo/hw/scheduled.log`). `uninstall-schedule` remove. Fora do macOS
-  o comando imprime a linha do cron.
+- `hw_profile.py install-schedule`: opcional, agenda no launchd um teste semanal além do
+  teste por uso. Não vem instalado (o usuário preferiu só o teste a cada 10 renders);
+  `uninstall-schedule` remove.
 
 No motor `podcast-reels`, `VENC=auto` consulta este perfil; se o encoder de hardware falhar
 no meio do render, o `final()` refaz em `libx264` e avisa. Instalado e validado no M4 em

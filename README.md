@@ -10,8 +10,7 @@ O nome vem de *BLAME!* (Tsutomu Nihei): Cibo é uma inteligência que sobrevive 
 2. Copie `CLAUDE.md` para `~/.claude/CLAUDE.md`: é o que faz o Claude abrir o `client-router`
    e seguir o mapa de skills em todo pedido de edição, sem o usuário precisar apontar.
 3. Rode `python3 ~/.claude/skills/video-render-optimizer/scripts/hw_profile.py env` (perfil de
-   hardware: encoder escolhido por benchmark) e, no macOS, `... hw_profile.py install-schedule`
-   (teste semanal do encoder).
+   hardware: encoder escolhido por benchmark). O teste do encoder roda sozinho a cada 10 renders.
 
 ## Como está organizado
 
@@ -72,7 +71,7 @@ Cada skill é autocontida: lê seu próprio `SKILL.md` antes de qualquer coisa, 
 | Skill | O que faz |
 |---|---|
 | `video-project-structure` | Cria e audita a estrutura fixa de pastas de um projeto de edição (fontes, transcrições, QA, entregas). |
-| `video-render-optimizer` | Detecta CPU/GPU/encoders FFmpeg, escolhe o encoder mais eficiente por benchmark e revalida sozinho (`hw_profile.py`: refaz quando a máquina muda ou a cada 30 dias, teste semanal, cai para CPU se o hardware falhar). |
+| `video-render-optimizer` | Detecta CPU/GPU/encoders FFmpeg, escolhe o encoder mais eficiente por benchmark e revalida sozinho (`hw_profile.py`: refaz quando a máquina muda ou a cada 30 dias, teste rápido a cada 10 renders, cai para CPU se o hardware falhar). |
 | `talking-head-music` | Escolhe, compara e mixa trilha de fundo para vídeos de talking head sem atropelar a inteligibilidade da fala. |
 | `clickup-thumb-podcast` | Cria a demanda de thumb de episódio de podcast no ClickUp (ContentHub > Max > Edição) no padrão da equipe; o token fica fora do repositório. |
 | `limpeza-gravacao-bruta` | Tira bastidores, pausas, retakes, bip e assuntos que a equipe pediu para cortar de gravações longas, com emendas pelo sinal de áudio e trava de duração do áudio. |
