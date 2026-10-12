@@ -37,6 +37,8 @@ def run(k):
           lambda: CK.build(c,f'{B}/clicks_{k}.wav'))
     cutkey=fp(c['keeps'],c['cropx'],c.get('cropx_timeline'),c.get('cropx_interp'),c['src'],os.environ.get('FORMAT'))
     if c.get('crop_h'): cutkey=fp(cutkey,c['crop_h'])   # so entra quando usado: caches antigos seguem validos
+    # VENC/PASSA_DIRECT so entram quando usados: caches antigos seguem validos
+    if os.environ.get('VENC') or os.environ.get('PASSA_DIRECT'): cutkey=fp(cutkey,os.environ.get('VENC'),os.environ.get('PASSA_DIRECT'))
     recut=stage(f'cut:{k}', cutkey, f'{B}/A_{k}.mp4', lambda: render.passA(c,f'{B}/A_{k}.mp4'))
     stage(f'intro:{k}',   cutkey, f'{B}/I_{k}.mp4', lambda: render.make_intro(f'{B}/A_{k}.mp4',f'{B}/I_{k}.mp4'))
     horiz=os.environ.get('FORMAT')=='16x9'   # YouTube: sem capa no 1o frame (thumbnail sobe a parte)
@@ -57,6 +59,7 @@ def run(k):
     # cover_src/_t/_x entram aqui tambem: sem eles, trocar o frame da capa refazia o PNG
     # mas o MP4 ficava em cache com a capa antiga no primeiro quadro.
     stage(f'final:{k}', fp(cutkey,CAPS,c['headline'],c['cover_t'],c.get('cover_src'),c.get('cover_src_t'),c.get('cover_src_x'),c.get('cover_style'),os.environ['FILMBURN'],
-                           JOB.get('preset'),JOB.get('crf'),JOB.get('extra_v'),c.get('burn_at'),c.get('voice_af'),c.get('music'),c.get('mix'),os.environ.get('BURN_OUT'),os.environ.get('BAND_Y'),os.environ.get('FORMAT')), out, _final)
+                           JOB.get('preset'),JOB.get('crf'),JOB.get('extra_v'),c.get('burn_at'),c.get('voice_af'),c.get('music'),c.get('mix'),os.environ.get('BURN_OUT'),os.environ.get('BAND_Y'),os.environ.get('FORMAT'),
+                           *([c.get('overlays'),os.environ.get('BURN_END_INLINE'),os.environ.get('BURN_END_LIMIT'),os.environ.get('BURN_END_BT709'),os.environ.get('VT_MBPS')] if (c.get('overlays') or os.environ.get('BURN_END_INLINE')) else [])), out, _final)
     print(k,'DONE ->',out,flush=True)
 for k in (sys.argv[1:] or list(JOB['clips'])): run(k)

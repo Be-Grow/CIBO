@@ -37,7 +37,7 @@ O usuário achou o motion feito só com slide/fade do Pillow "ruinzinho" (palest
 - Copie o template para `04_work/mg/` do projeto, rode `npm i`, ponha a fonte **do cliente** e o avatar em `public/`. O template não traz fonte nem cor de cliente nenhum. O avatar é a foto **atual do perfil do Instagram** do cliente (peça ao usuário; o círculo mostra a imagem quadrada inteira, como no app), nunca um quadro recortado do vídeo: o cliente reclamou de "foto aleatória" (João Campos, 12/10/2026).
 - Sempre um `npx remotion still ... --frame=N` composto sobre um quadro real do corte antes do render inteiro.
 - Render com alpha: `npx remotion render src/index.ts SeguirCard out/card.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --props='{"name":"...","handle":"@..."}'`.
-- Sobreposição: `scripts/overlay_card.sh ENTRADA.mp4 card.mov INICIO SAIDA.mov [SFX.wav TEMPO]`, numa passada separada sobre o MP4 pronto e **antes** do `burn_end.py`. O SFX vai no toque do botão (mudança visual real), nunca na entrada da fala.
+- Sobreposição: no `podcast-reels`, ponha o `.mov` em `overlays` do clipe (item 46 da skill): entra na mesma codificação do corte, sem recodificar a entrega. `scripts/overlay_card.sh ENTRADA.mp4 card.mov INICIO SAIDA.mov [SFX.wav TEMPO]` fica só para motor que não tem `overlays`, numa passada separada **antes** do `burn_end.py`. O SFX vai no toque do botão (mudança visual real), nunca na entrada da fala.
 - Posição: cartão de @ sempre no canto inferior, acima da faixa de UI do Instagram (y ≈ 1420 de 1920), nunca no topo. Ele não pode cobrir a legenda nem o rosto.
 - Confira o @ no próprio Instagram (`og:title` da página) antes de renderizar. A transcrição erra o @: "jgcampus" em vez de @jgcampos.
 

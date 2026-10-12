@@ -21,6 +21,23 @@ def sh(cmd):
     return r.stdout
 
 ZOOM=float(os.environ.get('ZOOM_AMT','0.055'))   # 0 disables
+# VENC=videotoolbox (opt-in): codifica na GPU do Mac. Aprovado no M4 pela skill
+# video-render-optimizer (12/10/2026): 4,2x mais rapido, SSIM 0,9941 x 0,9952 do x264 slow
+# crf18, 6,9 Mb/s. Hardware precisa de alvo e teto de bitrate, nao CRF: VT_MBPS/VT_MAX_MBPS.
+VENC=os.environ.get('VENC','x264')
+def venc_final(preset,crf):
+    if VENC=='videotoolbox':
+        b=float(os.environ.get('VT_MBPS','8')); m=float(os.environ.get('VT_MAX_MBPS','10'))
+        return f'-c:v h264_videotoolbox -b:v {b:g}M -maxrate {m:g}M -bufsize {2*m:g}M -realtime false -profile:v high'
+    return f'-c:v libx264 -preset {preset} -crf {crf}'
+def venc_mid(preset,crf):
+    """Intermediarios (passA, intro): na GPU com bitrate alto, ja que serao recodificados."""
+    if VENC=='videotoolbox':
+        return ['-c:v','h264_videotoolbox','-b:v','40M','-realtime','false','-profile:v','high']
+    return ['-c:v','libx264','-preset',preset,'-crf',crf]
+# PASSA_DIRECT=1 (opt-in, so com ZOOM_AMT=0): o ffmpeg ja entrega o quadro em W x H e o
+# Python so repassa os bytes. Sem zoom, o resize por quadro no PIL era tempo perdido.
+PASSA_DIRECT=os.environ.get('PASSA_DIRECT')=='1' and ZOOM==0
 def ease_quad(p): return 2*p*p if p<0.5 else 1-((-2*p+2)**2)/2
 
 def passA(c,out):
@@ -33,6 +50,7 @@ def passA(c,out):
     # oversample relative to the FINAL output size (not the native crop size) so the zoom
     # only ever crops+lightly-downscales from an already-adequate source instead of upscaling.
     OS=int(H*(1+ZOOM+0.02)); OSW=int(W*(1+ZOOM+0.02))//2*2
+    if PASSA_DIRECT: OS,OSW=H,W
     # `crop_h` (opt-in): recorte mais baixo que 1080, ancorado no topo, para deixar de fora
     # uma marca queimada no rodape do bruto (logo da transmissao). Largura = crop_h*9/16.
     ch=int(c.get('crop_h',1080))
@@ -90,8 +108,8 @@ def passA(c,out):
 
     video_out=out+'.video.mp4'
     enc=subprocess.Popen(['ffmpeg','-y','-v','error','-f','rawvideo','-pix_fmt','rgb24',
-        '-s',f'{W}x{H}','-r',str(FPS),'-i','-','-an','-c:v','libx264','-preset','ultrafast',
-        '-crf','14','-pix_fmt','yuv420p',video_out],stdin=subprocess.PIPE)
+        '-s',f'{W}x{H}','-r',str(FPS),'-i','-','-an',*venc_mid('ultrafast','14'),
+        '-pix_fmt','yuv420p',video_out],stdin=subprocess.PIPE)
     for i,(a,b) in enumerate(keeps):
         zin=(i%2==0)                      # alternate push-in / pull-out per beat
         zA,zB=(1.0,1.0+ZOOM) if zin else (1.0+ZOOM,1.0)
@@ -105,6 +123,8 @@ def passA(c,out):
         for k in range(nframes):
             buf=dec.stdout.read(fsz)
             if len(buf)<fsz: break
+            if PASSA_DIRECT:
+                enc.stdin.write(buf); continue
             im=Image.frombytes('RGB',(OSW,OS),buf)
             if ZOOM>0:
                 p=k/max(1,nframes-1)
@@ -130,8 +150,8 @@ def make_intro(passa,out):
                        shell=True,capture_output=True).stdout
     fs=W*H*3
     p=subprocess.Popen(['ffmpeg','-y','-v','error','-f','rawvideo','-pix_fmt','rgb24',
-        '-s',f'{W}x{H}','-r',str(FPS),'-i','-','-an','-c:v','libx264','-preset','veryfast',
-        '-crf','16','-pix_fmt','yuv420p',out],stdin=subprocess.PIPE)
+        '-s',f'{W}x{H}','-r',str(FPS),'-i','-','-an',*venc_mid('veryfast','16'),
+        '-pix_fmt','yuv420p',out],stdin=subprocess.PIPE)
     for i in range(n):
         im=Image.frombytes('RGB',(W,H),raw[i*fs:(i+1)*fs])
         e=ease_io(i/(n-1))
@@ -205,9 +225,41 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
     else:
         f+=";[body]null[vfin];[abody]anull[afin]"
     ins+=f' -i "{passa}"'
-    sh(f'ffmpeg -y -v error {ins} -filter_complex "{f}" -map "[vfin]" -map "[afin]" '
-       f'-c:v libx264 -preset {preset} -crf {crf} -pix_fmt yuv420p -c:a aac -b:a 160k '
-       f'{extra} -movflags +faststart "{out}"')
+    nin=aidx+1; vl,al='vfin','afin'; tail=''
+    # `overlays` (opt-in, por clipe): grafismos com alpha (ProRes 4444 do Remotion) na mesma
+    # codificacao, em vez de recodificar o MP4 entregue. [{"file","t"(s no arquivo entregue),
+    # "sfx":{"file","at"(s no arquivo entregue),"trim":[a,b],"gain"}}]
+    for j,o in enumerate(c.get('overlays',[])):
+        ins+=f' -i "{o["file"]}"'
+        f+=(f";[{nin}:v]setpts=PTS+{float(o['t']):.3f}/TB[ov{j}];"
+            f"[{vl}][ov{j}]overlay=0:0:eof_action=pass:format=auto[vov{j}]"); vl=f'vov{j}'; nin+=1
+        if o.get('sfx'):
+            x=o['sfx']; a,b=x.get('trim',[0,10])
+            ins+=f' -i "{x["file"]}"'
+            f+=(f";[{nin}:a]atrim={a}:{b},asetpts=PTS-STARTPTS,aresample=48000,volume={float(x.get('gain',1)):g},"
+                f"adelay={int(float(x['at'])*1000)}:all=1[sx{j}];"
+                f"[{al}][sx{j}]amix=inputs=2:duration=first:normalize=0[aov{j}]"); al=f'aov{j}'; nin+=1
+    # BURN_END_INLINE=1 (opt-in): o mesmo fim do `burn_end.py` (video acaba seco, pico do burn
+    # no ultimo quadro, resto sobre preto, cauda do audio em fade) sem uma segunda codificacao.
+    if os.environ.get('BURN_END_INLINE')=='1':
+        D=float(subprocess.run(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=duration',
+                                '-of','csv=p=0',passa],capture_output=True,text=True).stdout)+(1.0/FPS if cover else 0)
+        st,tot=D-0.53,D-0.53+1.4
+        ins+=f' -i "{fb}" -f lavfi -i color=black:s={W}x{H}:r={FPS}:d=2.5'
+        f+=(f";[{nin}:v]fps={FPS},scale={W}:{H},format=yuv420p,setsar=1[eb0];[{nin+1}:v]format=yuv420p,setsar=1[eb1];"
+            f"[eb0][eb1]concat=n=2:v=1:a=0,format=gbrp,tpad=start_mode=add:start_duration={st:.3f}:color=black[ebt];"
+            f"[{vl}]tpad=stop_mode=add:stop_duration={tot-D+0.1:.3f}:color=black,format=gbrp[ev];"
+            f"[ev][ebt]blend=all_mode=screen:shortest=1,format=yuv420p[vend];"
+            f"[{al}]apad=pad_dur={tot-D+0.1:.3f},afade=t=out:st={D-0.05:.3f}:d={tot-D+0.05:.3f}"
+            +(f",alimiter=limit={os.environ['BURN_END_LIMIT']}:level=false" if os.environ.get('BURN_END_LIMIT') else '')
+            +"[aend]"); vl,al='vend','aend'; nin+=2
+        tail=f'-t {tot:.3f} '
+        if os.environ.get('BURN_END_BT709'):
+            tail+=('-color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 '
+                   '-bsf:v h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1:video_full_range_flag=0 ')
+    sh(f'ffmpeg -y -v error {ins} -filter_complex "{f}" -map "[{vl}]" -map "[{al}]" '
+       f'{venc_final(preset,crf)} -pix_fmt yuv420p -c:a aac -b:a 160k '
+       f'{tail}{extra} -movflags +faststart "{out}"')
 
 if __name__=='__main__':
     P=json.load(open(os.path.join(B,'plan.json'))); k=sys.argv[1]; c=P[k]

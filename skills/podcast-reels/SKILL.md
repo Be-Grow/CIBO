@@ -428,8 +428,8 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
     manchete em Montserrat Bold centralizada na vertical, alinhada à esquerda (margem 90 px),
     sombra deslocada 12 px para baixo com blur 9.
 41. **`burn_end.py` recodifica o vídeo inteiro** só para pôr 1,4 s no fim: é a etapa mais lenta
-    depois do passA. O preset agora é `BURN_END_PRESET` (padrão `fast`). Pendente: integrar o
-    burn de saída no `final()` para uma codificação só.
+    depois do passA. O preset agora é `BURN_END_PRESET` (padrão `fast`). Resolvido no item 46:
+    `BURN_END_INLINE=1` faz o mesmo fim dentro do `final()`.
 42. **Ganho de voz é por episódio, não por cliente.** O `voice_af` com +6 dB que deixou o
     episódio da Carolina em −14 LUFS deixou o da Maria Rita (mesmo podcast) em −19,5. Meça o
     LUFS do trecho mantido de cada fonte antes (`ebur128`) e calcule o ganho. Se já renderizou,
@@ -460,3 +460,20 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
     Um `final` do ffmpeg ficou parado com 0% de CPU e o `.part.mp4` quase pronto (palestra
     do João); matar e rodar o clipe sozinho resolveu em 33 s. Se a fila parar sem progresso,
     olhe `ps` (estado S e tempo de CPU parado) antes de esperar mais.
+46. **Render rápido: uma codificação só, na GPU** ("demora muito", 12/10/2026). O fluxo antigo
+    codificava o vídeo três vezes (final → cartão/título → `burn_end.py`) e redimensionava cada
+    quadro no PIL mesmo sem zoom: ~3–4 min por corte. Tudo opt-in (sem as chaves, a saída é
+    idêntica quadro a quadro):
+    - `VENC=videotoolbox`: x264 → `h264_videotoolbox` (alvo `VT_MBPS`=8, teto `VT_MAX_MBPS`=10;
+      intermediários a 40 Mb/s). No M4: 4,2× mais rápido, SSIM 0,9941 × 0,9952, aprovado pela
+      `video-render-optimizer` e na comparação visual de pele, barba e letra.
+    - `PASSA_DIRECT=1` (só com `ZOOM_AMT=0`): o ffmpeg já entrega o quadro em 1080×1920 e o
+      Python só repassa os bytes.
+    - `overlays` por clipe: `[{"file": card.mov, "t": 8.0, "sfx": {"file","at","trim","gain"}}]`,
+      com tempo no arquivo entregue (capa incluída). Substitui `overlay_card.sh`/`post.sh`.
+    - `BURN_END_INLINE=1` (+ `BURN_END_LIMIT`, `BURN_END_BT709`): o fim do `burn_end.py` dentro
+      do `final()`.
+    Corte 02 da palestra do João: 53 s do zero (antes ~3,5 min), mesma duração, SSIM 0,99 contra
+    a entrega antiga, AUTOMATED_PASS. Script de projeto pronto: `joãoCortes/04_work/render_all.sh`.
+    Rode com `taskpolicy -B -t 0 -l 0 -p $$` no topo do script: em background o macOS joga o
+    ffmpeg nos núcleos de eficiência.
