@@ -95,6 +95,11 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   `video-render-optimizer`, testado de novo a cada 10 renders) e uma codificação só (`overlays`,
   `BURN_END_INLINE`). Nunca recodifique o MP4 entregue para pôr cartão ou burn. ("demora
   muito", 12/10/2026)
+- **Projeto editável: sempre oferecer, só gerar se pedirem.** Na entrega, pergunte se o editor
+  quer o projeto para Premiere Pro e/ou DaVinci Resolve (`podcast-reels/scripts/projeto_nle.py`:
+  XML do Final Cut 7 que os dois importam, com trechos, reenquadramento, burn, grafismos, voz,
+  trilha, cliques, marcadores e `.srt`). ("só deve gerar caso o editor peça, mas sempre deve ser
+  fornecida a opção", 12/10/2026)
 - **Ritmo e som de referência** (6 reels de criadores; `kurbaitaev/ghost-editor` e
   `kmilo93sd/agent-video-editor`, 12/10/2026): ~95% das transições são corte seco; plano médio
   de ~3 s; algo novo na tela a cada 5–7 s em Reels; SFX 0,4–0,9 a cada 10 s, nos grafismos e

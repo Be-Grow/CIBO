@@ -82,6 +82,24 @@ gratuito para pessoa física e empresa de até 3 pessoas; acima disso exige lice
 - Biblioteca CC0 de SFX (whoosh, clique, pop, notificação, impacto, stinger): `acervo.py find
   cc0 --type sfx`. Licença livre de verdade, ao contrário de efeitos ripados do YouTube.
 
+## Lottie (animações vetoriais prontas)
+
+`src/LottieOverlay.tsx` no template toca qualquer JSON Lottie (LottieFiles, After Effects com
+Bodymovin) sobre o vídeo, com alpha, quadro a quadro: props `src` (arquivo em `public/`), `x`, `y`,
+`width`, `loop`, `playbackRate`. Renderize como os outros cartões (ProRes 4444) e ponha em
+`overlays` do clipe. Biblioteca: `acervo.py find --type lottie` (começa com `lottie-anel-destaque`).
+Lottie de terceiros: confira a licença (LottieFiles "Lottie Simple License" permite uso comercial
+sem atribuição; animações pagas não). Pacotes: `@remotion/lottie` e `@remotion/layout-utils`
+(`fitText` para a frase sempre caber) já estão no `package.json` do template.
+
+## Audiograma (podcast só de áudio)
+
+`scripts/audiograma.py --audio EP.wav --mg PROJETO_REMOTION --out a.mp4 --srt legenda.srt --image foto.png
+--title "..." --subtitle "@perfil" [--inicio S --fim S]`: foto em círculo, barras espelhadas que seguem o
+áudio real (graves compensados), legenda em blocos de até 3 palavras aparecendo 100 ms antes da fala,
+título. Composição `Audiogram` do template (`@remotion/media-utils`). Para legenda exata, gere o SRT com
+`fala-limpa/scripts/alinha_mfa.py --srt`. 12 s de audiograma: 7 s de render.
+
 ## Remotion neste Mac (validado em 12/10/2026)
 
 - Node 26 em `/opt/homebrew/bin`. No macOS o Remotion baixa sozinho o `chrome-headless-shell`: **não** passe `--browser-executable` (a instrução da skill da Anthropic é para Linux).

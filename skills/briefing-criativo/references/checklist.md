@@ -24,7 +24,7 @@ Marque cada uma como **definido (fonte)** ou **em aberto** antes de perguntar.
 |---|---|---|
 | Enquadramento | skill do cliente | close fixo por plano; segue o rosto; plano aberto quando houver slide |
 | Marca de terceiros no bruto | gravação | reenquadrar para tirar; manter como crédito |
-| Legenda: estilo | skill do cliente | estática; palavra a palavra; caixa alta; cor de destaque |
+| Legenda: estilo | skill do cliente | padrão do cliente; `veredito` (opinião forte, curto e grande); `historia` (caso); `aula` (explicação, linhas maiores); destaque contido (1 por bloco, ≤ 20%) |
 | Legenda: posição e tamanho | regra transversal | abaixo do queixo; terço inferior |
 | Palavras de destaque | job | IA escolhe; lista do editor |
 | Título de gancho na tela | lettering-motion | sim, nos 3 primeiros s; não |
@@ -58,3 +58,4 @@ Marque cada uma como **definido (fonte)** ou **em aberto** antes de perguntar.
 | Legenda e texto do post | pedido | só vídeo; vídeo + legenda do post + hashtags |
 | Collab / marcações | pedido | collab com perfil Y; marcar Z |
 | Aprovação | este skill | mapa de cortes + piloto (padrão); direto ao lote |
+| Projeto editável | pedido | não (padrão); Premiere Pro; DaVinci Resolve (mesmo XML serve aos dois) — **sempre oferecer**, gerar só se o editor pedir |

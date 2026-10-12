@@ -26,6 +26,11 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Legenda: pente-fino | `caption-quality-gate` |
 | Legenda: retranscrição cruzada | `legenda-cruzada` |
 | Checagem final do MP4 | `video-delivery-safety-check` (`podcast-reels/scripts/qa_lote.py` no lote, `audio_qa.py` no som) |
+| Referência de estilo mandada pelo editor | `briefing-criativo/scripts/analisa_referencia.py` |
+| Tempo exato de palavra (legenda, emendas) | `fala-limpa/scripts/alinha_mfa.py` (MFA no SSD) |
+| Podcast só de áudio | `lettering-motion/scripts/audiograma.py` |
+| Teste A/B de ganchos | `podcast-reels/scripts/variacoes_gancho.py` |
+| Projeto editável Premiere/Resolve (oferecer sempre, gerar sob pedido) | `podcast-reels/scripts/projeto_nle.py` |
 | Entrega no Drive (com links) | `scripts/entrega_drive.py` desta skill — simula sem `--confirmo`; confirme o destino |
 | Correção do editor | `scripts/feedback.py add` no mesmo turno em que a skill é corrigida; `resumo` mostra onde investir |
 | Cor de fotos | `foto-evento-cor` |

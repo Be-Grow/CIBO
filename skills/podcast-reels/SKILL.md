@@ -144,6 +144,8 @@ export JOB=job.json ZOOM_AMT=0 BURN_OUT=0 VENC=auto PASSA_DIRECT=1 PARALLEL=auto
 | `PARALLEL=auto` | env | vários cortes ao mesmo tempo (número pela RAM, perfil de hardware); 7 cortes: 400 → 236 s |
 | `PROFILE` / `profile` | env / job | perfil de cliente (`<skill>/assets/profile.json`): `env` + padrões do job; env > job > perfil |
 | `COVER_Y`, `COVER_BAR=0` | env | altura da manchete na capa; tira a barra azul (perfis) |
+| `CAP_PRESET` | env | estilo de legenda pelo conteúdo: `veredito` (opinião forte, gancho, < 40 s: 1–3 palavras, letra 92), `historia` (caso contado: ~22 caracteres, letra 70), `aula` (explicação: até 30 caracteres, letra 62); padrão = 18 caracteres, letra 74. Liga também `EMPH_MAX` (1 destaque por bloco, em ≤ 15–20% dos blocos). Trocar num corte já planejado: `REPLAN=1` |
+| `CAP_CHARS`, `CAP_BASE`, `CAP_EMPH`, `EMPH_MAX` | env | os ajustes finos que os presets usam |
 
 **Clientes neste motor:** `podcast-reels` (genérico, João Campos) e `katia` (perfil). Bombordo,
 Autismo Cast e Content Hub ainda têm motor próprio (recursos a migrar: `impact_pulses`,
@@ -151,6 +153,23 @@ Autismo Cast e Content Hub ainda têm motor próprio (recursos a migrar: `impact
 
 Trilha: escolha com `talking-head-music` (por corte, com offset). Fim do corte: vídeo acaba seco
 e o burn passa do fim sobre preto, nunca fade.
+
+## Projeto editável (Premiere Pro / DaVinci Resolve) — só sob pedido
+
+`JOB=job.json scripts/projeto_nle.py [corte01 ...] [--master ORIGINAL] [--clicks 'x_{k}.wav']` grava
+`<outdir>/Projetos editáveis/PROJETO - <nome>.xml` + `.srt` + LEIAME. Um XML do Final Cut 7 serve aos
+dois programas: V1 trechos sobre o original com Movimento (keyframes do `cropx_timeline`), V2 film
+burn em modo Tela, V3 `overlays`, A1/A2 voz, A3/A4 trilha no nível do job, A5 cliques, marcador em
+cada emenda. Sem o quadro da capa e sem o ducking (feito no render). Ofereça sempre na entrega;
+gere só se o editor pedir. Pendente: confirmar a importação no Premiere e no Resolve com o editor
+(o primeiro teste está em `joãoCortes/05_qa/projetos_teste`).
+
+## Variações de gancho (teste A/B)
+
+`scripts/variacoes_gancho.py CORPO.mp4 GANCHO1.mp4 [GANCHO2 ...] --sem-capa --out PASTA`: um vídeo por
+gancho, volume do gancho igualado ao do corpo (LUFS), tamanho/qps ajustados, GPU com `VENC=auto`.
+Cada saída é conferida pelo ffmpeg e pelo AVFoundation (`av_check`, compilado de `av_check.swift`):
+arquivo que roda no ffmpeg pode travar no QuickTime/iPhone. Ganchos de 3 s em 1 corte de 58 s: 24 s.
 
 ## Economia de tokens
 

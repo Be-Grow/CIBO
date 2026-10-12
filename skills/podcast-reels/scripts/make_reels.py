@@ -21,6 +21,13 @@ if _pf:
     JOBF=os.path.join(JOB.get('work','./work'),'.job_com_perfil.json')
     json.dump(JOB,open(JOBF,'w'),ensure_ascii=False,indent=1); os.environ['JOB']=JOBF   # plan.py le daqui
 if os.environ.get('CAP_BAND_Y') and not os.environ.get('BAND_Y'): os.environ['BAND_Y']=os.environ['CAP_BAND_Y']
+# CAP_PRESET (opt-in): estilo de legenda pelo tipo de conteudo (oneshot-video captions.md, 12/10/2026).
+# Valores explicitos no env ganham. Mudou de preset num corte ja planejado: REPLAN=1.
+_PRESETS={'veredito':dict(CAP_CHARS='12',MAX_MERGE_CHARS='16',CAP_BASE='92',CAP_EMPH='118',EMPH_MAX='0.2'),   # opiniao forte, gancho, < 40 s
+          'historia':dict(CAP_CHARS='22',MAX_MERGE_CHARS='26',CAP_BASE='70',CAP_EMPH='90',EMPH_MAX='0.15'),   # caso, "o que aconteceu"
+          'aula':dict(CAP_CHARS='30',MAX_MERGE_CHARS='36',CAP_BASE='62',CAP_EMPH='78',EMPH_MAX='0.2')}        # explicacao, argumento
+if os.environ.get('CAP_PRESET') in _PRESETS:
+    for _k,_v in _PRESETS[os.environ['CAP_PRESET']].items(): os.environ.setdefault(_k,_v)
 os.environ.setdefault('WORK',JOB.get('work','./work'))
 os.environ.setdefault('SRCDIR',JOB['srcdir'])
 os.environ.setdefault('FONT',JOB.get('font',os.path.join(HERE,'..','assets','CalSans-Regular.ttf')))
@@ -60,7 +67,8 @@ def run(k):
     P=json.load(open(os.path.join(B,'plan.json'))); c=P[k]
     # fingerprint the caption DATA before render_caps decorates it with PIL objects
     CAPS=fp([{a:b for a,b in x.items() if a!='items'} for x in c['caps']])
-    stage(f'caps:{k}',   fp(CAPS,JOB.get('style'),os.environ.get('BAND_Y'),os.environ.get('CAP_CY')), [f'{B}/caps_{k}_rgb.mp4',f'{B}/caps_{k}_a.mp4'],
+    _CAPX=[os.environ.get('CAP_BASE'),os.environ.get('CAP_EMPH')] if (os.environ.get('CAP_BASE') or os.environ.get('CAP_EMPH')) else []
+    stage(f'caps:{k}',   fp(CAPS,JOB.get('style'),os.environ.get('BAND_Y'),os.environ.get('CAP_CY'),*_CAPX), [f'{B}/caps_{k}_rgb.mp4',f'{B}/caps_{k}_a.mp4'],
           lambda: RC.render(c,f'{B}/caps_{k}'))
     stage(f'clicks:{k}',  fp([x['s'] for x in c['caps'] if x.get('any')]), f'{B}/clicks_{k}.wav',
           lambda: CK.build(c,f'{B}/clicks_{k}.wav'))

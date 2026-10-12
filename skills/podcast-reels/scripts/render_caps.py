@@ -12,7 +12,7 @@ W=1080; BAND_H=420; BAND_Y=int(os.environ.get("BAND_Y",810))   # band top in the
 # mais baixa, a legenda caia fora da area desenhada e saia invisivel)
 CY=int(os.environ.get("CAP_CY",BAND_Y+210))-BAND_Y   # caption center inside band
 FPS=30
-BASE=74; EMPH=100; LINE_GAP=1.12
+BASE=int(os.environ.get('CAP_BASE',74)); EMPH=int(os.environ.get('CAP_EMPH',100)); LINE_GAP=1.12   # presets de legenda
 MAXW=W-150
 
 def f(sz):

@@ -12,6 +12,15 @@ O nome vem de *BLAME!* (Tsutomu Nihei): Cibo é uma inteligência que sobrevive 
 3. Rode `python3 ~/.claude/skills/video-render-optimizer/scripts/hw_profile.py env` (perfil de
    hardware: encoder escolhido por benchmark). O teste do encoder roda sozinho a cada 10 renders.
 
+## Dependências pesadas no SSD
+
+O MFA (alinhamento forçado de palavras, `fala-limpa/scripts/alinha_mfa.py`) mora em
+`/Volumes/SSD/CIBO/miniforge/envs/mfa`, com os modelos `portuguese_mfa` e `portuguese_brazil_mfa` em
+`/Volumes/SSD/CIBO/mfa_root`. Numa máquina nova: instale o Miniforge no SSD, `conda create -p
+.../envs/mfa -c conda-forge montreal-forced-aligner` e `mfa model download` dos dois modelos com
+`MFA_ROOT_DIR` apontando para o SSD. Os guias oficiais do Remotion ficam em `~/.cibo/vendor/remotion-skills`
+(`git clone --depth 1 https://github.com/remotion-dev/skills`).
+
 ## Testes
 
 `tests/regressao.py check` renderiza o mesmo material sintético em cada motor de corte

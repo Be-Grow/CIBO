@@ -60,6 +60,11 @@ Qualquer `outra_voz` confirmada, hesitação audível, `fim_cortado`, ou palavra
   atrasam o áudio 25–35 ms:** compense o atraso antes de juntar com o vídeo.
 - **Respiração entre frases:** abaixar só os intervalos ≥ 0,45 s (−7 dB, fade 0,08 s); abaixar todo
   intervalo entre palavras deixa "buracos estranhos" na fala corrida.
-- **Alinhamento forçado (MFA, Montreal Forced Aligner):** tempo de palavra com 10–20 ms de
-  precisão e silêncios explícitos; tem modelo de português. Exige conda (~1–2 GB). Ainda não
-  instalado neste Mac (decisão do editor).
+- **Alinhamento forçado (MFA)** — instalado no SSD (`/Volumes/SSD/CIBO/miniforge/envs/mfa`, modelos
+  `portuguese_mfa` + `portuguese_brazil_mfa` em `/Volumes/SSD/CIBO/mfa_root`):
+  `scripts/alinha_mfa.py --audio MASTER --words whisper.json --range IN OUT --out a.json [--srt p.srt]`.
+  Usa só o TEXTO do Whisper e devolve tempo de palavra com ~10–20 ms e silêncios explícitos, no
+  formato do Whisper (o `--srt` palavra a palavra entra direto como `srt` do job). Na palestra do
+  João (29 s, 77 palavras, 25 s de processamento): mediana de 30 ms para o Whisper, mas **10% das
+  palavras erradas em ≥ 240 ms** — são essas que atrasam legenda e cortam emenda. Use em todo corte
+  final quando o SSD estiver conectado; sem SSD, Whisper e avise.

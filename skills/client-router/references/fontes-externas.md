@@ -19,23 +19,24 @@ AGPL e sem licença, não).
 | remotion-dev/skills | sem licença (oficial) | guias usados como referência local, não copiados para o CIBO | `~/.cibo/vendor/remotion-skills`, lettering-motion |
 | hassancs91/claude-youtube-editor | MIT | teste A/B/C de capa no YouTube; ganho extra para SFX percussivo | seo-youtube-podcast |
 
-## Vale fazer (pendente, por decisão do editor)
+## Adotado depois (12/10/2026, "faça todos")
 
-- **Projeto do Premiere editável** (oneshot-video `premiere.py`, MIT): XML do FCP7 com os cortes
-  sobre o original, recorte como Motion, grafismos em V2, trilhas alternativas desligadas,
-  marcadores, `.srt` e a cor como LUT `.cube`. Encaixa no fluxo do editor (Premiere).
-- **MFA (alinhamento forçado)** para tempo de palavra exato em português; precisa de conda.
-- **Lottie** no Remotion (`@remotion/lottie`, `diffusionstudio/lottie` gera o JSON): ícones e
-  setas animados prontos.
-- **Variações de gancho** (krusemediallc/video-editor-agent `hook-variations`): um corpo × N
-  ganchos para teste A/B, com junção sem perda, volume casado e checagem pelo AVFoundation
-  (arquivo que roda no ffmpeg e trava no QuickTime).
-- **Audiograma** para podcast só de áudio (iart-ai/youtube-video-skills).
-- **Presets de legenda por conteúdo** (oneshot: veredito, fogueira, aula, diálogo, epígrafe).
-- **Clonar estilo de um reel de referência** (edenfunf/reelmimic, krusemediallc) e catálogo de
-  costuras por velocidade (zoom-through, rack-focus) do reelmimic `cut-the-curve`.
-- **Triagem de takes por visão** (Fagan1024/smart-video-editor) para gravações com vários takes
-  (Katia).
+| Ideia | Fonte | Onde ficou |
+|---|---|---|
+| Projeto editável Premiere Pro + DaVinci Resolve (XML do FCP7) | kvrancic/oneshot-video (MIT) | `podcast-reels/scripts/projeto_nle.py` — sempre oferecer, gerar só sob pedido; falta o editor confirmar a importação nos dois programas |
+| MFA (tempo exato de palavra, português) | louisedesadeleer/cut-video | `fala-limpa/scripts/alinha_mfa.py`, instalado no SSD |
+| Lottie no Remotion | remotion-dev/skills, diffusionstudio/lottie | `lettering-motion` template `LottieOverlay`, acervo `--type lottie` |
+| Variações de gancho + checagem AVFoundation | krusemediallc/video-editor-agent | `podcast-reels/scripts/variacoes_gancho.py`, `av_check.swift` |
+| Audiograma | iart-ai/youtube-video-skills | `lettering-motion/scripts/audiograma.py`, composição `Audiogram` |
+| Presets de legenda por conteúdo | kvrancic/oneshot-video captions.md | `podcast-reels` `CAP_PRESET` (veredito, historia, aula) + `EMPH_MAX` |
+| Estilo de um reel de referência | edenfunf/reelmimic, krusemediallc | `briefing-criativo/scripts/analisa_referencia.py` |
+
+## Ainda não feito
+
+- Legenda "diálogo" (duas pessoas, lados opostos) e "epígrafe": precisam de layout novo no `render_caps`.
+- Catálogo de costuras por velocidade (zoom-through, rack-focus) do reelmimic `cut-the-curve`.
+- Triagem de takes por visão (Fagan1024/smart-video-editor) para gravações com vários takes (Katia).
+- Migrar Bombordo, Autismo Cast e Content Hub para o motor único (sessão própria).
 
 ## Descartado
 

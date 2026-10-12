@@ -37,6 +37,14 @@ Leia, nesta ordem, e preencha o checklist de `references/checklist.md`:
 Cada item do checklist fica **definido** (com a fonte) ou **em aberto**. Só os em aberto
 viram pergunta. Nunca pergunte o que o perfil do cliente ou o pedido já respondem.
 
+### 1b. Referência do editor ("quero nesse estilo")
+
+Quando o editor mandar um vídeo de referência, meça antes de perguntar:
+`~/.claude/skills/content-hub/.venv/bin/python3 scripts/analisa_referencia.py REF.mp4 --out PASTA`
+(ritmo de corte, enquadramento, faixa e troca da legenda, cor, loudness, transientes; 5 s para um
+reel de 1 min). As sugestões viram as opções recomendadas das perguntas (ritmo, `CAP_PRESET`,
+enquadramento, cor) e entram no brief com a origem "referência do editor".
+
 ### 2. Pergunte o que está em aberto
 
 - Use a ferramenta de pergunta com opções (`AskUserQuestion`): até 4 perguntas por
@@ -74,7 +82,9 @@ no brief.
   pergunta. Mudar a lista nesse ponto é grátis; depois do render não é.
 - **Piloto antes do lote**: renderize o primeiro corte completo (capa, legenda, motion, som),
   mostre e pergunte se o padrão está aprovado antes de rodar os demais.
-- **Entrega**: diga o que foi decidido pela IA sem consulta, para o editor poder vetar.
+- **Entrega**: diga o que foi decidido pela IA sem consulta, para o editor poder vetar, e **ofereça
+  sempre o projeto editável** para Premiere Pro / DaVinci Resolve (`podcast-reels/scripts/projeto_nle.py`).
+  Só gere se o editor pedir.
 
 ## O que não fazer
 

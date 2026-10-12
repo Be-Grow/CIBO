@@ -73,6 +73,7 @@ def norm(w): return re.sub(r'[^0-9a-záàâãéêíóôõúüç%\-]','',w.lower(
 
 MINB=float(os.environ.get('MIN_BLOCK','0.45'))   # s: abaixo disso a legenda pisca
 MAXCPS=float(os.environ.get('MAX_CPS','20'))     # caracteres por segundo confortaveis
+CAPN=int(os.environ.get('CAP_CHARS','18'))   # limite de caracteres por bloco (presets de legenda)
 MAXMERGE=int(os.environ.get('MAX_MERGE_CHARS','30'))  # ate aqui ainda cabe em duas linhas
 
 def _rebuild(o):
@@ -126,6 +127,27 @@ def ritmo(out,total):
         limpo.append(o)
     return limpo
 
+
+def limita_enfase(out):
+    """EMPH_MAX (opt-in, ex. 0.2): no maximo 1 palavra destacada por bloco e destaque em no maximo
+    essa fracao dos blocos, espalhados (oneshot-video captions.md). Sem EMPH_MAX, nada muda."""
+    mx=os.environ.get('EMPH_MAX')
+    if not mx: return out
+    for o in out:
+        if sum(o['em'])>1:
+            # fica a palavra mais "forte": numero > a mais longa
+            idx=[i for i,f in enumerate(o['em']) if f]
+            best=max(idx,key=lambda i:(any(ch.isdigit() for ch in o['w'][i]),len(o['w'][i])))
+            o['em']=[i==best for i in range(len(o['w']))]
+        o['any']=any(o['em'])
+    com=[i for i,o in enumerate(out) if o['any']]
+    lim=max(1,int(len(out)*float(mx)))
+    if len(com)>lim:
+        keep={com[round(j*(len(com)-1)/max(lim-1,1))] for j in range(lim)}
+        for i in com:
+            if i not in keep:
+                out[i]['em']=[False]*len(out[i]['w']); out[i]['any']=False
+    return out
 
 def build(name):
     c=CLIPS[name]; mi=c['master_in']
@@ -184,12 +206,12 @@ def build(name):
     # wall of text instead of the intended short auto-wrapped captions.
     _split=[]
     for a0,a1,txt in atoms:
-        if len(txt)<=18:
+        if len(txt)<=CAPN:
             _split.append([a0,a1,txt]); continue
         words=txt.split(); chunks=[]; cur=[]; curlen=0
         for w in words:
             wl=len(w)+(1 if cur else 0)
-            if curlen+wl>18 and cur:
+            if curlen+wl>CAPN and cur:
                 chunks.append(' '.join(cur)); cur=[w]; curlen=len(w)
             else:
                 cur.append(w); curlen+=wl
@@ -208,13 +230,13 @@ def build(name):
             p=caps[-1]
             cand=(p[2]+' '+a[2]).replace('  ',' ').strip()
             cand=re.sub(r'\s+([,.?!])',r'\1',cand)
-            if len(cand)<=18 and a[0]-p[1]<0.30 and (a[1]-p[0])<2.2:
+            if len(cand)<=CAPN and a[0]-p[1]<0.30 and (a[1]-p[0])<2.2:
                 p[1]=a[1]; p[2]=cand; continue
         caps.append([a[0],a[1],a[2]])
     # second pass: absorb tiny orphan captions
     i=1
     while i<len(caps):
-        if len(caps[i][2])<=4 and caps[i-1][1]-caps[i-1][0]<2.6 and len((caps[i-1][2]+' '+caps[i][2]))<=18:
+        if len(caps[i][2])<=4 and caps[i-1][1]-caps[i-1][0]<2.6 and len((caps[i-1][2]+' '+caps[i][2]))<=CAPN:
             caps[i-1][1]=caps[i][1]; caps[i-1][2]=(caps[i-1][2]+' '+caps[i][2]).strip(); caps.pop(i); continue
         i+=1
     # tidy + emphasis
@@ -232,6 +254,7 @@ def build(name):
         if out[i]['e']>out[i+1]['s']: out[i]['e']=out[i+1]['s']
     out=[o for o in out if o['e']<=total+0.05]
     out=ritmo(out,total)
+    out=limita_enfase(out)
     result=dict(name=name, src=c['src'], keeps=keeps, total=round(total,3),
                 headline=c['headline'], cropx=c['cropx'], cover_t=c['cover_t'], caps=out)
     # pass through any other per-clip job fields (music, mix, filename, logo, ...)
