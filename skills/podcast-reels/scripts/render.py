@@ -5,7 +5,10 @@ import numpy as np
 from PIL import Image, ImageFilter
 
 B=os.environ.get('WORK','.'); SRCDIR=os.environ.get('SRCDIR','.')
-FPS=30; W,H=1080,1920
+FPS=30
+# FORMAT=16x9: versao horizontal (YouTube) do mesmo corte, quadro inteiro sem recorte.
+HORIZ=os.environ.get('FORMAT','9x16')=='16x9'
+W,H=(1920,1080) if HORIZ else (1080,1920)
 # Burn tambem na saida. Desligado por padrao: esta skill e o motor de varios
 # clientes e ligar mudaria a entrega de quem nao pediu. BURN_OUT=0.63 coloca o
 # pico do asset (que estoura em 0,53s) encostado no ultimo quadro.
@@ -30,7 +33,7 @@ def passA(c,out):
     # oversample relative to the FINAL output size (not the native crop size) so the zoom
     # only ever crops+lightly-downscales from an already-adequate source instead of upscaling.
     OS=int(H*(1+ZOOM+0.02)); OSW=int(W*(1+ZOOM+0.02))//2*2
-    cw=608; x=int((1920-cw)*c['cropx']); x=max(0,min(1920-cw,x))
+    cw=1920 if HORIZ else 608; x=int((1920-cw)*c['cropx']); x=max(0,min(1920-cw,x))
     # Reenquadramento por plano de camera. Uma gravacao que alterna close e plano
     # aberto nao pode usar um recorte fixo: no plano aberto o corte fixo aponta
     # para o meio da mesa. `cropx_timeline` e uma lista [[tempo_no_fonte, cropx]]
@@ -38,7 +41,21 @@ def passA(c,out):
     # emenda dentro do mesmo plano faz a imagem deslizar de lado na tela.
     timeline=sorted((float(t),float(v)) for t,v in c.get('cropx_timeline',[]))
     def crop_expr(a,b):
-        if not timeline: return str(x)
+        if HORIZ or not timeline: return str(x)
+        if c.get('cropx_interp'):
+            # Camera unica com a pessoa andando no palco (palestra em plano aberto): o
+            # recorte acompanha por interpolacao linear entre os pontos da timeline, sem
+            # degrau. Opt-in por clipe; o padrao continua sendo degrau por plano de camera.
+            # tolerancia de 0,45 s: o snap de silencio move a borda do keep para dentro e
+            # deixava os pontos do proprio trecho de fora -- o recorte caia no `cropx` do
+            # primeiro trecho e a pessoa saia do quadro.
+            pts=[(t-a,v) for t,v in timeline if a-0.45<=t<=b+0.45]
+            if not pts:
+                tn,vn=min(timeline,key=lambda p:min(abs(p[0]-a),abs(p[0]-b))); pts=[(0.0,vn)]
+            expr=f'{pts[-1][1]:.5f}'
+            for (t0,v0),(t1,v1) in reversed(list(zip(pts,pts[1:]))):
+                expr=f'if(lt(t,{t1:.4f}),{v0:.5f}+({v1-v0:.5f})*(t-{t0:.4f})/{max(t1-t0,1e-3):.4f},{expr})'
+            return f"'(iw-{cw})*clip({expr},0,1)'"
         atual=float(c['cropx']); mudancas=[]
         for t,v in timeline:
             if t<=a+1e-6: atual=v
@@ -70,8 +87,10 @@ def passA(c,out):
         zin=(i%2==0)                      # alternate push-in / pull-out per beat
         zA,zB=(1.0,1.0+ZOOM) if zin else (1.0+ZOOM,1.0)
         nframes=max(1,round((b-a)*FPS))
-        dec=subprocess.Popen(['ffmpeg','-v','error','-i',src,'-filter_complex',
-            f'[0:v]trim=start={a}:end={b},setpts=PTS-STARTPTS,crop={cw}:1080:x={crop_expr(a,b)}:y=0,'
+        # -ss na entrada: antes o trim decodificava o arquivo desde o inicio para cada keep
+        # (custo quadratico; 35 keeps numa janela de 9 min levaram 18 min).
+        dec=subprocess.Popen(['ffmpeg','-v','error','-ss',f'{a:.3f}','-i',src,'-filter_complex',
+            f'[0:v]trim=duration={b-a:.3f},setpts=PTS-STARTPTS,crop={cw}:1080:x={crop_expr(a,b)}:y=0,'
             f'scale={OSW}:{OS}:flags=lanczos,format=rgb24[v]','-map','[v]','-f','rawvideo','-'],
             stdout=subprocess.PIPE)
         for k in range(nframes):
@@ -122,19 +141,34 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
     clk=f'{B}/clicks_{k}.wav'
     music=c.get('music'); mix=c.get('mix',{})
     ins=(f'-i "{passa}" -i "{intro}" -i "{fb}" -i "{cr}" -i "{ca}" -i "{clk}"')
-    if music: ins+=f' -stream_loop -1 -i "{music}"'
+    # loop limitado a duracao do clipe: com -stream_loop -1 sem -t a entrada nunca termina
+    # e o encode chega ao fim do video mas trava sem fechar o arquivo (0% de CPU).
+    if music: ins+=f' -stream_loop -1 -t {float(c["total"])+float(c.get("mix",{}).get("music_offset",0))+2:.2f} -i "{music}"'
+    # `burn_at`: burns extras no meio do clipe (segundos no clipe, sem contar a capa),
+    # com o pico do asset (0,53 s) sobre a emenda: transicao entre blocos de assunto.
+    mids=[float(t) for t in c.get('burn_at',[])]
+    # O audio do passA entra por uma segunda leitura do arquivo, no fim da lista. Com
+    # [0:v] e [0:a] no mesmo demuxer, a fila do audio enchia esperando o mix e o video
+    # parava junto: encode travado com 0% de CPU por volta de 2 min (clipes longos).
+    aidx=6+bool(music)+bool(cover)
     f=(f"[0:v]trim=start={INTRO},setpts=PTS-STARTPTS[main];"
        f"[1:v][main]concat=n=2:v=1:a=0[vv];"
-       f"[2:v]fps={FPS},format=gbrp,split=2[fbA][fbB];"
-       f"[fbA]tpad=stop_mode=add:stop_duration=120:color=black[fb1];"
+       f"[2:v]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS},format=gbrp,split={2+len(mids)}[fbA][fbB]{''.join(f'[fbM{j}]' for j in range(len(mids)))};"
+       f"[fbA]tpad=stop_mode=add:stop_duration={float(c["total"])+5:.1f}:color=black[fb1];"
        f"[fbB]tpad=start_mode=add:start_duration={max(float(c['total'])-BURN_OUT,0):.3f}:color=black,"
-       f"tpad=stop_mode=add:stop_duration=120:color=black[fb2];"
+       f"tpad=stop_mode=add:stop_duration={float(c["total"])+5:.1f}:color=black[fb2];"
        f"[vv]format=gbrp[vvg];"
        f"[vvg][fb1]blend=all_mode=screen:shortest=1[vb1];"
-       f"[vb1][fb2]blend=all_mode=screen:shortest=1,format=yuv420p[vb];"
+       f"[vb1][fb2]blend=all_mode=screen:shortest=1[vm0];"
+       +''.join(f"[fbM{j}]tpad=start_mode=add:start_duration={max(t-0.53,0):.3f}:color=black,"
+                f"tpad=stop_mode=add:stop_duration={float(c["total"])+5:.1f}:color=black[fbm{j}];"
+                f"[vm{j}][fbm{j}]blend=all_mode=screen:shortest=1[vm{j+1}];" for j,t in enumerate(mids))
+       +f"[vm{len(mids)}]format=yuv420p[vb];"
        f"[3:v]format=yuva420p[c3];[c3][4:v]alphamerge[capa];"
-       f"[vb][capa]overlay=x=0:y={os.environ.get('BAND_Y',810)}:format=auto:eof_action=pass,setsar=1[body];"
-       f"[0:a][5:a]amix=inputs=2:duration=first:normalize=0[voice]")
+       f"[vb][capa]overlay=x={(W-1080)//2}:y={os.environ.get('BAND_Y',810)}:format=auto:eof_action=pass,setsar=1[body];"
+       f"[{aidx}:a][5:a]amix=inputs=2:duration=first:normalize=0"
+       # `voice_af`: cadeia de audio da voz por clipe (ganho fixo, EQ, limitador de pico).
+       f"{(','+c['voice_af']) if c.get('voice_af') else ''}[voice]")
     if music:
         music_db=float(mix.get('music_db',-26))
         music_offset=max(0.0,float(mix.get('music_offset',0)))
@@ -143,8 +177,12 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
         duck_ratio=float(mix.get('duck_ratio',6))
         f+=(f";[6:a]atrim=start={music_offset:.3f},asetpts=PTS-STARTPTS,"
             f"volume={music_db:g}dB,afade=t=in:d=0.8,afade=t=out:st={music_fade_out:.3f}:d=0.8[music];"
-            f"[music][voice]sidechaincompress=threshold={duck_threshold:.3f}:ratio={duck_ratio:g}:attack=12:release=420[duck];"
-            f"[voice][duck]amix=inputs=2:duration=first:normalize=0[abody]")
+            # [voice] e consumido duas vezes: sem asplit, o ffmpeg ligava o segundo uso ao
+            # primeiro audio de entrada livre (o audio cru do passA) e o mix final saia sem
+            # cliques e sem `voice_af`, em silencio.
+            f"[voice]asplit=2[vsc][vmix];"
+            f"[music][vsc]sidechaincompress=threshold={duck_threshold:.3f}:ratio={duck_ratio:g}:attack=12:release=420[duck];"
+            f"[vmix][duck]amix=inputs=2:duration=first:normalize=0[abody]")
     else:
         f+=";[voice]anull[abody]"
     if cover:
@@ -157,6 +195,7 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
             f"[sil][abody]concat=n=2:v=0:a=1[afin]")
     else:
         f+=";[body]null[vfin];[abody]anull[afin]"
+    ins+=f' -i "{passa}"'
     sh(f'ffmpeg -y -v error {ins} -filter_complex "{f}" -map "[vfin]" -map "[afin]" '
        f'-c:v libx264 -preset {preset} -crf {crf} -pix_fmt yuv420p -c:a aac -b:a 160k '
        f'{extra} -movflags +faststart "{out}"')

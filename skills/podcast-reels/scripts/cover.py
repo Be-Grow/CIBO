@@ -25,8 +25,21 @@ def fit(txt,maxw,start=104):
         s-=3
     return bolden(ImageFont.truetype(FONT,s)),s
 
+def grab_master(c):
+    """Capa de qualquer momento da gravacao (regra: a capa pode vir de fora do trecho).
+    `cover_src` e o arquivo horizontal, `cover_src_t` o tempo nele e `cover_src_x` o
+    centro do rosto em px; o recorte 9:16 sai na escala nativa e sobe uma vez so."""
+    src=c['cover_src']; t=float(c['cover_src_t'])
+    sw,shh=[int(v) for v in subprocess.run(f'ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0:s=x "{src}"',
+             shell=True,capture_output=True,text=True).stdout.strip().split('x')]
+    cw=int(round(shh*9/16))//2*2
+    x=int(max(0,min(sw-cw,float(c.get('cover_src_x',sw/2))-cw/2)))
+    raw=subprocess.run(f'ffmpeg -v error -ss {t} -i "{src}" -frames:v 1 -vf "crop={cw}:{shh}:{x}:0,scale={W}:{H}:flags=lanczos" '
+                       f'-f rawvideo -pix_fmt rgb24 -',shell=True,capture_output=True).stdout
+    return Image.frombytes('RGB',(W,H),raw[:W*H*3])
+
 def build(c,src,out):
-    im=grab(src,c['cover_t']).convert('RGB')
+    im=(grab_master(c) if c.get('cover_src') else grab(src,c['cover_t'])).convert('RGB')
     # vignette / bottom scrim
     sc=Image.new('L',(1,H))
     for y in range(H):

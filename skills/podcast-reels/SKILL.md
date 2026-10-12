@@ -318,3 +318,98 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
 - **Vários zooms:** combine os termos com `max()`. Somar termos que se sobrepõem dobra o zoom.
 - **Corte de gaguejada:** corte de silêncio a silêncio medido no envelope do áudio em passos de 10 ms, não pelos tempos de palavra do Whisper, que deixaram meia sílaba ("q-que"). Esconda o jump cut com um zoom seco de +10% que volta em 3 s. Transcreva o trecho cortado de novo antes do render.
 - **Transições:** coloque entrada e saída de B-roll, burn e SFX no centro de uma pausa real da fala. Um flash com whoosh sobre a palavra retomada soou como "corte cortando palavras". Ferramenta de referência: `fernanda-produto/scripts/find_pauses.py`.
+
+## Corrigido em 10/2026 (corte da Paula, cliente Michele)
+
+22. **Vídeo para em 2:01 e só o áudio segue.** O burn de abertura era estendido com
+    `tpad=stop_duration=120` e o `blend ... shortest=1` cortava o vídeo em ~121 s. Todo clipe
+    acima de 2 min saía truncado e o encode parecia travar no fim. Agora a extensão é
+    `total+5`. Confira sempre `ffprobe -show_entries stream=codec_type,duration`: vídeo e
+    áudio têm que bater.
+23. **Encode que chega ao fim mas não fecha (0% de CPU).** A música entrava com
+    `-stream_loop -1` sem `-t`, uma entrada infinita. Agora tem `-t total+offset+2`. O áudio
+    do passA também entra por uma segunda leitura do arquivo, separada do `[0:v]`.
+24. **Legenda invisível ao baixar a faixa.** `CY` era `1020-BAND_Y`, então com `BAND_Y=1150`
+    a legenda ficava fora da faixa. Agora o padrão é `BAND_Y+210`, e `BAND_Y`/`CAP_CY` entram
+    no fingerprint das legendas. Meça a matte (`signalstats` YMAX > 16) antes de entregar.
+25. **MP4 truncado aceito pelo cache.** O final é gravado em `.part.mp4` e só renomeado ao
+    terminar.
+26. **Opções novas por clipe:** `cropx_interp: true` (o recorte acompanha a pessoa andando no
+    palco, com interpolação entre os pontos de `cropx_timeline`) e `burn_at: [s, ...]` (burn
+    de transição no meio do clipe, com o pico na emenda). Motion graphics (cards e lower
+    third) entram numa passada separada sobre o MP4 pronto: dentro do encode final, com
+    10 entradas, o agendador do ffmpeg travava.
+27. **O recorte pula para o lugar errado em alguns trechos.** Com `cropx_interp`, os pontos
+    de cada keep eram filtrados por `a<=t<=b`. O snap de silêncio move a borda alguns
+    centésimos para dentro, os pontos ficavam de fora e o trecho caía no `cropx` do primeiro
+    keep: 13 de 35 trechos com a pessoa saindo do quadro. Agora a tolerância é de 0,45 s,
+    com o ponto mais próximo como reserva.
+28. **O mix final saía sem cliques e sem tratamento de voz.** `[voice]` era consumido duas
+    vezes (sidechain e amix). O ffmpeg ligava o segundo uso ao primeiro áudio livre (o áudio
+    cru do passA), sem erro nenhum. Agora tem `asplit`. Novo `voice_af` por clipe: ganho fixo,
+    EQ e limitador de pico na voz. Meça com `ebur128` depois do render: mudar o `voice_af`
+    tem que mudar o LUFS.
+29. **passA quadrático.** Cada keep decodificava o arquivo desde o início (`trim=start`).
+    Agora usa `-ss` na entrada + `trim=duration`: 18 min viraram 6 min no mesmo clipe.
+
+## Corrigido em 12/10/2026 (palestra do João Campos)
+
+30. **Palavras curtas sumiam da legenda.** O mapeamento de cue para trecho mantido tinha
+    `if e2-s2<=0.12: continue`: com SRT palavra por palavra, "eu", "a", "é" (e um "não", que
+    inverte a frase) eram descartados inteiros. O piso agora é 0,02 s. A Content Hub já tinha
+    essa correção; ela não tinha chegado aqui.
+31. **Ênfase vazando de outro cliente.** `plan.py` somava ao `job.emph` uma lista fixa de um
+    episódio de portos (mundo, risco, oportunidade, segurança...) e um `FIX` fixo do mesmo
+    episódio. Toda palavra comum dessas ganhava destaque em jobs sem relação. Agora ênfase e
+    correção vêm só do job.
+32. **Capa de qualquer momento da gravação.** Chaves por clipe `cover_src` (arquivo
+    horizontal), `cover_src_t` (tempo nele) e `cover_src_x` (centro do rosto em px). O recorte
+    9:16 sai na escala nativa e sobe uma vez só. Sem essas chaves, a capa continua saindo de
+    `cover_t` dentro do corte. Use quando o corte é todo em plano aberto e há um plano fechado
+    melhor, de frente e de boca fechada, em outro ponto. Ache os planos fechados com YuNet
+    (rosto com largura ≥ 140 px no 1920) e escolha numa folha de contato com o tempo real.
+33. **Palestra de palco, câmera única ou corte ao vivo.** Rastreie o rosto (YuNet a cada 3
+    quadros, continuidade de trilha, reinício em corte de câmera medido contra o quadro de 4
+    atrás, para pegar dissolve curto) (`scripts/track_stage.py SRC.mov OUT.json`, com o OpenCV do venv da content-hub) e gere `cropx_timeline` com zona morta de 60 px e resposta 0,14 por quadro (110 px deixava o rosto encostado na borda quando ele anda e fora do centro no plano fechado) +
+    `cropx_interp: true`. No plano aberto de 1080p, o recorte nativo de 608×1080 já deixa o
+    palestrante de corpo inteiro ocupando a vertical: `ZOOM_AMT=0`, sem close.
+34. **Clique de ênfase reprovado: "som de click bizarro… no meio das falas do jg"** (João
+    Campos, 12/10/2026). O clique sintético/`click.wav` em toda palavra de ênfase, somado ao
+    `voice_af` (que aplica +10 dB depois da mistura com os cliques), soou estranho e alto. O
+    usuário aprovou o `camera_click.mp3` dele (4 batidas; mora em
+    `~/CIBO/skills/fernanda-produto/assets/`, uso no João autorizado) **baixo** nas falas. Opções
+    novas no `clicks.py`, desligadas por padrão: `CLICK_VARIANTS=1` separa as batidas do
+    arquivo e alterna; `CLICK_MIN_GAP=2.5` evita rajada. Como o `voice_af` vem depois, ajuste
+    `CLICK_GAIN` para o pico do clique ficar ~-20 dBFS no arquivo final, e meça. Nunca clique
+    na primeira palavra nem colado em outro SFX (ex.: toque do cartão "Seguir").
+35. **Tags Rec.709 sumiam no `burn_end.py`.** O blend em gbrp entrega quadros com
+    primárias/transferência "unknown" e as flags de linha de comando não sobrescrevem. Com
+    `BURN_END_BT709=1` ele grava via `h264_metadata` no bitstream; `BURN_END_LIMIT=0.84` põe
+    um limitador no fim (true peak abaixo de -1 dBTP). Os dois desligados por padrão. Para
+    corrigir um arquivo já entregue sem re-encode: `ffmpeg -i in.mp4 -c copy -bsf:v
+    h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1 out.mp4`.
+
+## Corrigido em 12/10/2026 (LPA e Você, cortes da Carolina Fernandes)
+
+34. **Capa nova, MP4 com a capa velha.** O estágio `final` não tinha `cover_src`,
+    `cover_src_t` e `cover_src_x` no fingerprint: trocar o frame da capa refazia o PNG, mas o
+    primeiro quadro do MP4 continuava com a capa antiga, vinda do cache. Agora as três chaves
+    entram no fingerprint do `final`.
+35. **Tempo de palavra do Whisper atrasado ~0,3 s em fonte do YouTube.** A legenda do corte
+    começou com "ter?" (resto da frase cortada) e perdeu "o". Depois de fechar os `keeps`,
+    transcreva **o áudio já cortado** (large-v3, `--word-timestamps`, `--initial-prompt` com
+    nomes e termos do episódio para sair pontuado), descarte palavra com `probability < 0.2`
+    nos primeiros 0,6 s (alucinação "aquilo, né?") e devolva os tempos ao master pelos keeps
+    para gerar o SRT do job. Emendas pelo envelope (`find_pauses.py env`), nunca pelo tempo
+    de palavra.
+36. **Download do YouTube sem perda.** `yt-dlp --download-sections` com
+    `--force-keyframes-at-cuts` **recodifica** o trecho (q=29): não use. Sem a flag, o trecho
+    sai em cópia de stream. Se o áudio `251` der 403, use o HLS `234` (`-f "270+234/270+140"`).
+    Baixe só a minutagem pedida com folga de ~10 s de cada lado e transcreva só ela.
+37. **Grafismo da fonte cortado pelo 9:16** (card de definição queimado no plano aberto).
+    Não deixe o texto cortado pela metade: no `A_<clip>.mp4` (escala nativa, antes do `final`),
+    componha um painel desfocado com bordas em degradê sobre a área do card cortado e
+    reposicione o card inteiro, recortado da fonte com máscara (círculo + barra + caixa,
+    medidos por diferença entre um quadro com e outro sem o card). O card entra com fade só
+    depois que a animação original formou a caixa. Depois apague `I_<clip>.mp4` e rode o
+    `make_reels` de novo: o `cut` fica em cache e só a intro e o final são refeitos.

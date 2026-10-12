@@ -28,10 +28,20 @@ st, tot = D - PEAK, D - PEAK + 1.4
 fc = (f'[0:v]tpad=stop_mode=add:stop_duration={tot - D + 0.1:.3f}:color=black,format=gbrp[v];'
       f'[1:v]format=gbrp,tpad=start_mode=add:start_duration={st:.3f}:color=black[b];'
       f'[v][b]blend=all_mode=screen:shortest=1,format=yuv420p[vo];'
-      f'[0:a]apad=pad_dur={tot - D + 0.1:.3f},afade=t=out:st={D - 0.05:.3f}:d={tot - D + 0.05:.3f}[ao]')
+      f'[0:a]apad=pad_dur={tot - D + 0.1:.3f},afade=t=out:st={D - 0.05:.3f}:d={tot - D + 0.05:.3f}'
+      # BURN_END_LIMIT (ex.: 0.84): limitador de pico no fim da cadeia, para o true peak
+      # ficar abaixo de -1 dBTP. Desligado por padrao: os outros clientes saem identicos.
+      + (f',alimiter=limit={os.environ["BURN_END_LIMIT"]}:level=false' if os.environ.get('BURN_END_LIMIT') else '')
+      + '[ao]')
+# BURN_END_BT709=1: este e o ultimo encode da cadeia; sem as tags a entrega sai sem Rec.709.
+# As flags de linha de comando sozinhas nao bastam: o blend em gbrp entrega quadros com
+# primarias/transferencia "unknown" e o x264 grava isso. O h264_metadata escreve no bitstream.
+COLOR = (['-color_range', 'tv', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709',
+          '-bsf:v', 'h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1:video_full_range_flag=0']
+         if os.environ.get('BURN_END_BT709') else [])
 tmp = out + '.tmp.mp4'
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-i', tail, '-filter_complex', fc, '-map', '[vo]', '-map', '[ao]',
-                '-t', f'{tot:.3f}', '-c:v', 'libx264', '-preset', 'slow', '-crf', '16', '-c:a', 'aac', '-b:a', '160k',
+                '-t', f'{tot:.3f}', '-c:v', 'libx264', '-preset', 'slow', '-crf', '16', *COLOR, '-c:a', 'aac', '-b:a', '160k',
                 '-movflags', '+faststart', tmp], check=True)
 subprocess.run(['ffmpeg', '-v', 'error', '-i', tmp, '-f', 'null', '-'], check=True)
 os.replace(tmp, out); os.remove(tail); print('ok', out, f'{tot:.2f}s')

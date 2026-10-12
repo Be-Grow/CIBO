@@ -47,7 +47,9 @@ def main() -> None:
               "pergunte ao usuário de qual cliente é o material, ou confirme "
               "que é um job genérico para 'podcast-reels'.")
     elif len(hits) == 1:
-        print(f"Cliente identificado: {hits[0]}  ->  skills/{hits[0]}/")
+        skill = registry[hits[0]].get("skill", hits[0])   # cliente sem skill própria aponta o motor
+        print(f"Cliente identificado: {hits[0]}  ->  skills/{skill}/"
+              + (f"  ({registry[hits[0]]['note']})" if registry[hits[0]].get("note") else ""))
     else:
         print("Mais de um cliente bateu com o texto — desambigue antes de seguir: "
               + ", ".join(hits))

@@ -8,7 +8,9 @@ from easing import entrance, ease_out_back
 import os
 FONT=os.environ['FONT']
 W=1080; BAND_H=420; BAND_Y=int(os.environ.get("BAND_Y",810))   # band top in the 1920-tall frame (env-overridable)
-CY=int(os.environ.get("CAP_CY",1020))-BAND_Y   # caption center inside band
+# centro da legenda dentro da faixa; acompanha BAND_Y (antes era 1020 fixo e, com a faixa
+# mais baixa, a legenda caia fora da area desenhada e saia invisivel)
+CY=int(os.environ.get("CAP_CY",BAND_Y+210))-BAND_Y   # caption center inside band
 FPS=30
 BASE=74; EMPH=100; LINE_GAP=1.12
 MAXW=W-150

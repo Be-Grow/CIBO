@@ -16,24 +16,15 @@ Distância padrão: 30–50 px para legenda/lettering em 1080×1920 (proporciona
 
 `scale` (pop-in) e `entrance()` (slide+fade) não são mutuamente exclusivos: dá pra aplicar os dois na mesma tile (slide traz a posição, scale dá o peso de entrada). Mas não empilhe mais de dois efeitos no mesmo elemento — legenda que desliza, aparece, cresce e ainda balança compete com a leitura da fala, que é sempre prioridade (ver hierarquia editorial em `video-delivery-safety-check/references/final-checklist.md`).
 
-## Árvore de decisão: Pillow × SVG × Remotion
+## Árvore de decisão: Pillow × Remotion
 
 ```
-O efeito é slide, fade, scale-pop ou bounce de um elemento já rasterizado (texto/PNG)?
-├── Sim → Pillow + easing.py. Fim.
-└── Não, precisa desenhar/morphar uma forma vetorial (traço, ícone, contorno)?
-    ├── Sim → SVG por frame + cairosvg, mesmo pipe de PNG. Fim.
-    └── Não, precisa de física de mola real ou múltiplos elementos
-        reagindo uns aos outros em composição complexa?
-        ├── Não → volte para Pillow + easing.py; provavelmente falta só
-        │         uma curva nova em easing.py, não uma ferramenta nova.
-        └── Sim, e isso é um padrão recorrente (não um efeito isolado)
-            → avaliar Remotion como decisão de arquitetura à parte,
-              não como resposta a um único job.
+É legenda corrida (bloco a bloco da fala)?
+├── Sim → Pillow + easing.py, dentro do motor de legenda.
+└── Não. É um grafismo que entra na tela (card, @, lower third, título, número, CTA)?
+    └── Sim → Remotion (anthropic-skills:motion-graphics), template em
+              assets/remotion-template, render ProRes 4444 com alpha e
+              overlay numa passada separada (scripts/overlay_card.sh).
 ```
 
-## Quando NÃO usar SVG ou Remotion
-
-- Nunca troque de ferramenta só porque "parece mais profissional" — o teste é sempre "esse efeito específico é impossível ou visivelmente pior em Pillow?".
-- SVG por frame tem custo de rasterização por frame (mais lento que o compositing direto em Pillow); só compensa quando o resultado visual realmente depende de desenho vetorial.
-- Remotion exige Node.js + Chromium instalados na máquina de render — não introduzir esse pipeline paralelo para resolver uma única animação; primeiro confirmar que é um padrão que vai se repetir em vários clientes/jobs.
+A versão anterior desta árvore mandava evitar Remotion ("só se virar padrão recorrente"). Virou: o motion em Pillow foi reprovado ("um pouco ruinzinha") e o pipeline Remotion já está instalado e validado neste Mac.

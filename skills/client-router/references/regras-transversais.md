@@ -22,6 +22,9 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 
 ## Durante o job
 
+- **Baixe e transcreva só a minutagem pedida**, com ~10 s de folga de cada lado, nunca o
+  episódio inteiro; um Whisper grande por vez ("pra ser mais econômico... transcreve só essa
+  minutagem", LPA e Você, 12/10/2026).
 - **Temporários no SSD**, na pasta do projeto, nunca no disco de sistema (vive perto de
   100 %). Detalhes e o `taskpolicy` para encode em background: `video-render-optimizer`.
 - **No máximo 2–3 ffmpeg em paralelo sobre 4K**, e um Whisper grande por vez: o Mac tem

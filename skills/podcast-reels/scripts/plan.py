@@ -61,19 +61,13 @@ _OLD={
 }
 
 # ---- text corrections applied to raw SRT text (regex -> replacement) ----
-FIX=[(a,b) for a,b in JOB.get('fix',[])]+[(r'\bBesos\b','berços'),(r'\bserbo\b','sebo'),(r'\bsó da cálcica\b','soda cáustica'),
-     (r'\bquem daí de vocês\b','quem aí de vocês'),(r'\bda granel\b','da Granel'),
-     (r'\bgranel\b','Granel'),(r'\bCoca-Cola\b','Coca-Cola'),(r'\bpo r\b','por'),
-     (r'\bteraprima\b','matéria-prima'),(r'\bvódica\b','vodka'),
-     (r'\bfaço parte\b','faço parte'),(r'Porto, gente','porto, gente'),
-     (r'dentro do Porto','dentro do porto'),(r'\bvai só da cálcica\b','vai soda cáustica'),
-     (r'\bsó da cálcica\b','soda cáustica'),(r'\bEla não tem lá um\b','Ela não tem lá um')]
+# Correções e ênfases vêm só do job. As listas fixas que moravam aqui eram de um
+# episódio de portos de outro cliente (navios, gasolina, "mundo", "risco",
+# "oportunidade") e pintavam de ênfase palavras comuns em jobs sem relação nenhuma.
+FIX=[(a,b) for a,b in JOB.get('fix',[])]
 
 # words that get the big/impact treatment
-EMPH = set(JOB.get('emph','').split()) | set('''80% mundo portuário portuário. risco risco. altíssimo gasolina moeda moeda?
-banho banho. sabonete sabonete? sebo sebo, cáustica cáustica, coca-cola pigmento vermelha
-navios navios. 42 anos enorme granel granel. econômica econômica. oportunidade oportunidade.
-incidente segurança segurança? líquida líquida.'''.split())
+EMPH = set(JOB.get('emph','').split())
 
 def norm(w): return re.sub(r'[^0-9a-záàâãéêíóôõúüç%\-]','',w.lower())
 
@@ -165,7 +159,9 @@ def build(name):
     for ls,le,t in g:
         for a,b,off in segs:
             s2,e2=max(ls,a),min(le,b)
-            if e2-s2<=0.12: continue
+            # 0,12 s era o piso aqui e descartava palavra curta inteira ("eu", "a", "é",
+            # até "não", invertendo a frase) quando o SRT vem palavra por palavra.
+            if e2-s2<=0.02: continue
             txt=t
             for pat,rep in FIX: txt=re.sub(pat,rep,txt,flags=re.I)
             # Only caption what is actually heard. A cue clipped by a keep

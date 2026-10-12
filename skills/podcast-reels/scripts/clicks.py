@@ -32,14 +32,33 @@ def load_click():
         return a.astype(np.float32)
     return shutter()
 CL=load_click()
+def variants(a):
+    """CLICK_VARIANTS=1: o arquivo traz varias batidas (ex.: camera_click.mp3 com 4); separa
+    cada uma pelo envelope (> -40 dB) para alternar entre elas em vez de repetir a mesma."""
+    h=240; n=len(a)//h
+    if n==0: return [a]
+    env=np.abs(a[:n*h]).reshape(n,h).max(1); thr=env.max()*0.01
+    out=[]; on=None
+    for i,v in enumerate(env):
+        if v>thr and on is None: on=i
+        if v<=thr and on is not None:
+            if (i-on)*h>0.02*SR: out.append(a[max(0,on*h-int(0.01*SR)):i*h])
+            on=None
+    return out or [a]
+VARS=variants(CL) if os.environ.get('CLICK_VARIANTS') else [CL]
+MIN_GAP=float(os.environ.get('CLICK_MIN_GAP','0'))   # s entre cliques; 0 = sem limite (padrao antigo)
 def build(clip,out):
     dur=clip['total']+0.2
     buf=np.zeros(int(dur*SR),dtype=np.float32)
+    last=-9.0; n=0
     for idx,c in enumerate(clip['caps']):
         if not c.get('any') or idx==0: continue  # never click over the opening hook word
-        i=int((c['s']+0.03)*SR)
-        j=min(len(buf),i+len(CL))
-        buf[i:j]+=CL[:j-i]
+        t=c['s']+0.03
+        if MIN_GAP and t-last<MIN_GAP: continue   # sem rajada de cliques
+        last=t; cl=VARS[n%len(VARS)]; n+=1
+        i=int(t*SR)
+        j=min(len(buf),i+len(cl))
+        buf[i:j]+=cl[:j-i]
     st=np.stack([buf,buf],1)
     st=np.clip(st,-1,1)
     pcm=(st*32767).astype('<i2').tobytes()
