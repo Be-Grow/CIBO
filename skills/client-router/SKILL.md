@@ -17,6 +17,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Pastas do projeto (início e fim) | `video-project-structure` |
 | Bruto longo com bastidores/retakes | `limpeza-gravacao-bruta` |
 | Transcrição de aula/live longa | `transcricao-aulas` |
+| Escolha dos momentos (portão, começo/fim) | `podcast-reels` → "Escolha dos momentos" + `scripts/checa_cortes.py` |
 | Fala: outra voz, hesitação, palavra engolida | `fala-limpa` |
 | Trilha por corte | `talking-head-music` |
 | B-roll / referência em tela | `semantic-broll-validator` |

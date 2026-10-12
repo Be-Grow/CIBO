@@ -3,8 +3,14 @@
 Podcast da comunidade portuária (Porto do Itaqui, São Luís/MA). Host: **Daniel Pereira**.
 O EP 01 "fez bastante sucesso no YT num crescimento natural": ele é o modelo.
 
-**Numeração:** a pasta local `epN` é o "EP N-1" no YouTube (o episódio do Silvio Lúcio é o EP 0
-no canal). Confira pelos convidados antes de escrever o número.
+**Numeração:** desde 30/09/2026 a pasta local `epN` é o próprio "EP N" do YouTube (ep0 = Silvio
+Lúcio, EP 00). Transcrições e jobs antigos ainda usam a numeração velha (epN = EP N-1): confira
+pelos convidados antes de escrever o número.
+
+**Estratégia vigente:** o SEO segue a estratégia do mês (relatório em `metricas/<mês>/_relatorio`).
+Em outubro/2026: título do episódio começa com o **número ou fato mais forte** da conversa e o nome
+do convidado vai no fim (teste T4 contra o formato "Carreira com X"); episódio sai segunda às 19h;
+a thumb 1:1 do Spotify acompanha a thumb do YouTube.
 
 ## Título
 

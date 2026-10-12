@@ -10,6 +10,8 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   o que o perfil do cliente não responde, com opções do histórico, registre o brief e peça
   aprovação no mapa de cortes e no piloto. ("a ia deveria questionar o editor para que o
   máximo de detalhes seja fornecido", 12/10/2026)
+- **Antes de criar algo novo, veja `references/fontes-externas.md`**: o que já foi avaliado de
+  terceiros, o que entrou e o que está pendente.
 - **Procure a skill antes de fazer.** "Procura skill ao invés de tentar fazer algo que já
   tá resolvido pela skill, faça isso sempre." Rodar um script solto de dentro da pasta de uma
   skill não conta: o valor está no SKILL.md, com as convenções e as falhas conhecidas. Se
@@ -93,6 +95,14 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   `video-render-optimizer`, testado de novo a cada 10 renders) e uma codificação só (`overlays`,
   `BURN_END_INLINE`). Nunca recodifique o MP4 entregue para pôr cartão ou burn. ("demora
   muito", 12/10/2026)
+- **Ritmo e som de referência** (6 reels de criadores; `kurbaitaev/ghost-editor` e
+  `kmilo93sd/agent-video-editor`, 12/10/2026): ~95% das transições são corte seco; plano médio
+  de ~3 s; algo novo na tela a cada 5–7 s em Reels; SFX 0,4–0,9 a cada 10 s, nos grafismos e
+  não nos cortes; zoom/punch-in só quando a fala motiva (no máximo ~3 por reel, nunca em todo
+  corte); pausa entre frases de 200–300 ms em Reels. O que o cliente já aprovou vale mais que
+  a referência (ex.: trilha −16 a −20 dB sob a voz no João).
+- **Asset ripado do YouTube** (efeito, meme, música) serve para Instagram e TikTok, mas pode
+  bloquear o vídeo por Content ID no YouTube: avise se o destino incluir YouTube.
 - **Loudness por ganho fixo medido**, nunca `loudnorm` dinâmico no mix ou na voz: ele
   levanta a trilha nas pausas até ficar mais alta que a voz. (Dr. Energia)
 - **Clique (SFX de ênfase): sempre os dois sons do usuário**, `/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav` e `~/CIBO/skills/fernanda-produto/assets/camera_click.mp3`, alternados. Nunca o clique sintetizado ("click ridículo", 12/10/2026). Já é o padrão do `clicks.py` da podcast-reels.

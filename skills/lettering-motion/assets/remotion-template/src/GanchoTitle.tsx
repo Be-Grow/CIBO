@@ -29,7 +29,8 @@ export const GanchoTitle: React.FC<Props> = ({text, accent = [], color = '#4F95F
           transform: `scaleX(${panel})`, transformOrigin: 'center'}}>
           <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: 18, rowGap: 4}}>
             {words.map((w, i) => {
-              const s = spring({frame: frame - 6 - i * 3, fps, config: {damping: 13, mass: 0.5}});
+              // palavras a 4 quadros (título: 4–6 q; gancho rápido: 2–4 q), sem quique (motionmaxxing/apple-motion)
+              const s = spring({frame: frame - 6 - i * 4, fps, config: {damping: 15.35, stiffness: 115, mass: 1}});
               const isAcc = acc.has(norm(w));
               return (
                 <span key={i} style={{fontFamily: 'GFont', fontSize: size, lineHeight: 1.12, color: isAcc ? color : '#fff',

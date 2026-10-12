@@ -12,16 +12,16 @@ export const SeguirCard: React.FC<Props> = ({name, handle, avatar = 'avatar.png'
   const {fps, durationInFrames} = useVideoConfig();
   const OUT = durationInFrames - 16;
 
-  const enter = spring({frame, fps, config: {damping: 15, mass: 0.7}});
+  const enter = spring({frame, fps, config: {damping: 15.35, stiffness: 115, mass: 1}});
   const leave = spring({frame: frame - OUT, fps, config: {damping: 200}});
   const y = interpolate(enter, [0, 1], [140, 0]) + interpolate(leave, [0, 1], [0, 160]);
   const opacity = interpolate(frame, [0, 8], [0, 1], clamp) * interpolate(frame, [OUT, durationInFrames - 2], [1, 0], clamp);
   const scale = interpolate(enter, [0, 1], [0.92, 1]);
 
   // avatar e textos chegam um pouco depois do cartão
-  const avatarS = spring({frame: frame - 4, fps, config: {damping: 12, mass: 0.5}});
+  const avatarS = spring({frame: frame - 4, fps, config: {damping: 15.35, stiffness: 115, mass: 1}});
   const textS = spring({frame: frame - 8, fps, config: {damping: 18}});
-  const btnS = spring({frame: frame - 14, fps, config: {damping: 11, mass: 0.6}});
+  const btnS = spring({frame: frame - 14, fps, config: {damping: 11, mass: 0.6}});   // a única mola com quique da peça
 
   // toque no botão: aperta em 52-58 e troca para "Seguindo"
   const TAP = tap;

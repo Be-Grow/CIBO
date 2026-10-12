@@ -46,3 +46,20 @@ VIRTUAL_ENV=~/.venvs/audiotools uv pip install torch torchaudio speechbrain sile
 ## Bloqueia a entrega
 
 Qualquer `outra_voz` confirmada, hesitação audível, `fim_cortado`, ou palavra perdida no teste de áudio.
+
+## Acréscimos de 12/10/2026 (fontes externas)
+
+- **Palavra esticada:** `audit_fala.py` acusa palavra de até 8 letras que o Whisper diz durar mais
+  de 1 s: ali tem pausa, gagueira ou trecho engolido (`louisedesadeleer/cut-video`).
+- **Limiar de silêncio relativo ao ruído da sala:** ruído (percentil 10 do RMS em janelas de
+  0,5 s) + 6 dB, não um valor fixo; se voz − ruído < ~8 dB (microfone ruidoso), nenhum limiar de
+  energia separa fala de pausa: use os tempos de palavra.
+- **Limpeza pela relação sinal/ruído medida** (`kvrancic/oneshot-video`): ≥ 24 dB → leve
+  (passa-altas 80 Hz, denoise FFT suave, compressão 2,5:1); 14–24 dB → forte (mais denoise,
+  presença +3,2 kHz, 3,5:1); < 14 dB → RNNoise (`arnndn` 85% wet) + forte. **`afftdn`/`arnndn`
+  atrasam o áudio 25–35 ms:** compense o atraso antes de juntar com o vídeo.
+- **Respiração entre frases:** abaixar só os intervalos ≥ 0,45 s (−7 dB, fade 0,08 s); abaixar todo
+  intervalo entre palavras deixa "buracos estranhos" na fala corrida.
+- **Alinhamento forçado (MFA, Montreal Forced Aligner):** tempo de palavra com 10–20 ms de
+  precisão e silêncios explícitos; tem modelo de português. Exige conda (~1–2 GB). Ainda não
+  instalado neste Mac (decisão do editor).

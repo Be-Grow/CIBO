@@ -56,3 +56,9 @@ cada vídeo (`maxresdefault`, 1280×720, com fallback). O YouTube não publica a
 original. O arquivo enviado (ex.: 1920×1080) só sai pelo YouTube Studio, logado como admin,
 por isso não dá para baixar pelo navegador automatizado. As faixas pretas de algumas thumbs
 baixadas são do letterbox do YouTube, não do design.
+
+## Teste A/B/C de capa (12/10/2026)
+
+O YouTube testa até 3 thumbnails sob o mesmo título e mede o CTR de cada uma. Entregue **três
+apostas de capa diferentes de verdade** (enquadramento, texto, expressão) sob um título fixo,
+em vez de uma capa só. Fonte: `hassancs91/claude-youtube-editor` (packaging, MIT).

@@ -40,6 +40,32 @@ silence-snapped trimming, caption rendering, audio sweetening and the cover.
    JOB=job.json python3 scripts/make_reels.py corte01    # one clip
    ```
 
+## Escolha dos momentos (doutrina)
+
+Onde todo "clipador" automático erra (testes do Opus Clip descartam 13–40% da saída). Adaptado de
+`kvrancic/oneshot-video` references/selection.md (MIT), 12/10/2026.
+
+- **Portão:** o momento precisa ter pelo menos um: virada inesperada; opinião forte que alguém
+  discutiria ou mandaria para outra pessoa; informação útil para salvar (número, mecanismo,
+  resultado, mito derrubado); história com virada, do começo à consequência; frase que se sustenta
+  citada sozinha. Bem falado e no tema não basta. Menos cortes, mais fortes.
+- **Começo:** a primeira frase faz sentido para um estranho. Pronome sem referência, resposta a
+  pergunta não ouvida, "então", "como eu disse" → adiante o começo. **Contexto se conserta
+  adiantando o início, nunca cortando o desfecho.**
+- **Fim:** depois do desfecho (inclua a risada, a pausa, o "e isso faz pensar"); termine em frase
+  completa, nunca em vírgula, "mas" ou gancho para a próxima ideia. Piada é unidade: preparação e
+  punchline juntas.
+- **Sem distorcer:** juntar dois trechos só se nada entre eles inverte ou relativiza ("mas",
+  "porém", "exceto").
+- **Cold open:** quando o melhor está depois da metade, abra com a frase-chave (3–8 s), corte para
+  o começo e deixe tocar.
+- **Ranqueie candidatos entre si** em gancho, completude, desfecho, densidade e público (uma frase
+  por eixo, depois nota 1–5); nota absoluta prevê pouco. Nada de dois cortes com a mesma ideia.
+- **Duração pelo conteúdo:** frase afiada 15–40 s; opinião com argumento ou história curta
+  40–90 s; lista/comparação 90 s–3 min.
+- Antes do render: `JOB=job.json scripts/checa_cortes.py` (começo com conectivo, pronome sem
+  referência, minúscula no meio da frase, fim em vírgula ou conectivo, duração).
+
 ## Choosing `keeps`
 
 `keeps` is the edit. Drop filler, false starts, repeated phrases and dead air; keep
@@ -142,6 +168,12 @@ e o burn passa do fim sobre preto, nunca fade.
 
 ## Rules that matter
 
+- **Ênfase com parcimônia:** no máximo uma palavra destacada por bloco e em ~20% dos blocos; a
+  palavra da surpresa (número, negação, conceito, contraste). Bloco aparece ~100 ms antes da
+  palavra (adiantado parece sincronizado; atrasado parece atrasado) e fica ~0,6 s depois.
+- **Áreas seguras 9:16:** nada importante nos 160 px de cima, nos 400 px de baixo, a menos de
+  72 px das laterais e na coluna direita de 140 px abaixo de y=1100 (botões). A capa precisa
+  funcionar no recorte 3:4 central que a grade do Instagram mostra.
 - **Captions align on a shared baseline.** Words are positioned by font ascent, never
   by their own bounding box — otherwise `o`, `aí`, `É` float up and the line looks
   crooked. Emphasis words are larger but sit on the same baseline.

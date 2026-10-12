@@ -115,6 +115,12 @@ issues = [x for x in issues if not inside_ok(x)]
 def speech_frac(t0, t1): return sum(max(0, min(t1, s1) - max(t0, s0)) for s0, s1 in speech) / max(t1 - t0, 1e-3)
 issues = [x for x in issues if speech_frac(x["s"], x["e"]) >= 0.5]
 
+# palavra esticada: o Whisper estica palavra curta por cima de pausa, gagueira ou trecho que ele
+# engoliu ("of" com 2,4 s). Palavra de até 8 letras com mais de 1 s no trecho mantido = olhar ali.
+# (alarme do cut-video, louisedesadeleer, 12/10/2026)
+for w in W:
+    if w["e"] - w["s"] > 1.0 and len(w["w"].strip(".,!?;:")) <= 8 and kept(w["s"], w["e"]):
+        issues.append(dict(tipo="palavra_esticada", s=round(w["s"], 2), e=round(w["e"], 2), texto=w["w"]))
 # 5. hesitacoes
 FILL = re.compile(r"^(eh+|éh+|ah+n*|ahn|ãh*|hu+m+|hm+|umm+|uh+|ahm|e{2,}h*|é{2,}|a{2,}h*)$")
 LONGV = re.compile(r"^(e|é|a|ã|um|hum)$")

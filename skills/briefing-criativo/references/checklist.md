@@ -13,6 +13,7 @@ Marque cada uma como **definido (fonte)** ou **em aberto** antes de perguntar.
 | Quantidade e duração | pedido | n cortes; 30–45 s; 45–60 s; até 90 s |
 | Tom | bíblia, referências | provocativo; inspirador; técnico; leve/humor |
 | Tipo de gancho | bíblia | pergunta; afirmação polêmica; número/dado; história |
+| Ritmo dos cortes | bíblia | agressivo (pausas de 0,25–1 s viram 0,1 s); equilibrado (0,3 s); sentimental (0,5 s); documental (mantém) |
 | Seleção dos momentos | regra transversal | editor já tem os tempos; IA escolhe e mostra o mapa |
 | Assuntos proibidos / obrigatórios | pedido, cliente | marca citada, concorrente, dado sensível |
 | Quem aparece | gravação | só o convidado; inclui entrevistador; plateia |
