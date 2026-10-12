@@ -363,6 +363,8 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
     - `BURN_END_INLINE=1` (+ `BURN_END_LIMIT`, `BURN_END_BT709`): o fim do `burn_end.py` dentro
       do `final()`.
     Corte 02 da palestra do João: 53 s do zero (antes ~3,5 min), mesma duração, SSIM 0,99 contra
-    a entrega antiga, AUTOMATED_PASS. Script de projeto pronto: `joãoCortes/04_work/render_all.sh`.
+    a entrega antiga, AUTOMATED_PASS. Lote completo (7 cortes, 13 entradas no `final()` com título, cartão,
+    SFX e burn): 6 min 40 s do zero, os 7 com AUTOMATED_PASS e duração idêntica à entrega; o
+    travamento do agendador com muitas entradas (item 26) não voltou. Script de projeto pronto: `joãoCortes/04_work/render_all.sh`.
     Rode com `taskpolicy -B -t 0 -l 0 -p $$` no topo do script: em background o macOS joga o
     ffmpeg nos núcleos de eficiência.
