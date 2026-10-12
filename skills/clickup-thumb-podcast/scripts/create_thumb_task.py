@@ -17,7 +17,10 @@ job.json:
   "orientacoes": ["..."],                 # opcional, soma às orientações padrão
   "gravacao": "https://drive...",          # opcional
   "subir_aqui": "https://drive...",        # opcional
-  "prazo": "2026-09-16 12:00"              # opcional; padrão: amanhã 12:00 (BRT)
+  "prazo": "2026-09-16 12:00",             # opcional; padrão: amanhã 12:00 (BRT)
+  "lista": "901105279019",                 # opcional; padrão: ContentHub > Max > Edição
+  "prioridade": "urgente",                 # opcional: urgente | alta | normal (padrão) | baixa
+  "status": "pendente"                     # opcional; padrão: nenhum (fica o status inicial da lista)
 }
 """
 import json, sys, datetime, urllib.request
@@ -25,8 +28,9 @@ from pathlib import Path
 
 LIST_ID = "901112367271"  # ContentHub > Max > Edição
 ASSIGNEES = {"Bruno Lucio BeGrow": 81565536, "Jorge Luis": 75568670}
-STATUS = "pendente"
-PRIORITY = 3  # 1 urgente, 2 alta, 3 normal, 4 baixa
+# Lista do JG Campos / Vai Lá e Faz Cast: "901105279019" (BeGrow GLD > JG Campos > Edição e Design)
+# Sem status por padrão: o usuário pediu "n coloque status nenhum" (30/09/2026).
+PRIORIDADES = {"urgente": 1, "alta": 2, "normal": 3, "baixa": 4}
 BRT = datetime.timezone(datetime.timedelta(hours=-3))
 API = "https://api.clickup.com/api/v2"
 # Instagram fixo dos hosts, repetido em toda demanda
@@ -63,7 +67,7 @@ def build(job):
     lines = [
         f"**Ep: {ep}**",
         f"**Título da Thumb:** {job['titulo_thumb']}",
-        f"**Subtítulo:** {job['subtitulo']}",
+        f"**Subtítulo:** {job.get('subtitulo', '')}",
         f"**Convidado:** {job['convidado']}",
         "**Orientações para a thumb:**",
         "",
@@ -88,11 +92,12 @@ def build(job):
         "name": name,
         "markdown_content": "\n".join(lines),
         "assignees": list(ASSIGNEES.values()),
-        "status": STATUS,
-        "priority": PRIORITY,
+        "priority": PRIORIDADES[job.get("prioridade", "normal")],
         "due_date": ms,
         "due_date_time": True,
     }
+    if job.get("status"):
+        body["status"] = job["status"]
     return body, dt
 
 
@@ -125,15 +130,19 @@ def bombordo_lines(job, ep):
 def main():
     job = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
     body, dt = build(job)
+    if job.get("formato") == "bombordo" and len(job.get("opcoes", [])) >= 2:
+        # nome com as duas opções no plural, como nas demandas do Vai Lá e Faz e do Bombordo
+        body["name"] = body["name"].replace(" - Thumb EP ", " - Thumbs EP ", 1)
     print("NOME:", body["name"])
     print("RESPONSÁVEIS:", ", ".join(ASSIGNEES))
-    print("STATUS:", STATUS, "| PRIORIDADE: normal | PRAZO:", dt.strftime("%d/%m/%Y %H:%M"), "(BRT)")
+    print("LISTA:", job.get("lista", LIST_ID), "| STATUS:", job.get("status", "(nenhum)"),
+          "| PRIORIDADE:", job.get("prioridade", "normal"), "| PRAZO:", dt.strftime("%d/%m/%Y %H:%M"), "(BRT)")
     print("---\n" + body["markdown_content"] + "\n---")
     if "--send" not in sys.argv:
         print("(prévia — rode com --send para criar)")
         return
     req = urllib.request.Request(
-        f"{API}/list/{LIST_ID}/task", data=json.dumps(body).encode(),
+        f"{API}/list/{job.get('lista', LIST_ID)}/task", data=json.dumps(body).encode(),
         headers={"Authorization": token(), "Content-Type": "application/json"}, method="POST")
     res = json.load(urllib.request.urlopen(req))
     print("CRIADA:", res["id"], res["url"])
