@@ -447,6 +447,8 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
     ficaram boas", João Campos). Rosto neutro, mão em posição estranha ou plano aberto
     reprovam. YuNet a 2 qps na gravação inteira (descarte telas estáticas: mesma caixa
     repetida), filtre por rosto grande, nítido e de frente, monte folhas de contato e depois
-    amostre 5 qps ±1,6 s em volta das melhores. Escolha expressão viva (sorriso, gesto que
-    ilustra a manchete: pinça para "átomos", apontar para "você") e não repita pose entre
-    capas do mesmo lote. Scripts em `scripts/cover_scan.py`.
+    amostre 5 qps ±1,6 s em volta das melhores. **O que aprova é close de rosto, de frente,
+    olhando para a câmera** ("de rosto tá ótimo"). Gesto grande (braço erguido, apontar,
+    sorriso de pé em plano aberto) foi chamado de "horrível": rosto pequeno, mão cortada na
+    borda ou braço disputando com o rosto. Confira a borda: dedo entrando no quadro reprova.
+    Scripts em `scripts/cover_scan.py`.
