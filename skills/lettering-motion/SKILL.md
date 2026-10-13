@@ -82,6 +82,10 @@ gratuito para pessoa física e empresa de até 3 pessoas; acima disso exige lice
 - Biblioteca CC0 de SFX (whoosh, clique, pop, notificação, impacto, stinger): `acervo.py find
   cc0 --type sfx`. Licença livre de verdade, ao contrário de efeitos ripados do YouTube.
 
+## Vinheta / intro de marca
+
+Tem skill própria: `vinheta-marca` (motion) + `desenho-de-som` (trilha, SFX e mix).
+
 ## Lottie (animações vetoriais prontas)
 
 `src/LottieOverlay.tsx` no template toca qualquer JSON Lottie (LottieFiles, After Effects com

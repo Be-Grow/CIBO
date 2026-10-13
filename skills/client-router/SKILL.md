@@ -22,6 +22,8 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Trilha por corte | `talking-head-music` |
 | B-roll / referência em tela | `semantic-broll-validator` |
 | Cartão Seguir, título, lower third, legenda animada | `lettering-motion` (+ `anthropic-skills:motion-graphics`) |
+| Vinheta, intro, abertura, logo animada | `vinheta-marca` (template Remotion 16:9/4K) |
+| Som conduzido por música (vinheta, teaser, motion): trilha medida, cortes na batida, SFX pelo pico | `desenho-de-som` |
 | Encoder e velocidade de render | `video-render-optimizer` (`VENC=auto`) |
 | Legenda: pente-fino | `caption-quality-gate` |
 | Legenda: retranscrição cruzada | `legenda-cruzada` |

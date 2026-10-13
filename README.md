@@ -76,6 +76,8 @@ Cada skill é autocontida: lê seu próprio `SKILL.md` antes de qualquer coisa, 
 |---|---|
 | `depoimento-vertical-blur` | Transforma depoimento/talking head horizontal em vertical nítido com blur só nas faixas superior/inferior. |
 | `cortes-youtube-verificados` | Baixa e recorta trechos do YouTube (yt-dlp + FFmpeg) validando minutagem e integridade contra a fonte. |
+| `vinheta-marca` | Vinheta/intro de marca em Remotion (16:9, 4K e versão curta) a partir do manual, da logo e de imagens da pessoa: painéis no ritmo da música, palavras da marca, símbolo na pausa e logo no impacto. Template parametrizado, preparo da logo, takes e entrega com QA. |
+| `desenho-de-som` | Som conduzido por música: mede a trilha (BPM, pausas, impactos), sugere o offset, gera as deixas e mixa SFX alinhados por pico/fim/ataque com a subida abaixo do impacto e loudness no alvo. Autoteste sintético. |
 | `lettering-motion` | Módulo de easing compartilhado e entrada por slide + fade para legendas, letterings e cards; árvore de decisão entre Pillow, SVG e Remotion. |
 
 ### Qualidade e QA
