@@ -3,6 +3,7 @@
 Sai em 07_davinci/<nome>/correcoes/: imagem (enquadramento do take + deslocamento da tela dividida, como a câmera do
 reel), voz (mesmo tratamento do mix.py e ganho do master do pacote) e as duas juntas. Começa no início do take, a menos
 que --de diga outro ponto da fonte.
+Áudio em PCM 24 bits com limitador -1 dBTP (float dentro de MOV não toca direito no DaVinci, 14/10/2026).
 uso: trecho_bruto.py PROJ rNN TAKE [--mais 3] [--de S_FONTE] [--nome x]     (TAKE = índice em segs.json, 0 = primeiro)"""
 import json, re, subprocess, sys
 from fractions import Fraction
@@ -39,8 +40,11 @@ vf = (f"{rot}pad={SW + 2 * PADV}:{SH + 2 * PADV}:{PADV}:{PADV}:black,crop={w:.0f
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{A}', '-t', f'{B - A:.2f}', '-noautorotate', '-i', g['JOB']['src'], '-vf', vf,
                 '-r', '30000/1001', '-c:v', 'prores_ks', '-profile:v', '2', '-an', str(O / f'{nome}_imagem.mov')], check=True)
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{A}', '-t', f'{B - A:.2f}', '-i', str(W / 'src_48k.wav'), '-af',
-                f'afade=t=in:d=0.006,highpass=f=80,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=140:makeup=2,volume={G:.2f}dB',
-                '-ac', '1', '-ar', '48000', '-c:a', 'pcm_f32le', str(O / f'{nome}_audio.wav')], check=True)
+                f'afade=t=in:d=0.006,highpass=f=80,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=140:makeup=2,volume={G:.2f}dB,'
+                'alimiter=limit=0.89:attack=2:release=60:level=false',   # -1 dBTP: com o ganho do master o pico passava de 0 dBFS
+                '-ac', '1', '-ar', '48000', '-c:a', 'pcm_s24le', str(O / f'{nome}_audio.wav')], check=True)
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(O / f'{nome}_imagem.mov'), '-i', str(O / f'{nome}_audio.wav'), '-map', '0:v', '-map', '1:a',
-                '-c:v', 'copy', '-c:a', 'pcm_f32le', str(O / f'{nome}_imagem_e_audio.mov')], check=True)
-t = TK0[K] + (A - S[K][0]); print(f'{nome}: fonte {A:.2f}-{B:.2f}, no vídeo a partir de {int(t // 60)}:{t % 60:05.2f}')
+                '-c:v', 'copy', '-c:a', 'pcm_s24le', str(O / f'{nome}_imagem_e_audio.mov')], check=True)
+t = TK0[K] + (A - S[K][0])
+ali = f'no vídeo a partir de {int(t // 60)}:{t % 60:05.2f}' if t >= 0 else f'o take original começa {S[K][0] - A:.2f} s depois do início do arquivo ({TK0[K]:.2f} s no vídeo)'
+print(f'{nome}: fonte {A:.2f}-{B:.2f}, {ali}')
