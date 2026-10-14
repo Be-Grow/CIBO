@@ -8,7 +8,7 @@ a = sys.argv; arg = lambda k, d: float(a[a.index(k) + 1]) if k in a else d
 LOGO, OUT = a[1], a[2]; DUR, X0, Y0, LW = arg('--dur', 6.3), arg('--x', 540), arg('--y', 1080), int(arg('--larg', 380))
 lg = cv2.imread(LOGO, cv2.IMREAD_UNCHANGED)
 if lg.ndim == 2: lg = cv2.cvtColor(lg, cv2.COLOR_GRAY2BGR)
-lg = lg.astype(np.float32) / 255
+lg = lg.astype(np.float32) / (65535 if lg.dtype == np.uint16 else 255)   # PNG de 16 bits (SVG convertido pelo ImageMagick)
 if lg.shape[2] == 3:
     al = np.clip((1 - lg.min(2)) / 0.12, 0, 1)                 # branco → transparente
     if '--cor-do-logo' in a:                                   # bloco de cor: só a moldura branca de fora sai; o branco de dentro fica
