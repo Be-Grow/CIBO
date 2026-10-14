@@ -42,6 +42,11 @@ Caso completo: `references/deixas_vinheta_lpa.json`.
    na música (+5 dB a partir da logo), comece o fade final da música só no último 1,5 s e mixe em **-14 LUFS**, para o começo não perder
    força com a normalização. Confira o perfil por segundo antes x depois: o começo ±2 dB, o pós-impacto +4 dB ou mais.
    (Cliente LPA, 14/10/2026: "a música demora a aumentar quando a logo aparece; deveria aumentar em 12 s, não em 13 s".)
+   **E a música volta ~1 batida ANTES da logo**, não junto (2ª correção da LPA: "deveria aumentar 1 s antes, no caso a música").
+   Não adianta subir o ganho durante a pausa da trilha: ali ela é silêncio. Encurte a pausa da própria trilha com
+   `"remover": [[a, b]]` (tempo da trilha, no meio da pausa, duração = N batidas); tudo antes continua casado com os cortes,
+   a música volta N batidas antes e a logo cai na batida seguinte com ela já cheia. Reverse/riser terminam na volta da música;
+   boom + impacto continuam na logo. `deixas_vinheta.py` já faz isso (`--adianta-musica 1`, padrão).
 7. Mux com o vídeo (`-c:a aac -b:a 320k` no MP4, `pcm_s24le` no master ProRes). Não diga que o som está bom
    sem medir: perfil + LUFS são a prova; peça ao editor para ouvir.
 

@@ -1,9 +1,9 @@
 {
  "dur": 17,
- "lufs": -14.0,
+ "lufs": -14,
  "tp": -1.5,
  "fade_out": 0.7,
- "impacto": 11.75,
+ "impacto": 10.891,
  "musica": {
   "arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Epic Cinematic Trailer by Infraction [No Copyright Music] ⧸ Giants League [0F0o1VmGOOI].mp3",
   "inicio_trilha": 20.8,
@@ -14,12 +14,18 @@
   ],
   "automacao": [
    [
-    11.65,
+    10.79,
     0
    ],
    [
-    11.8,
-    5.0
+    10.94,
+    5
+   ]
+  ],
+  "remover": [
+   [
+    30.495,
+    31.355
    ]
   ]
  },
@@ -91,17 +97,17 @@
   },
   {
    "arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Reverse Cinematic Boom Sound effect [9qVvCEeECsA].mp3",
-   "fim_em": 11.75,
-   "trim": 1.75,
-   "dur": 3.2,
+   "fim_em": 10.891,
+   "trim": 2.56,
+   "dur": 2.39,
    "ganho": -11,
    "nota": "subida baixa, abaixo do impacto"
   },
   {
    "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/riser-short-2s.wav",
-   "fim_em": 11.75,
+   "fim_em": 10.891,
    "ganho": -12,
-   "nota": "tensão final"
+   "nota": "tensão final, termina na volta da música"
   },
   {
    "arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Cinematic Boom - sound effect - [High quality] [RNDmV_sZpUk].mp3",
@@ -122,5 +128,5 @@
    "nota": "brilho: bem baixo, senão soa como a música subindo 2 s depois da logo"
   }
  ],
- "nota": "Vinheta LPA Caminhos e Visões — v3 (14/10/2026): trilha +5 dB no impacto, sweep -18 dB, -14 LUFS. Gerada por deixas_vinheta.py."
+ "nota": "Vinheta LPA — v4 (14/10/2026): música volta 1 batida antes da logo (remover), +5 dB, sweep -18, -14 LUFS. Gerada por deixas_vinheta.py."
 }

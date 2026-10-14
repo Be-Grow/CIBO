@@ -8,7 +8,8 @@ DEIXAS.json:
   "dur": 17, "lufs": -16, "tp": -1.5, "fade_out": 0.7,
   "impacto": 11.75,                      # opcional: confere subida x impacto
   "musica": {"arquivo": "...mp3", "inicio_trilha": 20.8, "ganho": -2, "fade_out": [15.5, 1.5],
-             "automacao": [[11.65, 0], [11.8, 6]]},  # trilha sobe 6 dB no impacto e fica (dB, linear entre pontos)
+             "automacao": [[11.65, 0], [11.8, 6]],   # trilha sobe 6 dB no impacto e fica (dB, linear entre pontos)
+             "remover": [[30.6, 31.459]]},          # tempo da TRILHA: encurta a pausa em 1 batida (música volta antes)
   "sfx": [
     {"arquivo": "...whoosh.wav", "pico_em": 1.5, "ganho": -3},       # pico do som cai em 1,5 s
     {"arquivo": "...reverse.wav", "fim_em": 1.5, "trim": 0.3},        # reverse/riser: termina no corte
@@ -54,7 +55,9 @@ D = cfg['dur']
 cmd = ['ffmpeg', '-v', 'error', '-y']; fl = []; k = 0
 m = cfg.get('musica')
 if m:
-    cmd += ['-ss', str(m.get('inicio_trilha', 0)), '-t', str(D), '-i', m['arquivo']]
+    ini = m.get('inicio_trilha', 0)
+    rem = sorted(m.get('remover', []))  # [[a, b], ...] em tempo da TRILHA: encurta pausa/respiro (crossfade de 40 ms)
+    cmd += ['-ss', str(ini), '-t', str(D + sum(z - y for y, z in rem) + 1), '-i', m['arquivo']]
     fo = m.get('fade_out')
     auto = ''
     if m.get('automacao'):  # [[t, dB], ...] linear entre pontos; antes do 1º = 0 dB, depois do último = último
@@ -65,7 +68,19 @@ if m:
             seg = f"{l0:.5f}" if t1 <= t0 else f"({l0:.5f}+({l1 - l0:.5f})*(t-{t0})/{t1 - t0:.4f})"
             ex = f"if(lt(t,{t1}),{seg},{ex})"
         auto = f",volume='{ex}':eval=frame"
-    fl.append(f"[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume={m.get('ganho', 0)}dB{auto}" +
+    src = '[0:a]'
+    if rem:
+        cuts = [0.0] + [v - ini for ab in rem for v in ab] + [None]
+        parts = []
+        for q in range(0, len(cuts), 2):
+            t0, t1 = cuts[q], cuts[q + 1]
+            fl.append(f"[0:a]atrim=start={t0}" + (f":end={t1 + 0.04}" if t1 is not None else '') + f",asetpts=PTS-STARTPTS[m{q}]")
+            parts.append(f'[m{q}]')
+        acc = parts[0]
+        for q, pt in enumerate(parts[1:]):
+            fl.append(f"{acc}{pt}acrossfade=d=0.04[mx{q}]"); acc = f'[mx{q}]'
+        src = acc
+    fl.append(f"{src}aformat=sample_rates=48000:channel_layouts=stereo,atrim=0:{D},volume={m.get('ganho', 0)}dB{auto}" +
               (f",afade=t=out:st={fo[0]}:d={fo[1]}" if fo else '') + f"[s0]")
     k = 1
 for d in cfg['sfx']:

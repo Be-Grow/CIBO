@@ -79,5 +79,19 @@ lv = lambda t0, t1: 20 * np.log10(np.sqrt((y[int(t0 * sr):int(t1 * sr)] ** 2).me
 dlt = lv(3.3, 5.0) - lv(1.0, 2.8)
 check('automação da trilha (+6 dB em 3 s)', abs(dlt - 6) < 0.8, f'{dlt:+.1f} dB')
 
+# remover trecho da trilha: silêncio até 3 s e ruído depois; removendo [1, 2] o ruído entra em 2 s
+mus = np.zeros(int(SR * 8)); mus[int(SR * 3):] = 0.1 * rng.standard_normal(int(SR * 5))
+wav(f'{tmp}/musica2.wav', mus)
+json.dump({'dur': 6, 'lufs': -20, 'tp': -1.5, 'fade_out': 0.2, 'sfx': [],
+           'musica': {'arquivo': f'{tmp}/musica2.wav', 'inicio_trilha': 0, 'remover': [[1.0, 2.0]]}}, open(f'{tmp}/r.json', 'w'))
+subprocess.run([sys.executable, f'{HERE}/mix.py', f'{tmp}/r.json', f'{tmp}/r.wav'], capture_output=True, check=True)
+with wave.open(f'{tmp}/r.wav') as w:
+    raw = w.readframes(w.getnframes()); sr = w.getframerate(); ch = w.getnchannels()
+y = np.frombuffer(raw, np.uint8).reshape(-1, 3)
+y = (y[:, 0].astype(np.int32) | (y[:, 1].astype(np.int32) << 8) | (y[:, 2].astype(np.int32) << 16))
+y = np.where(y >= 1 << 23, y - (1 << 24), y)[::ch] / float(1 << 23)
+onset = np.argmax(np.abs(y) > 0.01) / sr
+check('remover trecho da trilha (entra em 2,0 s)', abs(onset - 2.0) < 0.06, f'{onset:.2f}s')
+
 print('\nTUDO OK' if not fails else f'\n{len(fails)} FALHA(S): {fails}')
 sys.exit(1 if fails else 0)

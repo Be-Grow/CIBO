@@ -19,6 +19,7 @@ ap.add_argument('--pausa', type=float, required=True); ap.add_argument('--impact
 ap.add_argument('--dur', type=float, default=17); ap.add_argument('--palavras', type=int, default=3)
 ap.add_argument('--brilho-depois', type=float, default=2.2, help='s entre o impacto e o meio do brilho')
 ap.add_argument('--lufs', type=float, default=-14)
+ap.add_argument('--adianta-musica', type=int, default=1, help='batidas que a música volta ANTES da logo (encurta a pausa da trilha); 0 = junto com a logo')
 ap.add_argument('--subida-musica', type=float, default=5, help='dB que a trilha sobe no impacto (0 = sem automação)')
 a = ap.parse_args()
 
@@ -38,17 +39,23 @@ for k in range(1, a.palavras):
     add(G + 'whoosh-soft.wav', f'palavra {k + 1}', pico_em=b(4 + k), ganho=-10)
 add(G + 'whoosh-short.wav', 'painéis de novo', pico_em=setc, ganho=-5)
 add(G + 'downlifter-2s.wav', 'energia cai na pausa', em=a.pausa, ganho=-6)
-sub = round(min(3.2, a.impacto - a.pausa), 2)
+# a música volta N batidas antes da logo (cliente LPA, 14/10/2026: "a música deveria aumentar 1 s antes"):
+# remove N batidas do meio da pausa da trilha; a logo cai na batida seguinte com a música já cheia
+volta = round(a.impacto - a.adianta_musica * a.batida, 3)
+meio = (a.pausa + a.impacto) / 2 + a.inicio_trilha
+corte = a.adianta_musica * a.batida
+remover = [[round(meio - corte / 2, 3), round(meio + corte / 2, 3)]] if a.adianta_musica else []
+sub = round(min(3.2, volta - a.pausa), 2)
 add(M + 'Reverse Cinematic Boom Sound effect [9qVvCEeECsA].mp3', 'subida baixa, abaixo do impacto',
-    fim_em=a.impacto, trim=round(4.95 - sub, 2), dur=sub, ganho=-11)
-add(G + 'riser-short-2s.wav', 'tensão final', fim_em=a.impacto, ganho=-12)
+    fim_em=volta, trim=round(4.95 - sub, 2), dur=sub, ganho=-11)
+add(G + 'riser-short-2s.wav', 'tensão final, termina na volta da música', fim_em=volta, ganho=-12)
 add(M + 'Cinematic Boom - sound effect - [High quality] [RNDmV_sZpUk].mp3', 'revelação da logo', ataque_em=a.impacto, ganho=3)
 add(G + 'impact-soft-1.wav', 'corpo do impacto', ataque_em=a.impacto, ganho=0)
 add(G + 'sweep-long.wav', 'brilho: bem baixo, senão soa como a música subindo 2 s depois da logo', pico_em=round(a.impacto + a.brilho_depois, 2), ganho=-18)
 
-out = {'dur': a.dur, 'lufs': a.lufs, 'tp': -1.5, 'fade_out': 0.7, 'impacto': a.impacto,
+out = {'dur': a.dur, 'lufs': a.lufs, 'tp': -1.5, 'fade_out': 0.7, 'impacto': volta,
        'musica': {'arquivo': a.trilha, 'inicio_trilha': a.inicio_trilha, 'ganho': -2, 'fade_out': [round(a.dur - 1.5, 2), 1.5],
                  # a trilha cai depois do impacto: sobe +5 dB junto com a logo, mix em -14 LUFS para o começo não perder força (pedido da cliente LPA, 14/10/2026)
-                 'automacao': [[round(a.impacto - 0.1, 2), 0], [round(a.impacto + 0.05, 2), a.subida_musica]]},
+                 'automacao': [[round(volta - 0.1, 2), 0], [round(volta + 0.05, 2), a.subida_musica]], 'remover': remover},
        'sfx': s}
 print(json.dumps(out, ensure_ascii=False, indent=1))
