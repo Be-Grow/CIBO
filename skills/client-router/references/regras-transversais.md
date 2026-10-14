@@ -151,6 +151,11 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 - **Gráfico e etiqueta só com o que a pessoa diz naquele trecho** ("mandioca, milho e tofu… ela não fala isso").
 - **Olhada para o lado/para baixo no fim do take:** corte antes ou cubra com o burn; se ela segue falando, mantém.
 
+- **Formato por conteúdo, não um formato para tudo**: para cada corte, pense qual formato está performando e
+  serve àquele conteúdo (só legenda, motion, imagem real da marca citada como gancho de feed) e proponha com visão de
+  editor ("nem tudo igual, testar outros formatos", Priscilla, 14/10/2026).
+- **Trilha é opcional em conteúdo orgânico**; quando entra, nunca acima da voz e com BPM casado com o ritmo da fala.
+
 ## Entrega
 
 - **Nomes**: `NN - HEADLINE.mp4`, com acentos, numerados pela ordem da fala no episódio, e

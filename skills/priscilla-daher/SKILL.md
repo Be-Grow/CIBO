@@ -46,3 +46,13 @@ Sony 4K 29,97, câmera deitada (rotate clock), Rec.709. Cada bruto de roteiro = 
 - Arquivos inúteis e zips vão para `lixo/`.
 - Gastar poucos tokens: saídas filtradas, uma folha de contato por decisão.
 - Pode rodar até 3 trabalhos pesados em paralelo (render, câmera, transcrição): adiante o próximo reel enquanto o atual renderiza.
+
+## Feedback de 14/10/2026 (4 áudios em `criticas/`, transcritos em `05_qa/criticas/`)
+- **Nada de tudo igual.** Antes de montar, escolha o formato pelo conteúdo e pelo que está performando: tela dividida
+  com motion é um formato, não o padrão. Ex.: o 06 (suplemento saturado) pedia **só legenda** + uma imagem pequena da
+  marca do momento (Growth) como gancho visual de feed. Proponha o formato ao editor ("pra esse conteúdo, acho que fica
+  melhor X") com visão de editor, sem esperar referência.
+- **Imagens reais além das animações**: logo da marca citada (Shein), foto do que ela descreve (navio com gente
+  costurando). Gancho visual forte nos primeiros segundos.
+- **Corte comendo palavra** (07): `reel.py … revisa` antes de todo final, e ouvir cada aviso de corte.
+- **Trilha**: orgânicos podem ir sem; nunca acima da voz; BPM casado com o ritmo da fala (fala lenta, trilha calma).
