@@ -3,10 +3,10 @@
  "lufs": -14,
  "tp": -1.5,
  "fade_out": 0.7,
- "impacto": 10.891,
+ "impacto": 11.77,
  "musica": {
   "arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Epic Cinematic Trailer by Infraction [No Copyright Music] ⧸ Giants League [0F0o1VmGOOI].mp3",
-  "inicio_trilha": 20.8,
+  "inicio_trilha": 20.79,
   "ganho": -2,
   "fade_out": [
    15.5,
@@ -14,20 +14,23 @@
   ],
   "automacao": [
    [
-    10.79,
+    11.22,
     0
    ],
    [
-    10.94,
+    11.32,
+    -30
+   ],
+   [
+    11.74,
+    -30
+   ],
+   [
+    11.77,
     5
    ]
   ],
-  "remover": [
-   [
-    30.495,
-    31.355
-   ]
-  ]
+  "remover": []
  },
  "sfx": [
   {
@@ -97,36 +100,36 @@
   },
   {
    "arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Reverse Cinematic Boom Sound effect [9qVvCEeECsA].mp3",
-   "fim_em": 10.891,
-   "trim": 2.56,
-   "dur": 2.39,
-   "ganho": -11,
+   "fim_em": 11.77,
+   "trim": 1.75,
+   "dur": 3.2,
+   "ganho": -14,
    "nota": "subida baixa, abaixo do impacto"
   },
   {
    "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/riser-short-2s.wav",
-   "fim_em": 10.891,
-   "ganho": -12,
+   "fim_em": 11.77,
+   "ganho": -15,
    "nota": "tensão final, termina na volta da música"
   },
   {
    "arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Cinematic Boom - sound effect - [High quality] [RNDmV_sZpUk].mp3",
-   "ataque_em": 11.75,
+   "ataque_em": 11.77,
    "ganho": 3,
-   "nota": "revelação da logo"
+   "nota": "revelação do nome"
   },
   {
    "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/impact-soft-1.wav",
-   "ataque_em": 11.75,
+   "ataque_em": 11.77,
    "ganho": 0,
    "nota": "corpo do impacto"
   },
   {
    "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/sweep-long.wav",
-   "pico_em": 13.95,
+   "pico_em": 13.97,
    "ganho": -18,
    "nota": "brilho: bem baixo, senão soa como a música subindo 2 s depois da logo"
   }
  ],
- "nota": "Vinheta LPA — v4 (14/10/2026): música volta 1 batida antes da logo (remover), +5 dB, sweep -18, -14 LUFS. Gerada por deixas_vinheta.py."
+ "nota": "Vinheta LPA — v5 (14/10/2026): música salta no quadro do nome (11,77 s, medido); subida própria da trilha abafada; +5 dB; -14 LUFS. Gerada por deixas_vinheta.py --revela 11.77."
 }

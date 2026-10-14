@@ -40,7 +40,8 @@ escolha do SFX junto com a música ficou muito bom". Caso completo: `references/
 12. **Entrega + QA num comando:** `python3 scripts/entrega.py PROJETO "Vinheta - Marca" --video out/v.mov --som som.wav
     --video4k out/v4k.mov --curta out/curta.mov --curta-ini <(impacto - 2,5)>` → MP4 H.264 + master ProRes de cada uma,
     a versão anterior vai para `04_work/vN`, e o QA sai em `04_work/qa`.
-13. **QA:** folha a cada 0,5 s, `blackdetect` (o 1,5 s inicial escuro é o cold open, é proposital), recorte ampliado da
+13. **Sincronia do som com o nome:** `python3 scripts/sincronia.py 06_entregas/<vinheta>.mp4` → a música tem que saltar no quadro em que o nome aparece (≤ 33 ms). Gere as deixas com `--revela <esse instante>`.
+14. **QA:** folha a cada 0,5 s, `blackdetect` (o 1,5 s inicial escuro é o cold open, é proposital), recorte ampliado da
     logo com `eq=gamma=1.8` (borda de glow aparece aí), perfil e LUFS do som. Uma versão em `06_entregas`; a anterior vai para `04_work/vN`.
     Anote o que foi feito em `07_manifests/brief.md`.
 

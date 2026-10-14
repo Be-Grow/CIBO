@@ -27,8 +27,8 @@ Caso completo: `references/deixas_vinheta_lpa.json`.
    | mudança de bloco (tela cheia) | `Swoosh Transition SFX 20` + `impact-soft-3` | `pico_em` / `ataque_em` |
    | palavra/título na tela | `whoosh-soft` (-10 dB) | `pico_em` |
    | energia cai (pausa da música) | `downlifter-2s` | `em` no início da pausa |
-   | suspense até a revelação | `Reverse Cinematic Boom` (-11 dB) + `riser-short-2s` (-12 dB) | `fim_em` no impacto |
-   | revelação (logo/CTA) | `Cinematic Boom` (+3 dB) + `impact-soft-1` | `ataque_em` no impacto |
+   | suspense até a revelação | `Reverse Cinematic Boom` (-14 dB) + `riser-short-2s` (-15 dB) | `fim_em` no quadro do nome |
+   | revelação (logo/CTA) | `Cinematic Boom` (+3 dB) + `impact-soft-1` | `ataque_em` no quadro do nome |
    | brilho/shine | `sweep-long` (**-18 dB**: mais alto soa como "a música subindo" 2 s depois da logo) | `pico_em` no meio do brilho |
 4. **Folha de deixas JSON → mix.** Vinheta no padrão aprovado: gere as deixas direto dos tempos (os mesmos do `config.ts`):
    `python3 scripts/deixas_vinheta.py --trilha T --inicio-trilha 20.8 --batida 0.859 --primeiro 1.5 --pausa 8.5 --impacto 11.75 --dur 17 > deixas.json`
@@ -42,11 +42,15 @@ Caso completo: `references/deixas_vinheta_lpa.json`.
    na música (+5 dB a partir da logo), comece o fade final da música só no último 1,5 s e mixe em **-14 LUFS**, para o começo não perder
    força com a normalização. Confira o perfil por segundo antes x depois: o começo ±2 dB, o pós-impacto +4 dB ou mais.
    (Cliente LPA, 14/10/2026: "a música demora a aumentar quando a logo aparece; deveria aumentar em 12 s, não em 13 s".)
-   **E a música volta ~1 batida ANTES da logo**, não junto (2ª correção da LPA: "deveria aumentar 1 s antes, no caso a música").
-   Não adianta subir o ganho durante a pausa da trilha: ali ela é silêncio. Encurte a pausa da própria trilha com
-   `"remover": [[a, b]]` (tempo da trilha, no meio da pausa, duração = N batidas); tudo antes continua casado com os cortes,
-   a música volta N batidas antes e a logo cai na batida seguinte com ela já cheia. Reverse/riser terminam na volta da música;
-   boom + impacto continuam na logo. `deixas_vinheta.py` já faz isso (`--adianta-musica 1`, padrão).
+   **A música aumenta NO QUADRO em que o nome aparece — nem antes, nem depois** (LPA, 14/10/2026, 3 rodadas:
+   "aumenta tarde" → tentei 1 batida antes → "cuidado para não ficar cedo demais, a música precisa aumentar no exato
+   momento em que a logo revela o nome"). Como fazer:
+   - **Meça** o quadro do nome no vídeo (`vinheta-marca/scripts/sincronia.py` ou o crop da faixa do nome); não estime pelo frame da composição.
+   - Ponha o ataque CHEIO da trilha nesse instante (meça a trilha em janelas de 10 ms; trilha de trailer sobe sozinha ~0,4 s antes do ataque).
+   - Abafe essa subida própria da trilha (`deixas_vinheta.py --revela T` faz: música a -30 dB de T-0,45 a T-0,03 e +5 dB a partir de T),
+     senão a música "começa" antes do nome. Quem constrói a tensão até ali é o boom reverso (-14 dB) e o riser (-15 dB), que terminam em T.
+   - Não encurte a pausa da trilha para adiantar a música (`--adianta-musica` fica 0); isso foi o "cedo demais".
+   - Prova antes de entregar: `sincronia.py VIDEO.mp4` → |diferença| ≤ 33 ms (1 quadro). LPA v5: +13 ms.
 7. Mux com o vídeo (`-c:a aac -b:a 320k` no MP4, `pcm_s24le` no master ProRes). Não diga que o som está bom
    sem medir: perfil + LUFS são a prova; peça ao editor para ouvir.
 
