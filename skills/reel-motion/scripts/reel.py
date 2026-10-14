@@ -14,6 +14,7 @@ uso: reel.py PROJ rNN ETAPA [args]
   mix       voz + trilha do reel.json + SFX → mix.wav (−14 LUFS)
   previa    render rápido em 540p com som → 05_qa/previas (para o editor aprovar)
   revisa    todos os checadores num relatório (rode antes do final; o final também roda)
+  davinci   pacote editável para o DaVinci em 07_davinci/ (camadas + timeline.fcpxml); o editor exporta por lá
   final     render final, capa, entrega, checagem técnica e legenda cruzada
   trecho A B  refaz só os quadros A–B e encaixa na entrega (ajuste pontual)
   audio     troca só o som do arquivo entregue (vídeo copiado, sem recodificar)
@@ -25,7 +26,7 @@ reel.json: {"name": "03 - …", "src": "C0008-004.MP4", "tema": "priscilla", "mu
             "capa": {"frame_t": 12.3, "l1": "…", "l2": "…", "accent": "…", "y": 290}}
 Temporários sempre no SSD (TMPDIR) e mantidos (o editor pediu para guardar).
 """
-import json, os, re, shutil, subprocess, sys
+import json, os, re, shutil, subprocess, sys, time
 from pathlib import Path
 
 ENG = Path(__file__).resolve().parent.parent           # skill reel-motion
@@ -47,7 +48,7 @@ FPS = C.get('fps', 29.97)
 
 def fontes_tema():
     """copia as fontes do tema para PUB/fonts e devolve o tema com caminhos relativos à pasta pública"""
-    import shutil
+    import shutil, time
     (PUB / 'fonts').mkdir(exist_ok=True)
     th = json.loads(json.dumps(TH))
     for f in th.get('fonts', []):
@@ -363,14 +364,15 @@ def mata_orfaos():
                 pass
 
 
-def remotion(out, extra):
+def remotion(out, extra, props=None, codec=('--codec=h264',)):
     """render com limite de tempo e uma nova tentativa: a prévia do 05 travou 25 min sem dar erro (13/10/2026).
     Limite = 12 s por segundo de vídeo (render real: ~3-5 s/s com 2 abas), mínimo 6 min; trecho usa o tamanho dos quadros."""
-    pr = json.load(open(PUB / R / 'props.json'))
+    props = props or PUB / R / 'props.json'
+    pr = json.load(open(props))
     fr = [a for a in extra if a.startswith('--frames=')]
     dur = (lambda a, b: (int(b) - int(a)) / 29.97)(*fr[0][9:].split('-')) if fr else pr['duration']
     lim = max(360, int(dur * 12))
-    cmd = ['npx', 'remotion', 'render', 'src/index.ts', 'Reel', str(out), f'--props={PUB / R / "props.json"}', f'--public-dir={PUB}', '--codec=h264',
+    cmd = ['npx', 'remotion', 'render', 'src/index.ts', 'Reel', str(out), f'--props={props}', f'--public-dir={PUB}', *codec,
            '--muted', '--log=error', '--timeout=180000', '--concurrency=2'] + extra   # 2 abas (RAM do Mac de 16 GB); 180 s por quadro com a máquina ocupada
     mata_orfaos()
     for tentativa in (1, 2):
@@ -457,6 +459,54 @@ def e_revisa():
             print(f"  {t['ini']:.2f}-{t['fim']:.2f} olha para {t['lado']} colado no corte: corte antes ou segure o quadro")
         print('  OK' if not achou else f'  {len(achou)} ponto(s)')
 
+
+def e_davinci():
+    """pacote editável e fragmentado para o DaVinci (07_davinci/<nome>/), pedido do editor em 14/10/2026.
+    Camadas inteiras: câmera renderizada (referência), mídia, fundo dos painéis, legenda. Elementos isolados, cada um no seu
+    trecho de tempo: gráfico de cada painel, cada etiqueta, número da etapa, gancho, fundo do gancho, cada título.
+    O davinci.py monta a timeline (bruto em takes com alça, voz por take, SFX, burns, capa).
+    `davinci X…` re-renderiza só as camadas/elementos cujo nome contém X (ex.: davinci painel_2 tag_2)."""
+    out = P / '07_davinci' / C['name']; cam = out / '_camadas'; (cam / 'el').mkdir(parents=True, exist_ok=True)
+    if not (W / 'mix_pre.wav').exists() or not (W / 'musica.wav').exists():
+        e_mix()
+    pr = json.load(open(PUB / R / 'props.json'))
+    alfa = ('--codec=prores', '--prores-profile=4444', '--pixel-format=yuva444p10le', '--image-format=png')
+    N = int(round(pr['duration'] * FPS)); q = lambda t: min(N - 1, max(0, int(round(t * FPS))))
+    jobs = [('camera', 'camera', None, None, None, ('--codec=prores', '--prores-profile=standard')),
+            ('painel_fundo', 'painel_fundo', None, None, None, alfa), ('legenda', 'legenda', None, None, None, alfa)]
+    if pr.get('inserts'):
+        jobs.append(('midia', 'midia', None, None, None, alfa))
+    man = []
+    for i, p in enumerate(pr.get('panels', [])):
+        a, b = q(p['s'] - 0.6), q(p['e'] + 0.7)
+        jobs.append((f'painel_{i}', 'painel', str(i), a, b, alfa)); man.append(dict(arq=f'el/painel_{i}.mov', a=a, grupo='painel', nome=f"{p['type']} {p.get('title', '')} {p.get('accent', '')}"))
+        if p.get('step'):
+            jobs.append((f'step_{i}', 'step', str(i), a, b, alfa)); man.append(dict(arq=f'el/step_{i}.mov', a=a, grupo='step', nome=f"etapa {p['step'].get('n', '')}"))
+        for k, g in enumerate(p.get('tags') or []):
+            a2 = q(g.get('at', p['s']) - 0.1)
+            jobs.append((f'tag_{i}_{k}', 'tag', f'{i}:{k}', a2, b, alfa)); man.append(dict(arq=f'el/tag_{i}_{k}.mov', a=a2, grupo='tag', nome=f"etiqueta {g.get('text', '')}"))
+    if pr.get('hook'):
+        h = pr['hook']; b = q(h['e'] + 0.6)
+        for el in ('hookbg', 'hook'):
+            jobs.append((f'titulo_{el}', 'titulo', el, 0, b, alfa))
+            man.append(dict(arq=f'el/titulo_{el}.mov', a=0, grupo='titulo', nome='fundo escuro do gancho' if el == 'hookbg' else f"gancho {h.get('l1', '')} {h.get('l2', '')} {h.get('accent', '')}"))
+    for k, h in enumerate(pr.get('titles') or []):
+        a, b = q(h['s'] - 0.2), q(h['e'] + 0.6)
+        jobs.append((f'titulo_t{k}', 'titulo', f't{k}', a, b, alfa)); man.append(dict(arq=f'el/titulo_t{k}.mov', a=a, grupo='titulo', nome=f"título {h.get('l1', '')} {h.get('l2', '')} {h.get('accent', '')}"))
+    if pr.get('lower'):
+        lw = pr['lower']; a, b = q(lw.get('s', 0) - 0.2), q(lw.get('e', pr['duration']) + 0.6)
+        jobs.append(('titulo_lower', 'titulo', 'lower', a, b, alfa)); man.append(dict(arq='el/titulo_lower.mov', a=a, grupo='titulo', nome='tarja'))
+    json.dump(man, open(cam / 'elementos.json', 'w'), ensure_ascii=False, indent=1)
+    for nome, lay, el, a, b, codec in jobs:
+        f = cam / (f'el/{nome}.mov' if el is not None else f'{nome}.mov')
+        if f.exists() and (not ARGS or not any(x in nome for x in ARGS)) and (ARGS or f.stat().st_mtime > (PUB / R / 'props.json').stat().st_mtime):
+            continue                                            # já renderizado e props sem mudança
+        pf = PUB / R / f'props_{nome}.json'; json.dump({**pr, 'layer': lay, **({'el': el} if el is not None else {})}, open(pf, 'w'), ensure_ascii=False)
+        t0 = time.time(); remotion(f, [f'--frames={a}-{b}'] if a is not None else [], pf, codec)
+        print(f'{nome}: {time.time() - t0:.0f}s', flush=True)
+    sh([AUDIOPY, str(ENG / 'scripts/davinci.py'), str(P), R, str(out)])
+
+
 def e_final():
     e_revisa()
     remotion(W / 'video.mp4', ['--crf=16', '--x264-preset=slow'])
@@ -496,7 +546,7 @@ def e_trecho(A, B):
     entrega(W / 'video2.mp4')
 
 
-PESADAS = ('voz', 'camera', 'previa', 'final', 'trecho', 'entrega', 'capa')
+PESADAS = ('davinci', 'voz', 'camera', 'previa', 'final', 'trecho', 'entrega', 'capa')
 if ETAPA in PESADAS:   # trava: a mesma etapa nunca roda duas vezes no mesmo reel (duas câmeras do 02 corromperam o arquivo, 13/10/2026)
     LK = W / 'work' / f'.trava_{ETAPA}'; LK.parent.mkdir(exist_ok=True)
     if LK.exists():
@@ -507,4 +557,4 @@ if ETAPA in PESADAS:   # trava: a mesma etapa nunca roda duas vezes no mesmo ree
     LK.write_text(str(os.getpid()))
     import atexit; atexit.register(lambda: LK.unlink(missing_ok=True))
 {'fix': lambda: edit_fix(json.load(open(W / 'edit_mfa.json'))['segments'][0]['words']), 'fonte': e_fonte, 'takes': e_takes, 'voz': e_voz, 'legenda': e_legenda, 'camera': e_camera, 'props': e_props, 'mix': e_mix,
- 'previa': e_previa, 'final': e_final, 'capa': e_capa, 'revisa': e_revisa, 'entrega': lambda: entrega(W / 'video2.mp4'), 'audio': e_audio, 'trecho': lambda: e_trecho(*ARGS[:2])}[ETAPA]()
+ 'previa': e_previa, 'final': e_final, 'capa': e_capa, 'revisa': e_revisa, 'davinci': e_davinci, 'entrega': lambda: entrega(W / 'video2.mp4'), 'audio': e_audio, 'trecho': lambda: e_trecho(*ARGS[:2])}[ETAPA]()

@@ -189,3 +189,11 @@ então o que mais economiza é fazer menos turnos e não encher o contexto.
   Nunca mais fila com `while pgrep -f`.
 - Custo: o contexto por turno é o que mais pesa (844 mil/turno no fim da sessão). Um lote por sessão; o estado mora no disco
   (`status.py`, reel.json, segs.json), não na conversa.
+
+## Pacote para o DaVinci (14/10/2026)
+- `reel.py PROJ rNN davinci` → `07_davinci/<nome>/timeline.fcpxml` + mídia. Para reel com correção pedida: o editor
+  importa (File > Import > Timeline), corrige o erro bobo e exporta por lá; nada de render final aqui.
+- Tudo fragmentado: bruto em takes com alça, voz por take, cada painel/etiqueta/etapa/título/bloco de legenda/burn/SFX
+  em arquivo e clipe próprios. `davinci painel_2` re-renderiza só esse elemento (Reel.tsx: props `layer` + `el`).
+- Custo no 10 (41 s): câmera 121 s, fundo 38 s, legenda 45 s, 17 elementos ~3 min; 110 clipes, 2,6 GB.
+- O DaVinci ignora o modo de mesclagem do FCPXML: burn vai com alfa. Não abrir o DaVinci para testar (pedido do editor).

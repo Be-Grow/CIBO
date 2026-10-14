@@ -168,14 +168,22 @@ export const Reel: React.FC<ReelProps> = (props) => {
   const endF = props.endFade ? ramp(t, props.duration - props.endFade, props.endFade) : 0;
   const Comp = panel ? PANELS[panel.type] : null;
   const PrevComp = swap && prev ? PANELS[prev.type] : null;
+  // camadas isoladas para o DaVinci (etapa davinci, 14/10/2026): cada render traz só uma; sem layer = composição completa
+  const L = (props as any).layer as undefined | 'camera' | 'midia' | 'paineis' | 'titulos' | 'legenda';
+  const on = (k: string) => !L || L === k;
+  // elemento isolado (props.el): painel_fundo | painel el=i | tag el=i:k | step el=i | titulo el=hookbg|hook|t<k>|lower
+  const E = String((props as any).el ?? '');
+  const tudoP = !L || L === 'paineis';
+  const pid = (p?: Panel) => (p ? String(props.panels.indexOf(p)) : '-');
+  const tit = (id: string) => on('titulos') || (L === 'titulo' && E === id);
   return (
-    <AbsoluteFill style={{background: C.bg}}>
+    <AbsoluteFill style={{background: !L || L === 'camera' ? C.bg : 'transparent'}}>
       <Fonts />
       <VBlur id="vb" amount={blurPx} />
-      <AbsoluteFill style={{transform: `translateY(${camY}px)`, filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
+      {on('camera') && <AbsoluteFill style={{transform: `translateY(${camY}px)`, filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
         <OffthreadVideo src={staticFile(props.camera)} muted style={{width: 1080, height: 1920, filter: `blur(${endF * 14}px)`}} />
-      </AbsoluteFill>
-      {(props.inserts || []).map((v, k) => {
+      </AbsoluteFill>}
+      {on('midia') && (props.inserts || []).map((v, k) => {
         if (t < v.s - 0.25 || t > v.e + 0.25) return null;
         // opaco ANTES do instante da troca (a fonte pode trocar de plano um quadro antes); vizinhos colados = corte seco
         const all = props.inserts || [];
@@ -192,12 +200,13 @@ export const Reel: React.FC<ReelProps> = (props) => {
           </div>
         );
       })}
-      {sp > 0.001 && (
+      {(tudoP || ['painel_fundo', 'painel', 'tag', 'step'].includes(L as string)) && sp > 0.001 && (
         <div style={{position: 'absolute', left: 0, top: 0, width: 1080, height: H + PAD, transform: `translateY(${panelY}px)`, overflow: 'hidden',
-          background: C.paper, boxShadow: inv ? '0 -18px 40px rgba(0,0,0,0.25)' : '0 18px 40px rgba(0,0,0,0.25)', filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
-          <Grain opacity={T.grain} />
+          background: tudoP || L === 'painel_fundo' ? C.paper : 'transparent',
+          boxShadow: tudoP || L === 'painel_fundo' ? (inv ? '0 -18px 40px rgba(0,0,0,0.25)' : '0 18px 40px rgba(0,0,0,0.25)') : 'none', filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
+          {(tudoP || L === 'painel_fundo') && <Grain opacity={T.grain} />}
           <div style={{position: 'absolute', left: 0, top: 0, width: 1080, height: SPLIT, transform: `scale(${K})`, transformOrigin: 'top center'}}>
-          {PrevComp && prev && (
+          {PrevComp && prev && (tudoP || (L === 'painel' && E === pid(prev))) && (
             <div style={{position: 'absolute', inset: 0, opacity: 1 - pIn, transform: `translateX(${-pIn * 120}px)`, filter: `blur(${pIn * 10}px)`}}>
               <PrevComp p={prev} t={t} />
             </div>
@@ -205,12 +214,12 @@ export const Reel: React.FC<ReelProps> = (props) => {
           {Comp && panel && (
             <div style={{position: 'absolute', inset: 0, opacity: swap ? pIn : 1, transform: swap ? `translateX(${(1 - pIn) * 120}px)` : undefined,
               filter: swap ? `blur(${(1 - pIn) * 10}px)` : undefined}}>
-              <Comp p={panel} t={t} />
-              {panel.step && (
+              {(tudoP || (L === 'painel' && E === pid(panel))) && <Comp p={panel} t={t} />}
+              {panel.step && (tudoP || (L === 'step' && E === pid(panel))) && (
                 <div style={{position: 'absolute', left: 40, top: 20, ...fTitle(150), ...fAcc(), lineHeight: 1, color: C.terra,
                   opacity: 0.9 * ramp(t, panel.step.at, 0.4, OUT), transform: `translateY(${(1 - ramp(t, panel.step.at, 0.4, OUT)) * -30}px)`}}>{panel.step.n}</div>
               )}
-              {(T.layout.autoTags ? laneTags(panel.tags || []) : (panel.tags || [])).map((g: any, i: number) => (
+              {(T.layout.autoTags ? laneTags(panel.tags || []) : (panel.tags || [])).map((g: any, i: number) => (tudoP || (L === 'tag' && E === `${pid(panel)}:${i}`)) && (
                 <div key={i} style={{position: 'absolute', left: g.x ?? 0, right: g.x === undefined ? 0 : undefined, top: g.y, textAlign: 'center'}}>
                   <Pill text={g.text} p={ramp(t, g.at, 0.4, OUT)} dark={g.dark} size={g.size ?? 28} />
                 </div>
@@ -220,23 +229,23 @@ export const Reel: React.FC<ReelProps> = (props) => {
           </div>
         </div>
       )}
-      {props.hook && t < props.hook.e + 0.3 && (
+      {tit('hookbg') && props.hook && t < props.hook.e + 0.3 && (
         <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,13,12,0.62) 0%, rgba(15,13,12,0.28) 22%, rgba(15,13,12,0) 38%)',
           opacity: ramp(t, 0, 0.3) * (1 - ramp(t, props.hook.e - 0.25, 0.3))}} />
       )}
-      {props.hook && <Hook h={props.hook} t={t} />}
-      {(props.titles || []).map((h, k) => <Hook key={k} h={h} t={t} />)}
-      {props.lower && <Lower l={props.lower} t={t} sp={sp} />}
-      <Captions blocks={props.captions} t={t} sp={sp} inv={inv} hide={!!panel && panel.hideCapsFrom !== undefined && t >= panel.hideCapsFrom && t < panel.e} />
-      {(props.burns || []).map((b, k) => (
+      {tit('hook') && props.hook && <Hook h={props.hook} t={t} />}
+      {(props.titles || []).map((h, k) => tit(`t${k}`) && <Hook key={k} h={h} t={t} />)}
+      {tit('lower') && props.lower && <Lower l={props.lower} t={t} sp={sp} />}
+      {on('legenda') && <Captions blocks={props.captions} t={t} sp={sp} inv={inv} hide={!!panel && panel.hideCapsFrom !== undefined && t >= panel.hideCapsFrom && t < panel.e} />}
+      {!L && (props.burns || []).map((b, k) => (
         <Sequence key={k} from={Math.round((b.t - b.peak) * fps)} durationInFrames={Math.round(b.dur * fps)} layout="none">
           <AbsoluteFill style={{mixBlendMode: 'screen', pointerEvents: 'none', opacity: T.burnOpacity}}>
             <OffthreadVideo src={staticFile(b.src)} muted style={{width: 1080, height: 1920, filter: T.burnFilter}} />
           </AbsoluteFill>
         </Sequence>
       ))}
-      <Grain opacity={0.035} />
-      <AbsoluteFill style={{background: '#0f0d0c', opacity: endF * 0.85}} />
+      {on('camera') && <Grain opacity={0.035} />}
+      {on('camera') && <AbsoluteFill style={{background: '#0f0d0c', opacity: endF * 0.85}} />}
     </AbsoluteFill>
   );
 };
