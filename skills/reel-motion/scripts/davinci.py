@@ -121,7 +121,7 @@ txt = lambda b: ' '.join(w['t'] for w in b['words'])
 open(OUT / 'legenda.srt', 'w').write(''.join(f"{i + 1}\n{hms(b['s'])} --> {hms(b['e'])}\n{txt(b)}\n\n" for i, b in enumerate(PR['captions'])))
 # ---- camadas de vídeo em pedaços ----
 pan = PR.get('panels', [])
-fundos = pedacos(CAM / 'painel_fundo.mov', [fr(p['s']) for p in pan],
+fundos = [] if not (CAM / 'painel_fundo.mov').exists() else pedacos(CAM / 'painel_fundo.mov', [fr(p['s']) for p in pan],
                  lambda x, y: (lambda p: f"fundo {p['type']} {p.get('title', '')}" if p else 'fundo')(perto(pan, x, y)), 'paineis_fundo')
 cap = PR['captions']
 legenda = pedacos(CAM / 'legenda.mov', [fr(b['s']) for b in cap], lambda x, y: (lambda b: txt(b) if b else 'legenda')(perto(cap, x, y)), 'legenda')
@@ -326,6 +326,13 @@ faixas(elem.get('step', []), None)
 faixas(elem.get('tag', []), None)
 faixas(elem.get('titulo', []), None)
 faixas([(f, off, n, nome, 0) for f, off, n, nome in legenda], None)
+# extras do reel.json ("extras": [{"arq": "extras/x.mov", "s": 0.4, "nome": "…"}]): elementos feitos fora do Remotion
+# (ex.: cartão com o logo da Growth no gancho do 06, 14/10/2026), cada um na sua faixa
+for e in C.get('extras', []):
+    src = W / e['arq']; dst = OUT / 'extras' / src.name
+    dst.parent.mkdir(exist_ok=True); shutil.copy(src, dst)
+    shutil.copy(src.with_suffix('.png'), dst.with_suffix('.png')) if src.with_suffix('.png').exists() else None
+    L.append(clip(dst, nova(), fr(e.get('s', 0)), fr(dur(dst)), e.get('nome', src.stem)))
 V = nova()
 for f, off, n in burns:
     L.append(clip(f, V, off, n, 'burn', extra=f'<adjust-blend amount="{BOP}"/>'))

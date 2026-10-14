@@ -197,3 +197,7 @@ então o que mais economiza é fazer menos turnos e não encher o contexto.
   em arquivo e clipe próprios. `davinci painel_2` re-renderiza só esse elemento (Reel.tsx: props `layer` + `el`).
 - Custo no 10 (41 s): câmera 121 s, fundo 38 s, legenda 45 s, 17 elementos ~3 min; 110 clipes, 2,6 GB.
 - O DaVinci ignora o modo de mesclagem do FCPXML: burn vai com alfa. Não abrir o DaVinci para testar (pedido do editor).
+- `"formato": "so_legenda"` no reel.json: ela em tela cheia com gancho, títulos e legenda; sem painéis, tela dividida
+  e burns; SFX só nos textos (o original fica em sfx_com_paineis.json). Pedido da Priscilla para variar formato (06, 14/10/2026).
+- `"extras": [{"arq": "extras/x.mov", "s": 0, "nome": "…"}]`: elemento feito fora do Remotion (ex.: cartão com logo de
+  marca no gancho), entra numa faixa própria do pacote DaVinci junto com o PNG.

@@ -327,7 +327,17 @@ def e_camera():
 def e_props():
     out = PUB / R / 'props.json'; out.parent.mkdir(parents=True, exist_ok=True)
     sh([sys.executable, str(W / 'props.py'), str(W), str(out)])
-    pr = json.load(open(out)); pr['theme'] = fontes_tema(); json.dump(pr, open(out, 'w'), ensure_ascii=False, indent=1)
+    pr = json.load(open(out)); pr['theme'] = fontes_tema()
+    if C.get('formato') == 'so_legenda':
+        # formato "só legenda" (crítica do 06 da Priscilla, 14/10/2026: nem tudo igual): ela em tela cheia com gancho, títulos
+        # e legenda; sem painéis, tela dividida e burns. SFX ficam só nos textos (gancho e títulos); os dos painéis saem.
+        pr['panels'], pr['split'], pr['burns'] = [], [], []
+        orig = W / 'sfx_com_paineis.json'
+        if not orig.exists():
+            shutil.copy(W / 'sfx.json', orig)
+        marcas = [0.0] + [x for h in pr.get('titles') or [] for x in (h['s'], h.get('l2At', h['s']))]
+        json.dump([e for e in json.load(open(orig)) if any(abs(e['t'] - m) < 0.45 for m in marcas)], open(W / 'sfx.json', 'w'), indent=1)
+    json.dump(pr, open(out, 'w'), ensure_ascii=False, indent=1)
     sh([sys.executable, str(ENG / 'scripts/checa_props.py'), str(out), str(W / 'edit_mfa.json'), str(W / 'sfx.json')])
 
 
@@ -373,7 +383,7 @@ def remotion(out, extra, props=None, codec=('--codec=h264',)):
     dur = (lambda a, b: (int(b) - int(a)) / 29.97)(*fr[0][9:].split('-')) if fr else pr['duration']
     lim = max(360, int(dur * 12))
     cmd = ['npx', 'remotion', 'render', 'src/index.ts', 'Reel', str(out), f'--props={props}', f'--public-dir={PUB}', *codec,
-           '--muted', '--log=error', '--timeout=180000', '--concurrency=2'] + extra   # 2 abas (RAM do Mac de 16 GB); 180 s por quadro com a máquina ocupada
+           '--muted', '--overwrite', '--log=error', '--timeout=180000', '--concurrency=2'] + extra   # 2 abas (RAM do Mac de 16 GB); 180 s por quadro com a máquina ocupada
     mata_orfaos()
     for tentativa in (1, 2):
         print('$', ' '.join(map(str, cmd))[:160], f'(limite {lim}s)', flush=True)
@@ -473,7 +483,7 @@ def e_davinci():
     alfa = ('--codec=prores', '--prores-profile=4444', '--pixel-format=yuva444p10le', '--image-format=png')
     N = int(round(pr['duration'] * FPS)); q = lambda t: min(N - 1, max(0, int(round(t * FPS))))
     jobs = [('camera', 'camera', None, None, None, ('--codec=prores', '--prores-profile=standard')),
-            ('painel_fundo', 'painel_fundo', None, None, None, alfa), ('legenda', 'legenda', None, None, None, alfa)]
+            ('legenda', 'legenda', None, None, None, alfa)] + ([('painel_fundo', 'painel_fundo', None, None, None, alfa)] if pr.get('panels') else [])
     if pr.get('inserts'):
         jobs.append(('midia', 'midia', None, None, None, alfa))
     man = []
