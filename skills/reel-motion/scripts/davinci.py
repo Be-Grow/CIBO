@@ -313,9 +313,9 @@ V1 = nova()                                                   # bruto, take a ta
 for k, (a, b, s0, s1) in enumerate(takes):
     L.append(bruto(k, a, b, s0).replace('lane="1"', f'lane="{V1}"', 1))
     L.append(clip(OUT / 'voz.wav', -1, a, b - a, f'voz {s0:.2f}-{s1:.2f}', start=a, video=False, audio=True))
-V2 = nova()                                                   # câmera já renderizada: referência, desligada
-for a, b, s0, s1 in takes:
-    L.append(clip(CAM / 'camera.mov', V2, a, b - a, f'câmera renderizada {s0:.2f}', start=a).replace('<asset-clip ', '<asset-clip enabled="0" ', 1))
+V2 = nova()                                                   # câmera renderizada por cima (imagem aprovada); para estender um
+for a, b, s0, s1 in takes:                                    # take, desligue o clipe dela e use o bruto embaixo
+    L.append(clip(CAM / 'camera.mov', V2, a, b - a, f'câmera renderizada {s0:.2f}', start=a))
 if midia:
     V = nova()
     for f, off, n, nome in midia:
