@@ -15,6 +15,12 @@ if lg.shape[2] == 3:
         ys, xs = np.where(al > 0.5); lg = lg[ys.min():ys.max() + 1, xs.min():xs.max() + 1]; al = np.ones(lg.shape[:2], np.float32)
     lg = np.dstack([lg, al])
 ys, xs = np.where(lg[..., 3] > 0.05); lg = lg[ys.min():ys.max() + 1, xs.min():xs.max() + 1]   # apara a borda vazia
+if '--cor-do-logo' in a:                                       # apara a margem da cor de fundo (foto de produto em fundo branco)
+    bd0 = np.median(np.concatenate([lg[:2, :, :3].reshape(-1, 3), lg[-2:, :, :3].reshape(-1, 3)]), 0)
+    ys, xs = np.where(np.abs(lg[..., :3] - bd0).max(2) > 0.08)
+    if len(ys):
+        mg = int(0.06 * max(np.ptp(ys), np.ptp(xs)))
+        lg = lg[max(0, ys.min() - mg):ys.max() + mg + 1, max(0, xs.min() - mg):xs.max() + mg + 1]
 lh = int(lg.shape[0] * LW / lg.shape[1])
 if lh > LW * 0.6: lh = int(LW * 0.6); LW2 = int(lg.shape[1] * lh / lg.shape[0])
 else: LW2 = LW
