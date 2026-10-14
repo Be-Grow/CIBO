@@ -29,15 +29,20 @@ Caso completo: `references/deixas_vinheta_lpa.json`.
    | energia cai (pausa da música) | `downlifter-2s` | `em` no início da pausa |
    | suspense até a revelação | `Reverse Cinematic Boom` (-11 dB) + `riser-short-2s` (-12 dB) | `fim_em` no impacto |
    | revelação (logo/CTA) | `Cinematic Boom` (+3 dB) + `impact-soft-1` | `ataque_em` no impacto |
-   | brilho/shine | `sweep-long` (-9 dB) | `pico_em` no meio do brilho |
+   | brilho/shine | `sweep-long` (**-18 dB**: mais alto soa como "a música subindo" 2 s depois da logo) | `pico_em` no meio do brilho |
 4. **Folha de deixas JSON → mix.** Vinheta no padrão aprovado: gere as deixas direto dos tempos (os mesmos do `config.ts`):
    `python3 scripts/deixas_vinheta.py --trilha T --inicio-trilha 20.8 --batida 0.859 --primeiro 1.5 --pausa 8.5 --impacto 11.75 --dur 17 > deixas.json`
    (reproduz a mix aprovada da LPA com correlação de 0,97). Outros formatos: escreva o JSON à mão a partir da tabela acima.
    Depois: `python3 scripts/mix.py deixas.json som.wav`. O script mede o pico de cada SFX e
-   o posiciona sozinho; normaliza (padrão -16 LUFS, -1,5 dBTP; limitador + ganho medido, bate o alvo com ±0,2 dB) e imprime o perfil a cada 0,1 s.
+   o posiciona sozinho; normaliza (padrão -16 LUFS no mix.py, -14 nas deixas de vinheta; -1,5 dBTP; limitador + ganho medido, bate o alvo com ±0,2 dB) e imprime o perfil a cada 0,1 s.
 5. **A subida fica abaixo do impacto.** Com `"impacto"` no JSON o script compara; se aparecer AVISO, abaixe
    reverse/riser (na LPA: boom reverso de -4 → -11 dB, riser -8 → -12, boom +3). Impacto no máximo, ~6 dB acima da subida.
-6. Mux com o vídeo (`-c:a aac -b:a 320k` no MP4, `pcm_s24le` no master ProRes). Não diga que o som está bom
+6. **A trilha tem que crescer JUNTO com a revelação, não depois.** Muita trilha de trailer cai para um trecho mais
+   baixo logo após o impacto. Meça a trilha sozinha depois do impacto; se ela cair, use `"automacao": [[impacto-0.1, 0], [impacto+0.05, 5]]`
+   na música (+5 dB a partir da logo), comece o fade final da música só no último 1,5 s e mixe em **-14 LUFS**, para o começo não perder
+   força com a normalização. Confira o perfil por segundo antes x depois: o começo ±2 dB, o pós-impacto +4 dB ou mais.
+   (Cliente LPA, 14/10/2026: "a música demora a aumentar quando a logo aparece; deveria aumentar em 12 s, não em 13 s".)
+7. Mux com o vídeo (`-c:a aac -b:a 320k` no MP4, `pcm_s24le` no master ProRes). Não diga que o som está bom
    sem medir: perfil + LUFS são a prova; peça ao editor para ouvir.
 
 ## Regras

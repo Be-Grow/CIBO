@@ -7,7 +7,8 @@ DEIXAS.json:
 {
   "dur": 17, "lufs": -16, "tp": -1.5, "fade_out": 0.7,
   "impacto": 11.75,                      # opcional: confere subida x impacto
-  "musica": {"arquivo": "...mp3", "inicio_trilha": 20.8, "ganho": -2, "fade_out": [14.6, 2.4]},
+  "musica": {"arquivo": "...mp3", "inicio_trilha": 20.8, "ganho": -2, "fade_out": [15.5, 1.5],
+             "automacao": [[11.65, 0], [11.8, 6]]},  # trilha sobe 6 dB no impacto e fica (dB, linear entre pontos)
   "sfx": [
     {"arquivo": "...whoosh.wav", "pico_em": 1.5, "ganho": -3},       # pico do som cai em 1,5 s
     {"arquivo": "...reverse.wav", "fim_em": 1.5, "trim": 0.3},        # reverse/riser: termina no corte
@@ -55,7 +56,16 @@ m = cfg.get('musica')
 if m:
     cmd += ['-ss', str(m.get('inicio_trilha', 0)), '-t', str(D), '-i', m['arquivo']]
     fo = m.get('fade_out')
-    fl.append(f"[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume={m.get('ganho', 0)}dB" +
+    auto = ''
+    if m.get('automacao'):  # [[t, dB], ...] linear entre pontos; antes do 1º = 0 dB, depois do último = último
+        pts = [(0.0, 0.0)] + [tuple(p) for p in m['automacao']]
+        ex = f"{10 ** (pts[-1][1] / 20):.5f}"
+        for (t0, g0), (t1, g1) in reversed(list(zip(pts, pts[1:]))):
+            l0, l1 = 10 ** (g0 / 20), 10 ** (g1 / 20)
+            seg = f"{l0:.5f}" if t1 <= t0 else f"({l0:.5f}+({l1 - l0:.5f})*(t-{t0})/{t1 - t0:.4f})"
+            ex = f"if(lt(t,{t1}),{seg},{ex})"
+        auto = f",volume='{ex}':eval=frame"
+    fl.append(f"[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume={m.get('ganho', 0)}dB{auto}" +
               (f",afade=t=out:st={fo[0]}:d={fo[1]}" if fo else '') + f"[s0]")
     k = 1
 for d in cfg['sfx']:

@@ -1,24 +1,126 @@
 {
-  "nota": "Vinheta LPA Caminhos e Visões (aprovada 13/10/2026). Cortes na batida de 0,859 s a partir de 1,5 s; pausa 8,5 s; logo 11,75 s.",
-  "dur": 17, "lufs": -16, "tp": -1.5, "fade_out": 0.7, "impacto": 11.75,
-  "musica": {"arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Epic Cinematic Trailer by Infraction [No Copyright Music] ⧸ Giants League [0F0o1VmGOOI].mp3",
-             "inicio_trilha": 20.8, "ganho": -2, "fade_out": [14.6, 2.4]},
-  "sfx": [
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/reverse-cymbal-2s.wav", "fim_em": 1.5, "trim": 0.3, "nota": "cold open cresce até o 1º impacto"},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-reverse-1s.wav", "pico_em": 1.5, "ganho": -4},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-short.wav", "pico_em": 1.5, "ganho": -3, "nota": "painéis entram"},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/impact-soft-1.wav", "ataque_em": 1.5, "ganho": -4},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-short.wav", "pico_em": 3.22, "ganho": -6, "nota": "troca dos painéis"},
-    {"arquivo": "/Volumes/SSD/Music/Projeto premiere/Copiado_Raul Lamarca/Swoosh Transition SFX 20.wav", "pico_em": 4.94, "ganho": -6, "nota": "tela cheia"},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/impact-soft-3.wav", "ataque_em": 4.94, "ganho": -6},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-soft.wav", "pico_em": 5.79, "ganho": -10, "nota": "palavra 2"},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-soft.wav", "pico_em": 6.65, "ganho": -10, "nota": "palavra 3"},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-short.wav", "pico_em": 7.51, "ganho": -5, "nota": "painéis C"},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/downlifter-2s.wav", "em": 8.5, "ganho": -6, "nota": "energia cai na pausa"},
-    {"arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Reverse Cinematic Boom Sound effect [9qVvCEeECsA].mp3", "fim_em": 11.75, "trim": 1.75, "dur": 3.2, "ganho": -11, "nota": "subida baixa, abaixo do impacto"},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/riser-short-2s.wav", "fim_em": 11.75, "ganho": -12},
-    {"arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Cinematic Boom - sound effect - [High quality] [RNDmV_sZpUk].mp3", "ataque_em": 11.75, "ganho": 3, "nota": "logo"},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/impact-soft-1.wav", "ataque_em": 11.75, "ganho": 0},
-    {"arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/sweep-long.wav", "pico_em": 13.93, "ganho": -9, "nota": "brilho atravessa a logo"}
+ "dur": 17,
+ "lufs": -14.0,
+ "tp": -1.5,
+ "fade_out": 0.7,
+ "impacto": 11.75,
+ "musica": {
+  "arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Epic Cinematic Trailer by Infraction [No Copyright Music] ⧸ Giants League [0F0o1VmGOOI].mp3",
+  "inicio_trilha": 20.8,
+  "ganho": -2,
+  "fade_out": [
+   15.5,
+   1.5
+  ],
+  "automacao": [
+   [
+    11.65,
+    0
+   ],
+   [
+    11.8,
+    5.0
+   ]
   ]
+ },
+ "sfx": [
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/reverse-cymbal-2s.wav",
+   "fim_em": 1.5,
+   "nota": "cold open cresce até o 1º acento"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-reverse-1s.wav",
+   "pico_em": 1.5,
+   "ganho": -4,
+   "nota": "puxa para o 1º corte"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-short.wav",
+   "pico_em": 1.5,
+   "ganho": -3,
+   "nota": "painéis entram"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/impact-soft-1.wav",
+   "ataque_em": 1.5,
+   "ganho": -4,
+   "nota": "painéis assentam"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-short.wav",
+   "pico_em": 3.218,
+   "ganho": -6,
+   "nota": "troca dos painéis"
+  },
+  {
+   "arquivo": "/Volumes/SSD/Music/Projeto premiere/Copiado_Raul Lamarca/Swoosh Transition SFX 20.wav",
+   "pico_em": 4.936,
+   "ganho": -6,
+   "nota": "tela cheia"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/impact-soft-3.wav",
+   "ataque_em": 4.936,
+   "ganho": -6,
+   "nota": "tela cheia assenta"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-soft.wav",
+   "pico_em": 5.795,
+   "ganho": -10,
+   "nota": "palavra 2"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-soft.wav",
+   "pico_em": 6.654,
+   "ganho": -10,
+   "nota": "palavra 3"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/whoosh-short.wav",
+   "pico_em": 7.513,
+   "ganho": -5,
+   "nota": "painéis de novo"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/downlifter-2s.wav",
+   "em": 8.5,
+   "ganho": -6,
+   "nota": "energia cai na pausa"
+  },
+  {
+   "arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Reverse Cinematic Boom Sound effect [9qVvCEeECsA].mp3",
+   "fim_em": 11.75,
+   "trim": 1.75,
+   "dur": 3.2,
+   "ganho": -11,
+   "nota": "subida baixa, abaixo do impacto"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/riser-short-2s.wav",
+   "fim_em": 11.75,
+   "ganho": -12,
+   "nota": "tensão final"
+  },
+  {
+   "arquivo": "/Volumes/SSD/Music/Sound/Músicas edicao/Cinematic Boom - sound effect - [High quality] [RNDmV_sZpUk].mp3",
+   "ataque_em": 11.75,
+   "ganho": 3,
+   "nota": "revelação da logo"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/impact-soft-1.wav",
+   "ataque_em": 11.75,
+   "ganho": 0,
+   "nota": "corpo do impacto"
+  },
+  {
+   "arquivo": "/Volumes/SSD/CIBO Acervo/sfx/_global/sweep-long.wav",
+   "pico_em": 13.95,
+   "ganho": -18,
+   "nota": "brilho: bem baixo, senão soa como a música subindo 2 s depois da logo"
+  }
+ ],
+ "nota": "Vinheta LPA Caminhos e Visões — v3 (14/10/2026): trilha +5 dB no impacto, sweep -18 dB, -14 LUFS. Gerada por deixas_vinheta.py."
 }

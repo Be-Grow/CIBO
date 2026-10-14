@@ -18,7 +18,8 @@ ap.add_argument('--batida', type=float, required=True); ap.add_argument('--prime
 ap.add_argument('--pausa', type=float, required=True); ap.add_argument('--impacto', type=float, required=True)
 ap.add_argument('--dur', type=float, default=17); ap.add_argument('--palavras', type=int, default=3)
 ap.add_argument('--brilho-depois', type=float, default=2.2, help='s entre o impacto e o meio do brilho')
-ap.add_argument('--lufs', type=float, default=-16)
+ap.add_argument('--lufs', type=float, default=-14)
+ap.add_argument('--subida-musica', type=float, default=5, help='dB que a trilha sobe no impacto (0 = sem automação)')
 a = ap.parse_args()
 
 b = lambda n: round(a.primeiro + n * a.batida, 3)
@@ -43,9 +44,11 @@ add(M + 'Reverse Cinematic Boom Sound effect [9qVvCEeECsA].mp3', 'subida baixa, 
 add(G + 'riser-short-2s.wav', 'tensão final', fim_em=a.impacto, ganho=-12)
 add(M + 'Cinematic Boom - sound effect - [High quality] [RNDmV_sZpUk].mp3', 'revelação da logo', ataque_em=a.impacto, ganho=3)
 add(G + 'impact-soft-1.wav', 'corpo do impacto', ataque_em=a.impacto, ganho=0)
-add(G + 'sweep-long.wav', 'brilho atravessa a logo', pico_em=round(a.impacto + a.brilho_depois, 2), ganho=-9)
+add(G + 'sweep-long.wav', 'brilho: bem baixo, senão soa como a música subindo 2 s depois da logo', pico_em=round(a.impacto + a.brilho_depois, 2), ganho=-18)
 
 out = {'dur': a.dur, 'lufs': a.lufs, 'tp': -1.5, 'fade_out': 0.7, 'impacto': a.impacto,
-       'musica': {'arquivo': a.trilha, 'inicio_trilha': a.inicio_trilha, 'ganho': -2, 'fade_out': [round(a.dur - 2.4, 2), 2.4]},
+       'musica': {'arquivo': a.trilha, 'inicio_trilha': a.inicio_trilha, 'ganho': -2, 'fade_out': [round(a.dur - 1.5, 2), 1.5],
+                 # a trilha cai depois do impacto: sobe +5 dB junto com a logo, mix em -14 LUFS para o começo não perder força (pedido da cliente LPA, 14/10/2026)
+                 'automacao': [[round(a.impacto - 0.1, 2), 0], [round(a.impacto + 0.05, 2), a.subida_musica]]},
        'sfx': s}
 print(json.dumps(out, ensure_ascii=False, indent=1))

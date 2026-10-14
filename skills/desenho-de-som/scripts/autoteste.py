@@ -65,5 +65,19 @@ lufs = re.search(r'I:\s+(-?[0-9.]+) LUFS', out)
 check('loudness no alvo', bool(lufs) and abs(float(lufs.group(1)) + 16) < 0.6, lufs.group(0) if lufs else '')
 check('subida abaixo do impacto', 'ok' in out.split('subida')[-1].split('\n')[0] if 'subida' in out else False)
 
+# automação da trilha: ruído constante, +6 dB a partir de 3 s
+wav(f'{tmp}/musica.wav', 0.05 * rng.standard_normal(int(SR * 7)))
+json.dump({'dur': 6, 'lufs': -20, 'tp': -1.5, 'fade_out': 0.2, 'sfx': [],
+           'musica': {'arquivo': f'{tmp}/musica.wav', 'inicio_trilha': 0, 'automacao': [[3.0, 0], [3.05, 6]]}}, open(f'{tmp}/a.json', 'w'))
+subprocess.run([sys.executable, f'{HERE}/mix.py', f'{tmp}/a.json', f'{tmp}/a.wav'], capture_output=True, check=True)
+with wave.open(f'{tmp}/a.wav') as w:
+    raw = w.readframes(w.getnframes()); sr = w.getframerate(); ch = w.getnchannels()
+y = np.frombuffer(raw, np.uint8).reshape(-1, 3)
+y = (y[:, 0].astype(np.int32) | (y[:, 1].astype(np.int32) << 8) | (y[:, 2].astype(np.int32) << 16))
+y = np.where(y >= 1 << 23, y - (1 << 24), y)[::ch] / float(1 << 23)
+lv = lambda t0, t1: 20 * np.log10(np.sqrt((y[int(t0 * sr):int(t1 * sr)] ** 2).mean()))
+dlt = lv(3.3, 5.0) - lv(1.0, 2.8)
+check('automação da trilha (+6 dB em 3 s)', abs(dlt - 6) < 0.8, f'{dlt:+.1f} dB')
+
 print('\nTUDO OK' if not fails else f'\n{len(fails)} FALHA(S): {fails}')
 sys.exit(1 if fails else 0)
