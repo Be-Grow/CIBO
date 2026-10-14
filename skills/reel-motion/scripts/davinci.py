@@ -220,7 +220,13 @@ def tc_frames(f):
     if not r:
         return 0
     hh, mm, ss, ff = map(int, re.split('[:;]', r[0]))
-    return ((hh * 60 + mm) * 60 + ss) * 30 + ff
+    n = ((hh * 60 + mm) * 60 + ss) * 30 + ff
+    # 29,97 da Sony é drop-frame: o DaVinci lê 10:41:20;13 (o ffprobe mostra ':'). Sem descontar os quadros pulados
+    # (2 por minuto, exceto a cada 10) o take caía 38 s adiante na fonte e o DaVinci recusava a timeline (14/10/2026)
+    if JOB.get('tc_drop', True):
+        m = hh * 60 + mm
+        n -= 2 * (m - m // 10)
+    return n
 
 
 def kf(vals, nfmt):
