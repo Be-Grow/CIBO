@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cartão off-white com logo de marca (sombra, cantos arredondados), entra com pop e sai: ProRes 4444 com alfa + PNG.
 Mesmo cartão da Growth no gancho do 06 da Priscilla (14/10/2026). Logo sem alfa (JPG): o fundo quase branco vira transparente.
-uso: cartao_logo.py LOGO SAIDA.mov [--dur 6.3] [--x 540 --y 1080] [--larg 380] [--escuro|--claro|--cor-do-logo]
+uso: cartao_logo.py LOGO SAIDA.mov [--dur 6.3] [--x 540 --y 1080] [--larg 380] [--escuro|--claro|--cor-do-logo] [--so-logo] [--blur 24]
 Logo claro → cartão grafite automaticamente."""
 import sys, subprocess, cv2, numpy as np
 a = sys.argv; arg = lambda k, d: float(a[a.index(k) + 1]) if k in a else d
@@ -30,6 +30,9 @@ card = np.zeros((CH + 120, CW + 120, 4), np.float32); ox, oy = 60, 50
 m = np.zeros((CH, CW), np.uint8); cv2.rectangle(m, (R, 0), (CW - R, CH), 255, -1); cv2.rectangle(m, (0, R), (CW, CH - R), 255, -1)
 for cx, cy in ((R, R), (CW - R, R), (R, CH - R), (CW - R, CH - R)): cv2.circle(m, (cx, cy), R, 255, -1, cv2.LINE_AA)
 m = m.astype(np.float32) / 255
+SO = '--so-logo' in a                                         # só o logo, sem cartão nem sombra
+if SO:
+    m[:] = 0
 sh = np.zeros(card.shape[:2], np.float32); sh[oy + 14:oy + 14 + CH, ox:ox + CW] = m * 0.35; card[..., 3] = cv2.GaussianBlur(sh, (0, 0), 18)
 # logo claro (ex.: Dark Lab branco) some no off-white: cartão grafite do tema
 lum = float((lg[..., :3].mean(2) * lg[..., 3]).sum() / max(1e-3, lg[..., 3].sum()))
@@ -40,7 +43,10 @@ if '--cor-do-logo' in a:   # logo que já é um bloco de cor (ex.: Max Titanium 
 body = np.dstack([np.full((CH, CW), v) for v in cor] + [m])
 reg = card[oy:oy + CH, ox:ox + CW]; b = body[..., 3:]; reg[..., :3] = body[..., :3] * b + reg[..., :3] * (1 - b); reg[..., 3:] = b + reg[..., 3:] * (1 - b)
 l = reg[PY:PY + lh, PX:PX + LW2]; la = lg[..., 3:]; l[..., :3] = lg[..., :3] * la + l[..., :3] * (1 - la)
+if SO:
+    l[..., 3:] = la
 cv2.imwrite(OUT.rsplit('.', 1)[0] + '.png', (card * 255).astype(np.uint8))
+BLUR = arg('--blur', 0.0)
 FPS = 30000 / 1001; N = int(DUR * FPS); H, Wd = card.shape[:2]; ease = lambda u: 1 - (1 - min(max(u, 0), 1)) ** 3
 p = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', '1080x1920', '-r', '30000/1001', '-i', '-',
                       '-c:v', 'prores_ks', '-profile:v', '4444', '-pix_fmt', 'yuva444p10le', OUT], stdin=subprocess.PIPE)
@@ -50,5 +56,9 @@ for n in range(N):
     if al > 0:
         M = cv2.getRotationMatrix2D((Wd / 2, H / 2), (1 - ent) * -6, 0.82 + 0.18 * ent); M[0, 2] += X0 - Wd / 2; M[1, 2] += Y0 - H / 2
         fr = cv2.warpAffine(card, M, (1080, 1920)); fr[..., 3] *= al
+        bz = BLUR * max(1 - ent, 1 - al if t > DUR - 0.6 else 0)
+        if bz > 0.3:                                           # desfoque na entrada/saída sobre a imagem premultiplicada
+            pm = fr[..., :3] * fr[..., 3:]; pm = cv2.GaussianBlur(pm, (0, 0), bz); aa = cv2.GaussianBlur(fr[..., 3], (0, 0), bz)
+            fr = np.dstack([np.where(aa[..., None] > 1e-4, pm / np.maximum(aa[..., None], 1e-4), 0), aa])
     p.stdin.write((np.clip(np.dstack([fr[..., 2], fr[..., 1], fr[..., 0], fr[..., 3]]), 0, 1) * 255 + 0.5).astype(np.uint8).tobytes())
 p.stdin.close(); p.wait(); print(OUT, N, 'quadros')
