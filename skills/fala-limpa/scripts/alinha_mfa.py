@@ -36,7 +36,8 @@ def main():
     a = ap.parse_args()
     if not MFA.exists():
         sys.exit(f"MFA_AUSENTE em {MFA} (SSD desconectado?): use os tempos do Whisper e avise.")
-    A, B = a.range[0] - a.margem, a.range[1] + a.margem
+    # A nunca negativo: o ffmpeg trata -ss negativo como 0 e todos os tempos saíam deslocados pela margem
+    A, B = max(0.0, a.range[0] - a.margem), a.range[1] + a.margem
     d = json.load(open(a.words))
     W = [w for s in d.get("segments", []) for w in s.get("words", []) if A <= w["start"] < B]
     texto = " ".join(w["word"].strip() for w in W)

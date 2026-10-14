@@ -52,10 +52,22 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 - **Temporários no SSD**, na pasta do projeto, nunca no disco de sistema (vive perto de
   100 %). Detalhes e o `taskpolicy` para encode em background: `video-render-optimizer`.
 - **No máximo 2–3 ffmpeg em paralelo sobre 4K**, e um Whisper grande por vez: o Mac tem
-  16 GB. Se o DaVinci estiver exportando, `nice` e modelo menor.
+  16 GB. Se o DaVinci estiver exportando, `nice` e modelo menor. Folha de contato de vídeo longo:
+  um `ffmpeg -ss T -frames:v 1` por quadro, nunca `fps=1/60` decodificando o episódio inteiro com o
+  Whisper rodando ("cuidado com a ram", 13/10/2026). Chrome só aberto enquanto a extensão é usada.
 - **Dê progresso e tempo restante sem ser perguntado** em tarefa longa. "E aí", "falta
   quanto" e "tá editando mesmo?" são sinal de silêncio longo demais.
 - **Pode instalar a biblioteca certa** em vez de improvisar ("não precisa fazer gambiarra").
+
+- **Fila de etapas com `reel-motion/scripts/lote.py`**, nunca `while pgrep -f "…"`: o texto procurado está no
+  próprio comando, e a fila esperou a si mesma por 4 h (Priscilla, 14/10/2026). Render com limite de tempo e
+  grupo de processos; antes de renderizar, mate os órfãos (esbuild/Chrome com pai 1).
+- **Uma sessão por lote, com o estado em disco** (`status.py`, `reel.json`, `segs.json`): na sessão da Priscilla
+  os turnos por reel caíram 5× depois da 1ª auditoria, mas o contexto por turno subiu de 357 mil para 844 mil
+  tokens e comeu o ganho.
+- **Ajuste pontual só no trecho apontado** (render parcial ou só o áudio), nunca o vídeo inteiro de novo; e não
+  regere a câmera de um reel entregue para um ajuste (a nova sai com outro zoom).
+- **Não apague temporários de um job em andamento** sem o editor liberar: servem para o CIBO aprender com a demanda.
 
 ## Regras editoriais de todo corte
 
@@ -131,6 +143,14 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 - **Cortar bastidores**: conversa com a equipe, contagem, "deixa eu gravar outra", no começo
   e no fim. (Fernanda, Katia)
 
+- **A voz de quem sopra a fala nunca entra** (equipe/videomaker atrás da câmera, ~15–30 dB abaixo): escolha de
+  take pelo nível (`reel-motion/scripts/checa_takes.py`) antes da legenda ("isso devia ter sido cortado", 13/10/2026).
+- **Corte nunca no meio da palavra nem antes de a frase acabar.** A transcrição do Whisper adianta o início
+  das palavras: serve para conferir o FIM do corte, não o começo. `reel.py … revisa` junta energia + Whisper,
+  gaguejada, etiquetas e olhar, e roda sozinho antes do final (pegou 4 dos 5 erros que passaram no 05 da Priscilla).
+- **Gráfico e etiqueta só com o que a pessoa diz naquele trecho** ("mandioca, milho e tofu… ela não fala isso").
+- **Olhada para o lado/para baixo no fim do take:** corte antes ou cubra com o burn; se ela segue falando, mantém.
+
 ## Entrega
 
 - **Nomes**: `NN - HEADLINE.mp4`, com acentos, numerados pela ordem da fala no episódio, e
@@ -150,6 +170,10 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   defeito novo. O que não dá para verificar (ouvido, ritmo), diga que não verificou.
 - **Abra a pasta no Finder ao terminar** (`open "<pasta>"`). Ele pediu isso em quase toda
   sessão.
+
+- **Capa pensada para o grid do feed (3:4):** título fora do rosto, pessoa mais baixa no quadro, olhos abertos e
+  boca fechada, escolhida olhando a imagem (`reel-motion/scripts/capa_cand.py` faz a folha com o recorte pronto).
+  A capa nova vai também no quadro 0 do vídeo.
 
 ## Depois de uma correção do usuário
 

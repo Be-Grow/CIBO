@@ -1,0 +1,12 @@
+{
+ "cliente": "Priscilla Daher",
+ "theme": {
+  "fonts": [
+   {"family": "ISerif", "file": "/Volumes/SSD/CIBO Acervo/fonte/priscilla-daher/InstrumentSerif-Regular.ttf", "style": "normal"},
+   {"family": "ISerif", "file": "/Volumes/SSD/CIBO Acervo/fonte/priscilla-daher/InstrumentSerif-Italic.ttf", "style": "italic"},
+   {"family": "MSans", "file": "/Volumes/SSD/CIBO Acervo/fonte/priscilla-daher/Montserrat-SemiBold.ttf", "weight": "600"},
+   {"family": "MSans", "file": "/Volumes/SSD/CIBO Acervo/fonte/priscilla-daher/Montserrat-Regular.ttf", "weight": "400"}
+  ]
+ },
+ "capa": {"layout": "serif", "footer": "PRISCILLA DAHER"}
+}

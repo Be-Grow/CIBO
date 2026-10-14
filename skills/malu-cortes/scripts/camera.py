@@ -327,7 +327,7 @@ def render_frame(planes, t, k):
 
 
 def fingerprint():
-    keys = ("src", "rotate", "in", "out", "cuts", "shots", "framings", "face_pos", "camera_moves", "smooth_zooms",
+    keys = ("src", "rotate", "in", "out", "cuts", "shots", "framings", "face_pos", "camera_moves", "smooth_zooms", "out_size",
             "zoom_amount", "zoom_in", "zoom_center_face", "anchor_y", "tail_hold", "camera_ease", "malu_refs", "shift",
             "ref_grade")
     h = hashlib.sha256(json.dumps({k: job.get(k) for k in keys}, sort_keys=True).encode())
@@ -374,8 +374,12 @@ if __name__ == "__main__":
                             "-filter_complex", fc, "-map", "[v]", "-t", f"{D:.3f}", "-f", "rawvideo", "-pix_fmt", "yuv420p", "-"],
                            stdout=subprocess.PIPE)
     tmp = OUT + ".tmp.mov"
+    # out_size: o warp continua na resolução da fonte (nitidez do recorte), só a saída sai reduzida no próprio encoder —
+    # sem o intermediário 4K de ~10 GB e sem a segunda passada de proxy (reel-motion entrega em 1080, 14/10/2026)
+    osz = job.get("out_size")
+    vsc = ["-vf", f"scale={osz[0]}:{osz[1]}:flags=lanczos"] if osz else []
     enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "yuv420p", "-s", f"{W}x{H}",
-                            "-r", "30000/1001", "-i", "-", "-c:v", "prores_videotoolbox", "-profile:v", "hq",
+                            "-r", "30000/1001", "-i", "-"] + vsc + ["-c:v", "prores_videotoolbox", "-profile:v", "standard" if osz else "hq",
                             "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709", "-color_range", "tv", tmp],
                            stdin=subprocess.PIPE)
     ys, cs = W * H, (W // 2) * (H // 2); fsz = ys + 2 * cs

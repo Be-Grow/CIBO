@@ -45,6 +45,22 @@ Quando o editor mandar um vídeo de referência, meça antes de perguntar:
 reel de 1 min). As sugestões viram as opções recomendadas das perguntas (ritmo, `CAP_PRESET`,
 enquadramento, cor) e entram no brief com a origem "referência do editor".
 
+### 1c. Identidade sem manual de marca
+
+Quando o cliente não tem manual, peça um print do canal/perfil (banner + thumbs) e **meça** as cores no
+print (quantize por região: fundo, faixa, título, secundário) em vez de chutar; identifique as fontes
+das thumbs pelo desenho das letras e diga que é identificação visual. Registre a paleta medida no
+tema do cliente (`reel-motion/temas/`) e rode `reel-motion/scripts/contraste.py` (identidade sem perder
+leitura). Ex.: João, 13/10/2026 — marinho/azul das thumbs, Montserrat Black do ep 24.
+
+### 1d. Fonte em aberto ("tô sem ideia de fonte")
+
+Monte uma folha com **3 opções lado a lado sobre um quadro real do cliente, já no layout e nas cores
+do job** (título do painel + faixa + legenda com destaque): uma tirada da identidade dele (thumb mais
+recente), uma variação da identidade, e a do estilo de referência pedido. Rotule cada uma, recomende
+uma e pergunte. Confira antes de mostrar que o quadro é da pessoa certa (no João saiu a convidada na
+1ª tentativa). Fontes baixadas entram no `acervo` com `add`.
+
 ### 2. Pergunte o que está em aberto
 
 - Use a ferramenta de pergunta com opções (`AskUserQuestion`): até 4 perguntas por

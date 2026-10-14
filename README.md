@@ -69,6 +69,8 @@ Cada skill é autocontida: lê seu próprio `SKILL.md` antes de qualquer coisa, 
 | `dr-energia` | Cortes verticais do Dr. Energia BR Cast: burn-in verde na entrada e saída, proporção de 4 cortes do apresentador para 2 do convidado, entrega a 24 fps. |
 | `fernanda-produto` | Vídeos de produto da Fernanda (linha Zeo): Sony S-Log3 deitada → vertical colorizado, corte de bastidores e gaguejadas de silêncio a silêncio, zoom suave, referências Pexels em tela dividida, burn azul, SFX só nas transições e música em faixa separada. |
 | `malu-cortes` | Cortes da Malu (entrevista linha Zeo/Turi-Ita) no padrão de Reel premium: mapa de edição, fala limpa, rastreamento de rosto, kit de motion, legenda Montserrat fina animada palavra por palavra e pente-fino antes do render. Usa o motor da `fernanda-produto`. |
+| `priscilla-daher` | Reels da Priscilla Daher (categoria e varejo, Mercado Livre e TikTok Shop): talking head solo em tela dividida com motion; regras de take (equipe sopra a fala), capa para o grid do feed, trilha 18,5 dB abaixo da voz, modo invertido. Motor: `reel-motion`. |
+| `reel-motion` | Motor genérico de reels 9:16 com tela dividida, painéis Remotion reutilizáveis, legenda palavra a palavra, burn nas trocas e capa, configurado por tema de cliente; etapas `reel.py PROJ rNN …`, `revisa` (todos os checadores antes do final), `lote.py` (fila sem `pgrep`), `status.py`, `custo.py`. |
 | `podcast-reels` | Fluxo genérico de podcast → Reels: legendas Cal Sans, SFX de câmera, abertura com zoom-out e blur, capa com manchete. |
 
 ### Formato e transformação

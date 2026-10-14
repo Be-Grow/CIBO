@@ -1,0 +1,89 @@
+{
+ "cliente": "João Campos — JG Campos / Vai Lá e Faz Caxt",
+ "origem": "cores medidas das thumbs do canal YouTube @jgcampos.vailaefaz (print do editor, 13/10/2026); fonte opção A da folha de 3 (Montserrat Black, como a thumb do ep 24)",
+ "theme": {
+  "colors": {
+   "paper": "#0D1D35",
+   "paper2": "#142C4B",
+   "ink": "#F4FBFC",
+   "ink2": "#A9C3DE",
+   "terra": "#4FA2DA",
+   "terraDark": "#2E598B",
+   "peach": "#7CC4F0",
+   "white": "#1C3A62",
+   "video": "#FFFFFF",
+   "onAccent": "#0D1D35",
+   "pill": "#24497A",
+   "bg": "#0A1426",
+   "gold": "#D9B563"
+  },
+  "fonts": [
+   {
+    "family": "MontJ",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/joao-campos/Montserrat-VF.ttf",
+    "weight": "100 900"
+   }
+  ],
+  "title": {
+   "family": "MontJ",
+   "weight": 900,
+   "upper": true,
+   "ls": 0.5,
+   "scale": 0.62
+  },
+  "caption": {
+   "family": "MontJ",
+   "weight": 800,
+   "upper": true,
+   "ls": 0.5,
+   "scale": 0.8
+  },
+  "label": {
+   "family": "MontJ",
+   "weight": 700
+  },
+  "accent": {
+   "italic": false,
+   "weight": 900
+  },
+  "mediaFilter": "contrast(1.03) saturate(1.02)",
+  "burnFilter": "sepia(1) hue-rotate(175deg) saturate(2.4) brightness(0.95)",
+  "burnOpacity": 0.8,
+  "grain": 0.05,
+  "layout": {
+   "splitH": 768,
+   "camShift": 460,
+   "capSplitY": 1370,
+   "capFullY": 1300,
+   "capMaxW": 820,
+   "autoTags": true
+  }
+ },
+ "pares_extra": [
+  [
+   "gold",
+   "paper",
+   4.5,
+   "COM FULANO (secundário dourado)"
+  ],
+  [
+   "terra",
+   "paper2",
+   3.0,
+   "destaque no degradê"
+  ]
+ ],
+ "capa": {
+  "layout": "faixa",
+  "y": 58,
+  "logo": "/Volumes/SSD/CIBO Acervo/logo/joao-campos/LOGO VAI LA.png",
+  "logoY": 1530,
+  "logoW": 460
+ },
+ "regras": [
+  "layout 60% João / 40% painel (editor, 13/10/2026)",
+  "legenda dentro de 820 px (zona segura do Instagram)",
+  "em corte com foco no João (2 por episódio) só ele aparece: plano de reação da convidada vira inserção; o corte do convidado (1 por episódio) tem foco no convidado",
+  "trilha nivelada no tempo (music_level) e 18,5 dB abaixo da voz"
+ ]
+}

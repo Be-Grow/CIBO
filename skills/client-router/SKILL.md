@@ -22,6 +22,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Trilha por corte | `talking-head-music` |
 | B-roll / referência em tela | `semantic-broll-validator` |
 | Cartão Seguir, título, lower third, legenda animada | `lettering-motion` (+ `anthropic-skills:motion-graphics`) |
+| Reel com motion em tela dividida (painel em cima, pessoa embaixo), qualquer cliente | `reel-motion` — motor único com `temas/<cliente>.json` e biblioteca de componentes; nunca copie o motor para o projeto |
 | Vinheta, intro, abertura, logo animada | `vinheta-marca` (template Remotion 16:9/4K) |
 | Som conduzido por música (vinheta, teaser, motion): trilha medida, cortes na batida, SFX pelo pico | `desenho-de-som` |
 | Encoder e velocidade de render | `video-render-optimizer` (`VENC=auto`) |
