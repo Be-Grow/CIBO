@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cartão off-white com logo de marca (sombra, cantos arredondados), entra com pop e sai: ProRes 4444 com alfa + PNG.
 Mesmo cartão da Growth no gancho do 06 da Priscilla (14/10/2026). Logo sem alfa (JPG): o fundo quase branco vira transparente.
-uso: cartao_logo.py LOGO SAIDA.mov [--dur 6.3] [--x 540 --y 1080] [--larg 380] [--escuro|--claro]
+uso: cartao_logo.py LOGO SAIDA.mov [--dur 6.3] [--x 540 --y 1080] [--larg 380] [--escuro|--claro|--cor-do-logo]
 Logo claro → cartão grafite automaticamente."""
 import sys, subprocess, cv2, numpy as np
 a = sys.argv; arg = lambda k, d: float(a[a.index(k) + 1]) if k in a else d
@@ -11,6 +11,8 @@ if lg.ndim == 2: lg = cv2.cvtColor(lg, cv2.COLOR_GRAY2BGR)
 lg = lg.astype(np.float32) / 255
 if lg.shape[2] == 3:
     al = np.clip((1 - lg.min(2)) / 0.12, 0, 1)                 # branco → transparente
+    if '--cor-do-logo' in a:                                   # bloco de cor: só a moldura branca de fora sai; o branco de dentro fica
+        ys, xs = np.where(al > 0.5); lg = lg[ys.min():ys.max() + 1, xs.min():xs.max() + 1]; al = np.ones(lg.shape[:2], np.float32)
     lg = np.dstack([lg, al])
 ys, xs = np.where(lg[..., 3] > 0.05); lg = lg[ys.min():ys.max() + 1, xs.min():xs.max() + 1]   # apara a borda vazia
 lh = int(lg.shape[0] * LW / lg.shape[1])
@@ -26,6 +28,9 @@ sh = np.zeros(card.shape[:2], np.float32); sh[oy + 14:oy + 14 + CH, ox:ox + CW] 
 # logo claro (ex.: Dark Lab branco) some no off-white: cartão grafite do tema
 lum = float((lg[..., :3].mean(2) * lg[..., 3]).sum() / max(1e-3, lg[..., 3].sum()))
 cor = (0.110, 0.114, 0.122) if ('--escuro' in a or lum > 0.7) and '--claro' not in a else (0.937, 0.953, 0.965)
+if '--cor-do-logo' in a:   # logo que já é um bloco de cor (ex.: Max Titanium preto): cartão na cor da borda dele, sem moldura
+    bd = np.concatenate([lg[:3, :, :3].reshape(-1, 3), lg[-3:, :, :3].reshape(-1, 3), lg[:, :3, :3].reshape(-1, 3), lg[:, -3:, :3].reshape(-1, 3)])
+    cor = tuple(float(v) for v in np.median(bd, 0))
 body = np.dstack([np.full((CH, CW), v) for v in cor] + [m])
 reg = card[oy:oy + CH, ox:ox + CW]; b = body[..., 3:]; reg[..., :3] = body[..., :3] * b + reg[..., :3] * (1 - b); reg[..., 3:] = b + reg[..., 3:] * (1 - b)
 l = reg[PY:PY + lh, PX:PX + LW2]; la = lg[..., 3:]; l[..., :3] = lg[..., :3] * la + l[..., :3] * (1 - la)
