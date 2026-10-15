@@ -69,7 +69,7 @@ def cat_path() -> Path:
 
 def load() -> dict:
     try:
-        return json.loads(cat_path().read_text())
+        return json.loads(cat_path().read_text(encoding="utf-8-sig"))
     except (OSError, ValueError):
         return {"version": 1, "items": {}}
 
@@ -77,7 +77,7 @@ def load() -> dict:
 def save(cat: dict) -> None:
     p = cat_path()
     tmp = p.with_suffix(".tmp")
-    tmp.write_text(json.dumps(cat, ensure_ascii=False, indent=1) + "\n")
+    tmp.write_text(json.dumps(cat, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     tmp.replace(p)
     # cópia de segurança do catálogo fora do disco da biblioteca (é pequeno)
     bk = CONF.parent / "catalog_backup.json"
@@ -151,7 +151,7 @@ def guess_type(p: Path) -> str:
 def guess_client(p: Path) -> str:
     n = slug(str(p))
     try:
-        reg = json.loads(REGISTRY.read_text())
+        reg = json.loads(REGISTRY.read_text(encoding="utf-8-sig"))
     except (OSError, ValueError):
         reg = {}
     for key, v in reg.items():
@@ -185,7 +185,7 @@ def cmd_init(a):
     CONF.parent.mkdir(parents=True, exist_ok=True)
     c = conf()
     c.update({"library": str(p), "since": time.strftime("%Y-%m-%d")})
-    CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1))
+    CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1), encoding="utf-8")
     if not (p / "catalog.json").exists():
         save({"version": 1, "items": {}})
     print(f"biblioteca: {p}")
@@ -444,7 +444,7 @@ def cmd_move(a):
         sys.exit(f"cópia falhou; biblioteca continua configurada no lugar antigo: {e}")
     c = conf()
     c.update(library=str(new), moved_from=str(old), moved_at=time.strftime("%Y-%m-%d"))
-    CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1))
+    CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1), encoding="utf-8")
     bad = [k for k, it in load()["items"].items() if it["kind"] == "lib" and not resolve(it).exists()]
     print(f"biblioteca agora em {new}; {len(bad)} itens com problema. A cópia antiga em {old} "
           f"continua lá: apague só depois que o editor confirmar.")
