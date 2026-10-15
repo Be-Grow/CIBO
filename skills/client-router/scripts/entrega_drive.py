@@ -16,16 +16,26 @@ quando termina de sincronizar.
 import argparse, glob, os, re, shutil, subprocess, sys, time
 from pathlib import Path
 
-ROOT = Path.home() / "Library" / "CloudStorage"
+ROOT = Path(os.environ.get("CIBO_DRIVE_ROOT", Path.home() / "Google Drive"))
 ATTR = "com.google.drivefs.item-id#S"
 PADROES = ["[0-9][0-9] - *.mp4", "CAPA - *.png", "POST - *.txt"]
 
 
 def mounts():
+    if os.environ.get("CIBO_DRIVE_ROOT") and ROOT.is_dir():
+        return [ROOT]
+    if os.name == "nt":
+        # Google Drive for desktop commonly mounts a virtual drive such as G:\\My Drive.
+        roots = [Path(f"{letter}:/My Drive") for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
+        roots += [Path(f"{letter}:/") for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
+        return sorted({p for p in roots if p.is_dir() and (p.name == "My Drive" or (p / "Shared drives").is_dir())})
     return sorted(p for p in ROOT.glob("GoogleDrive-*") if p.is_dir()) if ROOT.exists() else []
 
 
 def item_id(p: Path):
+    if os.name == "nt":
+        # DriveFS item IDs are not exposed as portable Windows extended attributes.
+        return None
     r = subprocess.run(["xattr", "-p", ATTR, str(p)], capture_output=True, text=True)
     return r.stdout.strip() or None
 
@@ -53,8 +63,8 @@ def main():
     a = ap.parse_args()
     ms = mounts()
     if not ms:
-        sys.exit("DRIVE_NAO_INSTALADO: instale o Google Drive para desktop e entre com a conta; ele monta em "
-                 "~/Library/CloudStorage/GoogleDrive-<email>/.")
+        sys.exit("DRIVE_NAO_INSTALADO: configure CIBO_DRIVE_ROOT para a pasta/drive do Google Drive para desktop. "
+                 "No Windows, normalmente é G:\\My Drive ou a unidade escolhida na instalação.")
     if a.pasta == "onde":
         for m in ms:
             print(m)
@@ -67,6 +77,8 @@ def main():
     if not files:
         sys.exit(f"nada para subir em {src} (padrões: {', '.join(PADROES)})")
     if a.link:
+        if os.name == "nt":
+            sys.exit("No Windows o DriveFS não expõe o ID da pasta ao script; informe --destino relativo a CIBO_DRIVE_ROOT.")
         m = re.search(r"folders/([\w-]+)", a.link) or re.search(r"id=([\w-]+)", a.link)
         if not m:
             sys.exit("link de pasta não reconhecido")
@@ -90,12 +102,12 @@ def main():
         shutil.copy2(f, d)
     alvo = [dst / f.name for f in files]
     t0 = time.time()
-    while time.time() - t0 < a.espera:
+    while os.name != "nt" and time.time() - t0 < a.espera:
         falta = [p for p in alvo if not item_id(p)]
         if not falta:
             break
         time.sleep(10)
-    print("pasta:", f"https://drive.google.com/drive/folders/{item_id(dst)}" if item_id(dst) else "(sem ID ainda)")
+    print("pasta:", f"https://drive.google.com/drive/folders/{item_id(dst)}" if item_id(dst) else f"{dst} (confirme a sincronização no Drive para desktop)")
     for p in alvo:
         i = item_id(p)
         print(f"  {p.name}: " + (f"https://drive.google.com/file/d/{i}/view" if i else "AINDA SINCRONIZANDO"))

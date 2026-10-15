@@ -1,11 +1,14 @@
 """sfx.json a partir do props.json: whoosh nas trocas de layout e burns, pop baixo nas entradas, cliques do João
 (2 sons alternados, ~-20 dBFS, ≥2,5 s, nunca na 1ª palavra) nas palavras de destaque em tela cheia.
 uso: sfx_auto.py rNN/ public/rNN/props.json [cliques_max]"""
-import json, sys
+import json, os, sys
+from pathlib import Path
 W, PJ = sys.argv[1], sys.argv[2]; NMAX = int(sys.argv[3]) if len(sys.argv) > 3 else 3
 P = json.load(open(PJ))
-CK = ['/Volumes/SSD/CIBO Acervo/sfx/joao-campos/camera_click_1.wav', '/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav',
-      '/Volumes/SSD/CIBO Acervo/sfx/joao-campos/camera_click_3.wav']
+_conf = Path(os.environ.get('CIBO_ACERVO_CONF', Path.home()/'.cibo'/'acervo.json'))
+try: _lib = Path(json.loads(_conf.read_text(encoding='utf-8'))['library'])
+except (OSError, ValueError, KeyError): _lib = Path('')
+CK = [str(_lib/'sfx'/'joao-campos'/f'camera_click_{n}.wav') for n in (1, 2, 3)]
 CKDB = [-19, 4, -19]
 ev = []
 for g in P['split']:

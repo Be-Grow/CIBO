@@ -5,6 +5,7 @@ Adaptado do kinetic do Bombordo (a skill de la nao e alterada). JSON em vez de Y
 o mesmo do render.py, sem dependencia nova.
 """
 import copy, json, os, re, sys, unicodedata
+from pathlib import Path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.dirname(HERE)
@@ -32,7 +33,7 @@ def load_config(job):
 
 
 def fern_path(job):
-    p = job.get("engine_scripts_fernanda", os.path.expanduser("~/.claude/skills/fernanda-produto/scripts"))
+    p = job.get("engine_scripts_fernanda", str(Path(os.environ.get("CIBO_SKILLS", Path(__file__).resolve().parents[3])) / "fernanda-produto/scripts"))
     if p not in sys.path: sys.path.insert(0, p)
     return p
 

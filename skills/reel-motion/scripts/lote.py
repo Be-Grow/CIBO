@@ -4,7 +4,7 @@ por 4 h, 14/10/2026). Segue para a próxima mesmo se uma falhar e resume no fim.
 uso: lote.py PROJ "r06 trecho 43 47.2" "r08 trecho 20.3 24.9" "r10 final" …"""
 import os, subprocess, sys, time
 P = sys.argv[1]; R = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reel.py')
-os.environ.setdefault('TMPDIR', '/Volumes/SSD/CIBO/tmp')
+os.environ.setdefault('TMPDIR', os.path.join(os.environ.get('CIBO_TEMP', os.path.join(os.environ.get('TEMP', '/tmp'), 'CIBO'))))
 res = []
 for job in sys.argv[2:]:
     t = time.time(); r = subprocess.run([sys.executable, R, P] + job.split(), capture_output=True, text=True)

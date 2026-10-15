@@ -8,8 +8,16 @@ Uso:
 Tempos de job.json (in, out, cuts, broll, zooms) sao do ARQUIVO ORIGINAL; o script converte.
 """
 import json, os, subprocess, sys
+from pathlib import Path
 sys.path.insert(0, os.path.dirname(__file__))
 from timeline import load_job, segments, duration, o, cut_points
+
+def _popen_group():
+    return {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == 'nt' else {'start_new_session': True}
+
+def _kill_tree(proc):
+    if os.name == 'nt': subprocess.run(['taskkill', '/F', '/T', '/PID', str(proc.pid)], capture_output=True)
+    else: os.killpg(proc.pid, 9)
 
 SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = f"{SKILL}/assets"
@@ -53,7 +61,7 @@ LETTER_IN = 5 + len(BR)                  # indice do letter.mov (depois de sfx e
 # Sem essas chaves o grafo e identico ao de antes (conferido quadro a quadro num job da Fernanda).
 CAM = job.get("camera_engine") == "malu"
 KIN = job.get("caption_engine") == "kinetic"
-MALU = job.get("engine_scripts", os.path.expanduser("~/.claude/skills/malu-cortes/scripts"))
+MALU = job.get("engine_scripts", str(Path(os.environ.get("CIBO_SKILLS", Path(__file__).resolve().parents[2])) / "malu-cortes/scripts"))
 CAM_IN = 5 + len(BR) + (1 if FX else 0)  # indice do camera.mov (ultima entrada)
 # sfx_separate (Malu): no arquivo editavel o SFX vai numa faixa propria (A1 voz, A2 musica, A3 SFX); o ducking da musica
 # continua pela voz+SFX. Sem a chave: A1 voz+SFX, A2 musica, como sempre.
@@ -143,7 +151,7 @@ def build_track():
               f"[{prev}][x{i}]blend=all_mode=screen[y{i}];")
         prev = f"y{i}"
     f += f"[{prev}]format=yuv422p10le[out]"
-    run(f'ffmpeg -v error -y {ins} -filter_complex "{f}" -map "[out]" -c:v prores_videotoolbox -profile:v proxy "{W}/burntrack.mov"')
+    run(f'ffmpeg -v error -y {ins} -filter_complex "{f}" -map "[out]" -c:v prores_ks -profile:v proxy "{W}/burntrack.mov"')
 
 
 def build_sfx():
@@ -384,12 +392,12 @@ elif MODE == "check":
     ins, f = graph()
     import signal
     pr = subprocess.Popen(f'ffmpeg -v error -y {ins} -filter_complex "{f}" -map "[vo]" -map "[ao]" -map "[mo]"{SXMAP} -t 0.5 -f null -',
-                          shell=True, start_new_session=True)
+                          shell=True, **_popen_group())
     try:
         if pr.wait(timeout=120):
             sys.exit("check falhou")
     except subprocess.TimeoutExpired:
-        os.killpg(pr.pid, signal.SIGKILL)
+        _kill_tree(pr)
         print("AVISO: check travou no encerramento do ffmpeg (sem erro de grafo); siga para o render com vigia de CPU")
 elif MODE == "preview":
     # python3 render.py job.json preview INICIO DURACAO -> <work>/preview_<inicio>.mp4 (1080x1920, audio mixado)
@@ -402,15 +410,16 @@ elif MODE == "preview":
           ";[ao][mo]amix=inputs=2:duration=first:normalize=0[apv]")   # voz+SFX+musica numa faixa so
     pr = subprocess.Popen(f'ffmpeg -v error -y {ins} -filter_complex "{f}" -map "[vo]" -map "[apv]" -ss {t0p} -t {durp} '
                           f'-s 1080x1920 -c:v libx264 -preset fast -crf 17 -pix_fmt yuv420p -c:a aac -b:a 192k '
-                          f'-movflags +frag_keyframe+empty_moov "{outp}"', shell=True, start_new_session=True)
+                          f'-movflags +frag_keyframe+empty_moov "{outp}"', shell=True, **_popen_group())
     try:
         pr.wait(timeout=900)
     except subprocess.TimeoutExpired:
-        os.killpg(pr.pid, signal.SIGKILL)
+        _kill_tree(pr)
     print("preview:", outp)
 elif MODE == "render":
     ins, f = graph()
-    run(f'ffmpeg -v error -y {ins} -filter_complex "{f}" -map "[vo]" -map "[ao]" -map "[mo]"{SXMAP} -t {D} -c:v h264_videotoolbox '
+    encoder = os.environ.get('CIBO_VIDEO_ENCODER', 'h264_videotoolbox' if sys.platform == 'darwin' else 'libx264')
+    run(f'ffmpeg -v error -y {ins} -filter_complex "{f}" -map "[vo]" -map "[ao]" -map "[mo]"{SXMAP} -t {D} -c:v {encoder} '
         f'{AMETA}'
         f'-b:v {job.get("vbitrate", "45M")} -maxrate {job.get("vmaxrate", "60M")} -profile:v high -tag:v avc1 -color_range tv -colorspace bt709 -color_primaries bt709 '
         f'-color_trc bt709 -c:a aac -b:a 320k -movflags +faststart "{EDIT}"')

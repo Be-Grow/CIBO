@@ -3,7 +3,7 @@ Pontua: rosto grande (close), nítido, de frente, olhos visíveis, boca larga (s
 uso: cover_scan.py SAIDA.json VIDEO  -> lista [t, x_centro, w, score, sharp, front, mouth]"""
 import json, os, subprocess, sys
 import cv2, numpy as np
-MODEL = os.environ.get("YUNET", "/Users/bruno/.claude/skills/content-hub/assets/yunet.onnx")
+MODEL = os.environ.get("YUNET", str(Path(__file__).resolve().parents[2] / "content-hub" / "assets" / "yunet.onnx"))
 SRC = sys.argv[2] if len(sys.argv) > 2 else sys.exit("uso: cover_scan.py SAIDA.json VIDEO")
 W, H = 960, 540; FPS = 2
 det = cv2.FaceDetectorYN.create(MODEL, '', (W, H), 0.7)

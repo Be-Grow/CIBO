@@ -53,9 +53,16 @@ def stage(name,key,out,fn):
     fn(); _ST[name]=key
     # grava com trava e junta com o que esta no disco: cortes em paralelo (PARALLEL) dividem
     # este arquivo e um apagaria o registro do outro
-    import fcntl
-    with open(STAMP+'.lock','w') as lk:
-        fcntl.flock(lk,fcntl.LOCK_EX)
+    with open(STAMP+'.lock','a+b') as lk:
+        if os.name == 'nt':
+            import msvcrt
+            lk.seek(0)
+            if lk.tell() == 0 and os.fstat(lk.fileno()).st_size == 0:
+                lk.write(b'0'); lk.flush(); lk.seek(0)
+            msvcrt.locking(lk.fileno(), msvcrt.LK_LOCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(lk,fcntl.LOCK_EX)
         cur=json.load(open(STAMP)) if os.path.exists(STAMP) else {}
         cur[name]=key; _ST.update(cur)
         json.dump(cur,open(STAMP,'w'),indent=1)

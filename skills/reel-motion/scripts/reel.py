@@ -26,15 +26,17 @@ reel.json: {"name": "03 - …", "src": "C0008-004.MP4", "tema": "priscilla", "mu
             "capa": {"frame_t": 12.3, "l1": "…", "l2": "…", "accent": "…", "y": 290}}
 Temporários sempre no SSD (TMPDIR) e mantidos (o editor pediu para guardar).
 """
-import json, os, re, shutil, subprocess, sys, time
+import json, os, re, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 
 ENG = Path(__file__).resolve().parent.parent           # skill reel-motion
 P = Path(sys.argv[1]).resolve()
-WK = P / '04_work'; MG = ENG / 'mg'; SK = Path.home() / '.claude/skills'
-TMP = '/Volumes/SSD/CIBO/tmp'
-os.environ['TMPDIR'] = TMP
-AUDIOPY = str(Path.home() / '.venvs/audiotools/bin/python')
+WK = P / '04_work'; MG = ENG / 'mg'; SK = Path(os.environ.get('CIBO_SKILLS', ENG.parent))
+TMP = Path(os.environ.get('CIBO_TEMP', Path(tempfile.gettempdir()) / 'CIBO'))
+TMP.mkdir(parents=True, exist_ok=True)
+os.environ['TMPDIR'] = str(TMP)
+os.environ['TEMP'] = os.environ.get('TEMP', str(TMP))
+os.environ['TMP'] = os.environ.get('TMP', str(TMP))
 R = sys.argv[2]; ETAPA = sys.argv[3]; ARGS = sys.argv[4:]; W = WK / R
 C = json.load(open(W / 'reel.json'))
 NAME = C['name']; ENTREGA = P / '06_deliverables' / f'{NAME}.mp4'; CAPA = P / '06_deliverables' / f'CAPA - {NAME}.jpg'
@@ -83,7 +85,7 @@ def segs():
 
 
 def whisper(audio, out, prompt=None):
-    cmd = ['uv', 'run', '--quiet', '--with', 'mlx-whisper', 'python', str(ENG / 'scripts/wt.py'), str(audio), str(out), 'mlx-community/whisper-large-v3-mlx']
+    cmd = ['uv', 'run', '--quiet', '--with', 'faster-whisper', 'python', str(ENG / 'scripts/wt.py'), str(audio), str(out), 'large-v3']
     sh(cmd + ([prompt] if prompt else []), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
@@ -364,6 +366,14 @@ def limpa_bundles():
 
 
 def mata_orfaos():
+    if os.name == 'nt':
+        cmd = "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'reel-motion\\\\node_modules' } | Select-Object -ExpandProperty ProcessId | ConvertTo-Json -Compress"
+        raw = subprocess.run(['powershell', '-NoProfile', '-Command', cmd], capture_output=True, text=True).stdout.strip()
+        try: ids = json.loads(raw) if raw else []
+        except ValueError: ids = []
+        if isinstance(ids, int): ids = [ids]
+        for pid in ids: subprocess.run(['taskkill', '/F', '/T', '/PID', str(pid)], capture_output=True)
+        return
     """esbuild/Chrome do motor que ficaram órfãos (pai = 1) de render encerrado: dois esbuild ficaram 4 h a ~280% de CPU (auditoria 14/10/2026)"""
     for l in subprocess.run(['ps', '-eo', 'pid=,ppid=,command='], capture_output=True, text=True).stdout.splitlines():
         p = l.split(None, 2)
@@ -382,16 +392,18 @@ def remotion(out, extra, props=None, codec=('--codec=h264',)):
     fr = [a for a in extra if a.startswith('--frames=')]
     dur = (lambda a, b: (int(b) - int(a)) / 29.97)(*fr[0][9:].split('-')) if fr else pr['duration']
     lim = max(360, int(dur * 12))
-    cmd = ['npx', 'remotion', 'render', 'src/index.ts', 'Reel', str(out), f'--props={props}', f'--public-dir={PUB}', *codec,
+    cmd = ['npx.cmd' if os.name == 'nt' else 'npx', 'remotion', 'render', 'src/index.ts', 'Reel', str(out), f'--props={props}', f'--public-dir={PUB}', *codec,
            '--muted', '--overwrite', '--log=error', '--timeout=180000', '--concurrency=2'] + extra   # 2 abas (RAM do Mac de 16 GB); 180 s por quadro com a máquina ocupada
     mata_orfaos()
     for tentativa in (1, 2):
         print('$', ' '.join(map(str, cmd))[:160], f'(limite {lim}s)', flush=True)
-        p = subprocess.Popen(cmd, cwd=MG, start_new_session=True)
+        popen_kw = {'cwd': MG, 'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == 'nt' else {'cwd': MG, 'start_new_session': True}
+        p = subprocess.Popen(cmd, **popen_kw)
         import signal
         def _fim(sig, frm, p=p):   # reel.py encerrado: leva o render junto (grupo próprio não recebe o sinal do pai)
             try:
-                os.killpg(p.pid, 15)
+                if os.name == 'nt': subprocess.run(['taskkill', '/F', '/T', '/PID', str(p.pid)], capture_output=True)
+                else: os.killpg(p.pid, 15)
             except ProcessLookupError:
                 pass
             sys.exit(1)
@@ -401,7 +413,9 @@ def remotion(out, extra, props=None, codec=('--codec=h264',)):
                 break
             raise subprocess.CalledProcessError(p.returncode, cmd)
         except subprocess.TimeoutExpired:
-            os.killpg(p.pid, 15); p.wait()
+            if os.name == 'nt': subprocess.run(['taskkill', '/F', '/T', '/PID', str(p.pid)], capture_output=True)
+            else: os.killpg(p.pid, 15)
+            p.wait()
             print(f'render passou de {lim}s (travado?): encerrado' + ('; nova tentativa' if tentativa == 1 else ''), flush=True)
             if tentativa == 2:
                 raise

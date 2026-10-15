@@ -16,7 +16,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-YUNET = os.environ.get("YUNET", str(Path.home() / ".claude/skills/content-hub/assets/yunet.onnx"))
+YUNET = os.environ.get("YUNET", str(Path(__file__).resolve().parents[2] / "content-hub" / "assets" / "yunet.onnx"))
 SW, SH, FPS = 270, 480, 4          # análise em 270 px de largura, 4 qps
 
 

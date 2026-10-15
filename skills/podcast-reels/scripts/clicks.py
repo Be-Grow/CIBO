@@ -32,8 +32,8 @@ def _acervo(i,fallback):
         if r.returncode==0 and os.path.exists(p): return p
     except Exception: pass
     return fallback
-DEFAULT_CLICKS=(_acervo('sfx-click-lens','/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav')+'|'+
-                _acervo('sfx-camera-click','/Users/bruno/CIBO/skills/fernanda-produto/assets/camera_click.mp3'))
+_repo_click=os.path.abspath(os.path.join(os.path.dirname(__file__),'..','..','fernanda-produto','assets','camera_click.mp3'))
+DEFAULT_CLICKS=(_acervo('sfx-click-lens','')+'|'+_acervo('sfx-camera-click',_repo_click))
 def _load(fp):
     raw=subprocess.run(f'ffmpeg -v error -i "{fp}" -f s16le -ar {SR} -ac 1 -',
                        shell=True,capture_output=True).stdout

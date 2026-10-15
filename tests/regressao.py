@@ -21,7 +21,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 GOLDEN = HERE / "golden"
-SKILLS = Path(os.environ.get("CIBO_SKILLS", Path.home() / ".claude" / "skills"))
+SKILLS = Path(os.environ.get("CIBO_SKILLS", HERE.parent / "skills"))
 WORK = Path(os.environ.get("CIBO_TEST_WORK", Path.home() / ".cache" / "cibo" / "regressao"))
 ENGINES = ["podcast-reels", "bombordo-boreste", "katia", "autismo-cast", "content-hub"]
 # chaves de clipe que exigem arquivos externos do cliente: fora do teste
@@ -40,7 +40,7 @@ def ffversion():
 def fixture() -> Path:
     fx = WORK / "fixture"
     stamp = fx / "ffmpeg.txt"
-    if stamp.exists() and stamp.read_text() == ffversion():
+    if stamp.exists() and stamp.read_text(encoding="utf-8") == ffversion():
         return fx
     shutil.rmtree(fx, ignore_errors=True)
     fx.mkdir(parents=True)
@@ -63,13 +63,13 @@ def fixture() -> Path:
         a, b = i * 1.9, i * 1.9 + 1.5
         f = lambda x: f"00:00:{int(x):02d},{int(round((x % 1) * 1000)):03d}"
         srt.append(f"{i + 1}\n{f(a)} --> {f(b)}\n{t}\n")
-    (fx / "src.srt").write_text("\n".join(srt))
-    stamp.write_text(ffversion())
+    (fx / "src.srt").write_text("\n".join(srt), encoding="utf-8")
+    stamp.write_text(ffversion(), encoding="utf-8")
     return fx
 
 
 def job_for(engine: str, fx: Path, run: Path) -> Path:
-    ex = json.loads((SKILLS / engine / "assets" / "job.example.json").read_text())
+    ex = json.loads((SKILLS / engine / "assets" / "job.example.json").read_text(encoding="utf-8"))
     clips = ex.get("clips")
     c0 = dict(next(iter(clips.values())) if isinstance(clips, dict) else clips[0])
     for k in DROP:
@@ -94,7 +94,7 @@ def job_for(engine: str, fx: Path, run: Path) -> Path:
         else:
             job.pop(k)
     p = run / "job.json"
-    p.write_text(json.dumps(job, ensure_ascii=False, indent=1))
+    p.write_text(json.dumps(job, ensure_ascii=False, indent=1), encoding="utf-8")
     return p
 
 
@@ -120,21 +120,27 @@ def render(engine: str) -> tuple[dict, float, str]:
     shutil.rmtree(run, ignore_errors=True)
     run.mkdir(parents=True)
     job = job_for(engine, fx, run)
-    py = SKILLS / engine / ".venv" / "bin" / "python3"
+    bindir = "Scripts" if os.name == "nt" else "bin"
+    exe = "python.exe" if os.name == "nt" else "python3"
+    py = SKILLS / engine / ".venv" / bindir / exe
     if not py.exists():
-        py = SKILLS / "podcast-reels" / ".venv" / "bin" / "python3"
+        py = SKILLS / "podcast-reels" / ".venv" / bindir / exe
+    if not py.exists():
+        py = Path(sys.executable)
     env = {k: v for k, v in os.environ.items()
            if k not in ("VENC", "PASSA_DIRECT", "BURN_END_INLINE", "BURN_END_LIMIT", "BURN_END_BT709", "ZOOM_AMT",
                         "BURN_OUT", "JOB", "WORK", "SRCDIR", "FONT", "FILMBURN", "LOGO", "VIDEO_ENCODER", "REPLAN")}
     env.update(JOB=str(job), PYTHONHASHSEED="0")
     t = time.time()
     # em background o macOS joga tudo nos núcleos lentos; os filhos herdam a prioridade
-    subprocess.run(["taskpolicy", "-B", "-t", "0", "-l", "0", "-p", str(os.getpid())], capture_output=True)
     try:
         r = subprocess.run([str(py), str(SKILLS / engine / "scripts" / "make_reels.py"), "corte01"], cwd=run,
                            env=env, capture_output=True, text=True, timeout=TIMEOUT)
     except subprocess.TimeoutExpired as e:
-        subprocess.run(["pkill", "-f", str(run)], capture_output=True)   # ffmpeg filhos que ficaram presos
+        if os.name == "nt":
+            subprocess.run(["taskkill", "/F", "/T", "/PID", str(e.pid)], capture_output=True)
+        else:
+            subprocess.run(["pkill", "-f", str(run)], capture_output=True)
         return {"erro": f"travou: passou de {TIMEOUT}s (encode parado?)"}, time.time() - t, str(e.stdout or "")[-800:]
     el = time.time() - t
     log = (r.stdout + r.stderr)[-1500:]
@@ -161,14 +167,14 @@ def main():
                 print(f"ERRO   {eng}: {d['erro']}\n{log}")
                 falhas += 1
                 continue
-            g.write_text(json.dumps(d | {"ffmpeg": ffversion()}, indent=1) + "\n")
+            g.write_text(json.dumps(d | {"ffmpeg": ffversion()}, indent=1) + "\n", encoding="utf-8")
             print(f"GRAVADO {eng} ({el:.0f}s) {d}")
             continue
         if not g.exists():
             print(f"SEM_REFERENCIA {eng}: rode `regressao.py record --engine {eng}`")
             falhas += 1
             continue
-        ref = json.loads(g.read_text())
+        ref = json.loads(g.read_text(encoding="utf-8"))
         if "erro" in d:
             print(f"ERRO   {eng}: {d['erro']}\n{log}")
             falhas += 1

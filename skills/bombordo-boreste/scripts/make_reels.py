@@ -21,7 +21,8 @@ def _canon_check():
     """A project-local COPY of the pipeline silently misses every later skill fix
     (ep3 shipped phantom captions and chopped words that the skill had already
     fixed). Warn loudly when the running scripts differ from the skill's."""
-    for base in (os.path.expanduser('~/.claude/skills/bombordo-boreste/scripts'),):
+    skills = os.environ.get('CIBO_SKILLS', os.path.abspath(os.path.join(HERE, '..', '..')))
+    for base in (os.path.join(skills, 'bombordo-boreste', 'scripts'),):
         if os.path.isdir(base) and os.path.realpath(base)!=os.path.realpath(HERE):
             diff=[f for f in ('plan.py','render.py','clicks.py','render_caps.py','cover.py','make_reels.py')
                   if os.path.exists(os.path.join(base,f)) and os.path.exists(os.path.join(HERE,f))

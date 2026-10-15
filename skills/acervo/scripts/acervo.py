@@ -26,8 +26,13 @@ import argparse, hashlib, json, os, re, shutil, subprocess, sys, time, unicodeda
 from pathlib import Path
 
 CONF = Path(os.environ.get("CIBO_ACERVO_CONF", Path.home() / ".cibo" / "acervo.json"))
-SUGESTAO = "/Volumes/SSD/CIBO Acervo"
-REGISTRY = Path.home() / ".claude/skills/client-router/references/client-registry.json"
+SUGESTAO = str(Path.home() / "CIBO Acervo")
+try:
+    from skills._shared.paths import cibo_root
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+    from skills._shared.paths import cibo_root
+REGISTRY = Path(os.environ.get("CIBO_CLIENT_REGISTRY", cibo_root() / "skills/client-router/references/client-registry.json"))
 MEDIA = {".mp4", ".mov", ".mkv", ".webm", ".wav", ".mp3", ".aif", ".aiff", ".m4a", ".flac", ".ogg"}
 SKIP = {".DS_Store", "Thumbs.db"}
 
@@ -427,9 +432,10 @@ def cmd_move(a):
     old = lib()
     new = Path(a.caminho).expanduser()
     new.mkdir(parents=True, exist_ok=True)
-    r = subprocess.run(["rsync", "-a", f"{old}/", f"{new}/"])
-    if r.returncode:
-        sys.exit("rsync falhou; biblioteca continua no lugar antigo")
+    try:
+        shutil.copytree(old, new, dirs_exist_ok=True, copy_function=shutil.copy2)
+    except OSError as e:
+        sys.exit(f"cópia falhou; biblioteca continua configurada no lugar antigo: {e}")
     c = conf()
     c.update(library=str(new), moved_from=str(old), moved_at=time.strftime("%Y-%m-%d"))
     CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1))

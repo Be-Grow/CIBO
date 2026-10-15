@@ -14,8 +14,9 @@ Uso: reframe.py <video> <ini> <fim> <saida.sendcmd> [--preview arquivo.png]
 import importlib.util
 import os
 import sys
+from pathlib import Path
 
-SKILL = os.path.expanduser("~/.claude/skills/bombordo-boreste/scripts/face_crop.py")
+SKILL = str(Path(__file__).resolve().parents[2] / "bombordo-boreste" / "scripts" / "face_crop.py")
 LARG_CROP = 608
 LIMIAR_CENA = 18.0        # mesmo default da skill
 

@@ -1,7 +1,11 @@
 import json,subprocess,sys,os
+from pathlib import Path
 import numpy as np, soundfile as sf
 W=sys.argv[1]; SR=48000
-A='/Volumes/SSD/CIBO Acervo/sfx/_global/'
+ACERVO_CONF = Path(os.environ.get('CIBO_ACERVO_CONF', Path.home()/'.cibo'/'acervo.json'))
+try: ACERVO = Path(json.loads(ACERVO_CONF.read_text(encoding='utf-8'))['library'])
+except (OSError, ValueError, KeyError): ACERVO = None
+A=str(ACERVO/'sfx'/'_global')+os.sep if ACERVO else ''
 segs=json.load(open(f'{W}/segs.json'))
 TAIL=0.8
 # 1) voz: mesmos trechos do job, do áudio 48 kHz da câmera, fades de 6 ms nas emendas
@@ -16,7 +20,8 @@ for a0,b0 in json.load(open(f'{W}/mute.json')) if os.path.exists(f'{W}/mute.json
 sf.write(f'{W}/voz.wav',voz,SR)
 N=len(voz); DUR=N/SR
 # 2) trilha: fim natural da faixa no fim do reel (backtiming), entrada com fade curto
-MUS=json.load(open(f'{W}/reel.json'))['music']; MUS=MUS if os.path.isabs(MUS) else '/Volumes/SSD/CIBO Acervo/musica/_global/'+MUS   # trilha alterna por reel
+MUS=json.load(open(f'{W}/reel.json'))['music']; MUS=MUS if os.path.isabs(MUS) else str(ACERVO/'musica'/'_global'/MUS) if ACERVO else MUS
+if not os.path.isfile(MUS): raise SystemExit(f'trilha não encontrada: {MUS}; configure o caminho no reel.json ou no acervo CIBO')
 mdur=float(subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',MUS],capture_output=True,text=True).stdout)
 off=max(0,mdur-DUR)
 # music_level: nivela o volume da TRILHA no tempo (o trecho escolhido pode ter um começo 12 dB mais forte que o resto;

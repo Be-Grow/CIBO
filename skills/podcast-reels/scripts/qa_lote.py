@@ -9,8 +9,9 @@ uma linha por corte e monta UMA folha de contato (um corte por linha, quadros no
 pedidos; negativos contam do fim, fração < 1 é proporção da duração). Leia só a folha.
 """
 import argparse, glob, json, os, re, subprocess, sys, tempfile
+from pathlib import Path
 
-VERIFY = os.path.expanduser('~/.claude/skills/video-delivery-safety-check/scripts/verify_video.py')
+VERIFY = str(Path(os.environ.get('CIBO_SKILLS', Path(__file__).resolve().parents[2])) / 'video-delivery-safety-check/scripts/verify_video.py')
 
 
 def run(cmd):

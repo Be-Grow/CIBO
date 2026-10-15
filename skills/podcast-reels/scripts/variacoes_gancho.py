@@ -50,6 +50,9 @@ def venc():
 
 
 def ensure_av():
+    if os.name == "nt":
+        print("AVFoundation indisponível no Windows; validando o arquivo por decodificação integral no FFmpeg.")
+        return
     src = HERE / "av_check.swift"
     if not AVBIN.exists() or AVBIN.stat().st_mtime < src.stat().st_mtime:
         AVBIN.parent.mkdir(parents=True, exist_ok=True)

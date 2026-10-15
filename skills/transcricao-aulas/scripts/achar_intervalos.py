@@ -60,7 +60,12 @@ for n, (x, y) in enumerate(intervalos, 1):
     extra = f" | DaVinci {tc(x)} -> {tc(y)}" if a.inicio_timeline else ""
     print(f"{n}. {hms(x)} -> {hms(y)}  ({(y - x)/60:.0f} min){extra}")
 if a.janelas and intervalos:
-    import mlx_whisper  # rode com o python do mlx-whisper
+    import sys as _cibo_sys
+    from pathlib import Path as _CiboPath
+    for _cibo_parent in _CiboPath(__file__).resolve().parents:
+        if (_cibo_parent / "_shared" / "asr_compat.py").is_file():
+            _cibo_sys.path.insert(0, str(_cibo_parent / "_shared")); break
+    import asr_compat as mlx_whisper
     for n, (x, y) in enumerate(intervalos, 1):
         for rotulo, t0 in (("antes", max(0, x - 60)), ("depois", y)):
             with tempfile.NamedTemporaryFile(suffix=".wav") as w:

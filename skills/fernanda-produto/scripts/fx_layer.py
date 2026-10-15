@@ -12,6 +12,7 @@ palavra-chave em azul forte (sem pop palavra por palavra: o usuario achou o timi
 fade subindo suave e sai com fade; enquanto ha lettering na tela a legenda some (nao repetir o mesmo texto).
 """
 import json, os, subprocess, sys, unicodedata
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -20,7 +21,7 @@ from easing import ease_out_cubic, ease_out_back, entrance
 job = json.load(open(sys.argv[1]))
 DUR, OUT = float(sys.argv[2]), sys.argv[3]
 FPS = 30000 / 1001
-FONT = "/Users/bruno/Library/Fonts/Montserrat-VariableFont_wght.ttf"
+FONT = os.environ.get("CIBO_FONT", str((Path(__file__).resolve().parents[1] / ".." / "malu-cortes" / "assets" / "fonts" / "Montserrat[wght].ttf").resolve()))
 ACCENT = (10, 52, 170, 255)   # azul forte escuro (usuario: "azul forte" e depois "deveria ser mais escuro")
 WHITE = (255, 255, 255, 255)
 W = 2160

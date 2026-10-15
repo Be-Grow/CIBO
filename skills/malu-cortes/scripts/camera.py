@@ -25,6 +25,7 @@ Subquadros: sem movimento visivel (< 0,5 px no canto por quadro) = 1 warp; senao
 no maximo 0,5 px (mais que isso nao muda a imagem; a entrada de 0,3 s usa os 16).
 """
 import argparse, hashlib, json, math, os, subprocess, sys
+from pathlib import Path
 import numpy as np, cv2
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -37,7 +38,7 @@ ap.add_argument("--frames", help="so estes instantes (tempo editado, separados p
 ap.add_argument("--out", default=".")
 a = ap.parse_args()
 job = json.load(open(a.job))
-FERN = job.get("engine_scripts_fernanda", os.path.expanduser("~/.claude/skills/fernanda-produto/scripts"))
+FERN = job.get("engine_scripts_fernanda", str(Path(os.environ.get("CIBO_SKILLS", Path(__file__).resolve().parents[2])) / "fernanda-produto/scripts"))
 sys.path.insert(0, FERN)
 from timeline import segments, duration
 
@@ -379,7 +380,7 @@ if __name__ == "__main__":
     osz = job.get("out_size")
     vsc = ["-vf", f"scale={osz[0]}:{osz[1]}:flags=lanczos"] if osz else []
     enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "yuv420p", "-s", f"{W}x{H}",
-                            "-r", "30000/1001", "-i", "-"] + vsc + ["-c:v", "prores_videotoolbox", "-profile:v", "standard" if osz else "hq",
+                            "-r", "30000/1001", "-i", "-"] + vsc + ["-c:v", "prores_ks", "-profile:v", "standard" if osz else "hq",
                             "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709", "-color_range", "tv", tmp],
                            stdin=subprocess.PIPE)
     ys, cs = W * H, (W // 2) * (H // 2); fsz = ys + 2 * cs

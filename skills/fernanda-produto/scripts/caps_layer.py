@@ -4,13 +4,15 @@ Uso: python3 caps_layer.py captions.json DURACAO saida.mov
 captions.json: [{"text", "start", "end"}] em tempo do video editado.
 A faixa (2160x420) e posicionada pelo render em y=2022 (baseline 2322) ou y=1350 na tela dividida.
 """
-import json, sys, subprocess
+import json, os, sys, subprocess
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 CAPS, DUR, OUT = sys.argv[1], float(sys.argv[2]), sys.argv[3]
 W, BH, BASE = 2160, 420, 300
 FPS = 30000 / 1001
-f = ImageFont.truetype("/Users/bruno/Library/Fonts/Montserrat-VariableFont_wght.ttf", 122)
+font = Path(os.environ.get("CIBO_FONT", Path(__file__).resolve().parents[1] / ".." / "malu-cortes" / "assets" / "fonts" / "Montserrat[wght].ttf")).resolve()
+f = ImageFont.truetype(str(font), 122)
 f.set_variation_by_name("Medium")
 asc = f.getmetrics()[0]
 caps = json.load(open(CAPS))

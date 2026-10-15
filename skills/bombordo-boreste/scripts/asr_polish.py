@@ -43,7 +43,13 @@ MODEL2 = os.environ.get('ASR_MODEL2', 'mlx-community/whisper-large-v3-turbo')
 def transcribe(src, a, b, model=MODEL):
     # No domain prompt on purpose: a prompt about ports turned "no ponto" into
     # "no porto". Names/jargon are fixed afterwards by job.fix, not by biasing the ear.
-    import mlx_whisper
+    import sys as _cibo_sys
+    from pathlib import Path as _CiboPath
+    for _cibo_parent in _CiboPath(__file__).resolve().parents:
+        if (_cibo_parent / "_shared" / "asr_compat.py").is_file():
+            _cibo_sys.path.insert(0, str(_cibo_parent / "_shared"))
+            break
+    import asr_compat as mlx_whisper
     wav = os.path.join(B, '_seg.wav')
     subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-ss', f'{a:.3f}', '-t', f'{b-a:.3f}',
                     '-i', src, '-vn', '-ac', '1', '-ar', '16000', wav], check=True)

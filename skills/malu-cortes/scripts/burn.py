@@ -12,13 +12,14 @@ luz sem forma, entao o quadro 16:9 e esticado para 9:16 inteiro (nao corta a luz
 trilha de SFX pelo audio.py (evento com "src"), separado da voz.
 """
 import json, os, subprocess, sys
+from pathlib import Path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 job = json.load(open(sys.argv[1]))
-sys.path.insert(0, job.get("engine_scripts_fernanda", os.path.expanduser("~/.claude/skills/fernanda-produto/scripts")))
+sys.path.insert(0, job.get("engine_scripts_fernanda", str(Path(os.environ.get("CIBO_SKILLS", Path(__file__).resolve().parents[2])) / "fernanda-produto/scripts")))
 from timeline import duration
 
-SRC = job.get("burn_src", os.path.expanduser("~/.claude/skills/fernanda-produto/assets/film_burn_transitions_sfx_source.mp4"))
+SRC = job.get("burn_src", str(Path(os.environ.get("CIBO_SKILLS", Path(__file__).resolve().parents[2])) / "fernanda-produto/assets/film_burn_transitions_sfx_source.mp4"))
 # pico de luz de cada burn no arquivo (medido: luminancia a 10 fps); o som do arquivo ja vem sincronizado com a luz
 BURNS = {"B1": 6.10, "B4": 10.00, "B6": 13.40, "B7": 14.60, "B9": 19.85, "B10": 21.40, "B12": 24.45, "B13": 25.65}
 PRE, POST = 0.45, 0.50
@@ -41,6 +42,6 @@ if __name__ == "__main__":
               f"trim=duration={D}[x{i}];[{prev}][x{i}]blend=all_mode=screen[y{i}];")
         prev = f"y{i}"
     f += f"[{prev}]format=yuv422p10le[out]"
-    subprocess.run(f'ffmpeg -v error -y {ins} -filter_complex "{f}" -map "[out]" -c:v prores_videotoolbox -profile:v proxy '
+    subprocess.run(f'ffmpeg -v error -y {ins} -filter_complex "{f}" -map "[out]" -c:v prores_ks -profile:v proxy '
                    f'"{W}/burntrack.mov"', shell=True, check=True)
     print(f"burntrack.mov: {len(ev)} burns vermelhos em " + ", ".join(f"{e['t']:.2f}s ({e['burn']})" for e in ev))

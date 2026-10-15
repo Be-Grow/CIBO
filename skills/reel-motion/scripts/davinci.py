@@ -20,7 +20,9 @@ import numpy as np, soundfile as sf
 P, R, OUT = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3]).resolve()
 W = P / '04_work' / R; PUB = P / '04_work' / 'public'; CAM = OUT / '_camadas'
 C = json.load(open(W / 'reel.json')); PR = json.load(open(PUB / R / 'props.json'))
-SFXDIR = '/Volumes/SSD/CIBO Acervo/sfx/_global/'
+_acervo_conf = Path(os.environ.get('CIBO_ACERVO_CONF', Path.home()/'.cibo'/'acervo.json'))
+try: SFXDIR = str(Path(json.loads(_acervo_conf.read_text(encoding='utf-8'))['library'])/'sfx'/'_global') + os.sep
+except (OSError, ValueError, KeyError): SFXDIR = ''
 FD = Fraction(1001, 30000)
 fr = lambda t: max(0, round(t / FD))                       # segundos → quadros
 tt = lambda n: f'{n * 1001}/30000s' if n else '0s'         # quadros → tempo FCPXML
@@ -115,7 +117,7 @@ BOP = (PR.get('theme') or {}).get('burnOpacity') or 0.85
 # ---- capa e SRT ----
 CP = next(P.glob(f"06_deliverables/CAPA - {R[1:]} -*"))
 sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', CP, '-frames:v', '1', '-r', '30000/1001', '-vf', 'scale=1080:1920',
-   '-c:v', 'prores_videotoolbox', '-profile:v', 'standard', OUT / 'capa.mov')
+   '-c:v', 'prores_ks', '-profile:v', 'standard', OUT / 'capa.mov')
 hms = lambda t: f'{int(t // 3600):02d}:{int(t % 3600 // 60):02d}:{int(t % 60):02d},{int(round(t % 1 * 1000)) % 1000:03d}'
 txt = lambda b: ' '.join(w['t'] for w in b['words'])
 open(OUT / 'legenda.srt', 'w').write(''.join(f"{i + 1}\n{hms(b['s'])} --> {hms(b['e'])}\n{txt(b)}\n\n" for i, b in enumerate(PR['captions'])))

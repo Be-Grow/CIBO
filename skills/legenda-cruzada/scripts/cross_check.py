@@ -15,6 +15,12 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
+
+for _cibo_parent in Path(__file__).resolve().parents:
+    if (_cibo_parent / "_shared" / "asr_compat.py").is_file():
+        sys.path.insert(0, str(_cibo_parent / "_shared"))
+        break
 
 FILLERS = {'e', 'é', 'a', 'o', 'as', 'os', 'um', 'uma', 'que', 'de', 'da', 'do',
            'na', 'no', 'em', 'né', 'aí', 'ah', 'então', 'se', 'eu', 'ele', 'ela'}
@@ -55,6 +61,18 @@ def transcribe(whisper: str, wav: str, out_dir: str, name: str,
     if os.path.exists(target) and os.path.getsize(target) > 0:
         print(f'  {name}: já transcrito, pulando')
         return target
+    if os.name == 'nt' or whisper == 'faster-whisper':
+        import asr_compat
+        for attempt, mdl in enumerate((model, fallback)):
+            try:
+                result = asr_compat.transcribe(wav, path_or_hf_repo=mdl, language=language)
+                with open(target, 'w', encoding='utf-8') as fh:
+                    json.dump(result, fh, ensure_ascii=False)
+                print(f'  {name}: ok com {mdl}')
+                return target
+            except Exception as e:
+                print(f'  {name}: falhou com {mdl}: {e}' + (' (tentando fallback)' if attempt == 0 else ''))
+        raise SystemExit(f'não consegui transcrever {name}: verifique a instalação do faster-whisper e a memória')
     for attempt, mdl in enumerate((model, fallback)):
         if not mdl:
             continue
@@ -88,9 +106,9 @@ def main() -> None:
     ap.add_argument('--max-duration', type=float, default=300.0,
                     help='MP4 mais longo que isso nao e corte; fica fora da conferencia')
     ap.add_argument('--out', required=True, help='pasta de QA para áudio, JSONs e relatório')
-    ap.add_argument('--model', default='mlx-community/whisper-large-v3-mlx')
-    ap.add_argument('--fallback-model', default='mlx-community/whisper-large-v3-mlx-8bit')
-    ap.add_argument('--whisper', default='mlx_whisper')
+    ap.add_argument('--model', default='large-v3')
+    ap.add_argument('--fallback-model', default='large-v3')
+    ap.add_argument('--whisper', default='faster-whisper')
     ap.add_argument('--language', default='pt')
     ap.add_argument('--clip-prefix', default='corte',
                     help='prefixo das chaves captions_<prefixo><NN>.json')

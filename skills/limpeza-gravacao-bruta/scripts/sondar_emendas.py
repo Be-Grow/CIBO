@@ -22,7 +22,13 @@ em −23…−30 dB colado no primeiro "V".
 import json, subprocess, sys
 
 import numpy as np
-import mlx_whisper
+import sys as _cibo_sys
+from pathlib import Path as _CiboPath
+for _cibo_parent in _CiboPath(__file__).resolve().parents:
+    if (_cibo_parent / "_shared" / "asr_compat.py").is_file():
+        _cibo_sys.path.insert(0, str(_cibo_parent / "_shared"))
+        break
+import asr_compat as mlx_whisper
 
 SR, FR = 16000, 320  # 20 ms
 
