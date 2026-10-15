@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const output = join(here, '..', 'public', 'audio.wav');
 const rate = 48_000;
-const seconds = 12;
+const seconds = 13;
 const channels = 2;
 const dataBytes = rate * seconds * channels * 2;
 const wav = Buffer.alloc(44 + dataBytes);
