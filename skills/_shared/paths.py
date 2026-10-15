@@ -23,9 +23,14 @@ def skills_root() -> Path:
 def acervo_root() -> Path | None:
     conf = Path(os.environ.get("CIBO_ACERVO_CONF", Path.home() / ".cibo" / "acervo.json"))
     try:
-        library = __import__("json").loads(conf.read_text(encoding="utf-8")).get("library")
+        raw = conf.read_bytes()
+        try:
+            text = raw.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            text = raw.decode("cp1252")
+        library = __import__("json").loads(text).get("library")
         return Path(library).expanduser() if library else None
-    except (OSError, ValueError):
+    except (OSError, ValueError, UnicodeDecodeError):
         return None
 
 

@@ -40,8 +40,14 @@ SKIP = {".DS_Store", "Thumbs.db"}
 # ------------------------------------------------------------------ config / catálogo
 def conf() -> dict:
     try:
-        return json.loads(CONF.read_text())
-    except (OSError, ValueError):
+        raw = CONF.read_bytes()
+        try:
+            text = raw.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            # Configuração criada no Windows com encoding legado do PowerShell.
+            text = raw.decode("cp1252")
+        return json.loads(text)
+    except (OSError, ValueError, UnicodeDecodeError):
         return {}
 
 
