@@ -78,6 +78,8 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 - **Gravação bruta longa com silêncio ou repetição: Whisper com `--condition-on-previous-text False
   --hallucination-silence-threshold 2` desde a primeira passada.** Sem isso o large-v3 entrou em loop
   ("não! não!") do minuto 3:40 até o fim e precisou de uma segunda passada de 8 min.
+- **Toda espera em segundo plano tem tempo limite e sai também no erro** (`timeout 900 …`, ou o loop testa a falha e um
+  contador). No EP 06 duas esperas ficaram 20 min presas checando um log de um export que já tinha falhado.
 - **zsh não separa variável sem aspas**: `for x in ${=lista}` (ou um array), nunca `for x in $lista`.
 - **Pergunte o que o editor quis dizer antes de investigar** quando o tempo citado não existe no vídeo
   (ex.: "3:05" num corte de 2:24 era do bruto).
