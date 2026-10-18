@@ -33,7 +33,8 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Tempo exato de palavra (legenda, emendas) | `fala-limpa/scripts/alinha_mfa.py` (MFA no SSD) |
 | Podcast só de áudio | `lettering-motion/scripts/audiograma.py` |
 | Teste A/B de ganchos | `podcast-reels/scripts/variacoes_gancho.py` |
-| Projeto editável Premiere/Resolve (oferecer sempre, gerar sob pedido) | `podcast-reels/scripts/projeto_nle.py` |
+| Render final (padrão: no DaVinci do editor — camadas + XML, validar em projeto NOVO, sem render queimado) | `reel-motion` etapa `davinci`; FCP7: `bombordo-boreste/scripts/historias_xml/`; regras em `references/regras-transversais.md` → "DaVinci Resolve pela API" |
+| Projeto Premiere (só sob pedido) | `podcast-reels/scripts/projeto_nle.py` |
 | Entrega no Drive (com links) | `scripts/entrega_drive.py` desta skill — simula sem `--confirmo`; confirme o destino |
 | Correção do editor | `scripts/feedback.py add` no mesmo turno em que a skill é corrigida; `resumo` mostra onde investir |
 | Cor de fotos | `foto-evento-cor` |

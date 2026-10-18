@@ -3,7 +3,7 @@ import {
   Img, AbsoluteFill, Easing, OffthreadVideo, Sequence, continueRender, delayRender, interpolate,
   staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion';
-import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, cl, ramp, useT} from './theme';
+import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, cl, ramp, useT, sh} from './theme';
 
 // Peças reutilizáveis dos painéis. Painel novo = composição destas peças; só crie peça nova quando nenhuma serve.
 
@@ -50,7 +50,7 @@ export const Pill: React.FC<{text: string; p: number; dark?: boolean; size?: num
     background: dark ? C.terra : C.pill, color: dark ? C.onAccent : C.ink,
     ...fLab(), fontSize: size, letterSpacing: 2.2, textTransform: 'uppercase',
     opacity: p, transform: `translateY(${(1 - p) * 18}px)`, filter: `blur(${(1 - p) * 6}px)`,
-    boxShadow: '0 10px 30px rgba(43,37,34,0.18)', whiteSpace: 'nowrap', ...style,
+    boxShadow: `0 10px 30px ${sh(0.18)}`, whiteSpace: 'nowrap', ...style,
   }}>{text}</div>
 );
 
@@ -60,7 +60,7 @@ export const MediaFrame: React.FC<{src: string; t: number; s: number; e: number;
   const inP = ramp(t, s, 0.5, OUT);
   return (
     <div style={{position: 'absolute', left: 60, right: 60, top: 170, height, borderRadius: 34, overflow: 'hidden',
-      boxShadow: '0 30px 60px rgba(43,37,34,0.22)', opacity: inP, transform: `scale(${0.97 + 0.03 * inP})`}}>
+      boxShadow: `0 30px 60px ${sh(0.22)}`, opacity: inP, transform: `scale(${0.97 + 0.03 * inP})`}}>
       <Sequence from={Math.round(s * fps)} layout="none">
         <OffthreadVideo src={staticFile(src)} muted startFrom={Math.round(from * fps)}
           style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${push})`,
@@ -142,10 +142,10 @@ export const PhotoFrame: React.FC<{src: string; t: number; s: number; e: number;
   const push = interpolate(t, [s, e], [1.0, 1.08], cl);
   return (
     <div style={{position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: 30, overflow: 'hidden',
-      background: fit === 'contain' ? C.white : undefined, boxShadow: '0 26px 54px rgba(43,37,34,0.22)',
+      background: fit === 'contain' ? C.white : undefined, boxShadow: `0 26px 54px ${sh(0.22)}`,
       opacity: inP, transform: `translateY(${(1 - inP) * 30}px) scale(${0.96 + 0.04 * inP})`, filter: `blur(${(1 - inP) * 8}px)`}}>
       <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: fit, transform: `scale(${push})`,
-        filter: fit === 'cover' ? T.mediaFilter : 'drop-shadow(0 20px 30px rgba(43,37,34,0.25))', padding: fit === 'contain' ? 30 : 0, boxSizing: 'border-box'}} />
+        filter: fit === 'cover' ? T.mediaFilter : `drop-shadow(0 20px 30px ${sh(0.25)})`, padding: fit === 'contain' ? 30 : 0, boxSizing: 'border-box'}} />
     </div>
   );
 };

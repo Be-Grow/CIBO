@@ -187,7 +187,10 @@ def e_takes():
 
 
 def e_voz():
-    e_takes()
+    try:   # o checador lista trechos para OUVIR; no voz é aviso (no revisa/final continua cobrando)
+        e_takes()
+    except subprocess.CalledProcessError:
+        print('AVISO: checa_takes acusou emenda para ouvir (ver acima); seguindo')
     S = segs()
     f = ''.join(f'[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS,afade=t=in:d=0.006,afade=t=out:st={b - a - 0.006:.3f}:d=0.006[a{i}];' for i, (a, b) in enumerate(S))
     f += ''.join(f'[a{i}]' for i in range(len(S))) + f'concat=n={len(S)}:v=0:a=1[o]'
@@ -265,7 +268,7 @@ def e_camera_crop():
     src = fonte_path()
     cr = sorted(C['crops'], key=lambda c: c['at'])
     iw, ih = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', str(src)],
-                                     capture_output=True, text=True).stdout.strip().split(','))
+                                     capture_output=True, text=True).stdout.strip().split(',')[:2])   # HEVC do iPhone imprime vírgula a mais
     S = segs(); base = max(min(a for a, _ in S) - 1, 0)   # trechos podem vir fora de ordem (cold open)
     pieces = []
     for a, b in S:
@@ -273,11 +276,19 @@ def e_camera_crop():
         for x, y in zip(cuts, cuts[1:]):
             c = [k for k in cr if k['at'] <= x + 1e-3][-1]
             # escala nativa: altura inteira da fonte (608×1080 em 1080p), nunca close ampliado (regra transversal; João, 09/10/2026)
+            # "z" (punch-in no corte seco) só enquanto o recorte continua ≥ 1080 de largura: fonte vertical 1440×2560 aceita até 1,33
             h = ih; w = round(h * 9 / 16)
-            x0 = min(max(round(c['cx'] - w / 2), 0), iw - w); y0 = 0
+            zz = min(c.get('z', 1.0), w / 1080)
+            if zz > 1.001:
+                h = round(h / zz / 2) * 2; w = round(h * 9 / 16 / 2) * 2
+            x0 = min(max(round(c['cx'] - w / 2), 0), iw - w)
+            y0 = min(max(round(c.get('cy', ih * 0.42) - h * 0.42), 0), ih - h) if zz > 1.001 else 0
             pieces.append((x - base, y - base, w, h, x0, y0))
     (PUB / R).mkdir(parents=True, exist_ok=True)
-    f = ''.join(f'[0:v]trim={x:.4f}:{y:.4f},setpts=PTS-STARTPTS,crop={w}:{h}:{x0}:{y0},scale=1080:1920:flags=lanczos,'
+    # "tonemap": "hlg" — selfie de iPhone em HDR HLG (arib-std-b67) vira SDR Rec.709; sem isso céu estoura e pele lava (GL, 18/10/2026)
+    pre = {'hlg': 'zscale=tin=arib-std-b67:min=bt2020nc:pin=bt2020:t=linear:npl=203,format=gbrpf32le,zscale=p=bt709,'
+                  'tonemap=mobius:desat=0:param=0.35,zscale=t=bt709:m=bt709:r=tv,format=yuv422p10le,'}.get(C.get('tonemap'), '')
+    f = ''.join(f'[0:v]trim={x:.4f}:{y:.4f},setpts=PTS-STARTPTS,{pre}crop={w}:{h}:{x0}:{y0},scale=1080:1920:flags=lanczos,'
                 f'unsharp=5:5:{C.get("sharpen", 0.5)},setsar=1[v{i}];' for i, (x, y, w, h, x0, y0) in enumerate(pieces))
     f += ''.join(f'[v{i}]' for i in range(len(pieces))) + f'concat=n={len(pieces)}:v=1:a=0,fps={FPS}[o]'
     sh(['ffmpeg', '-v', 'error', '-y', '-threads', '4', '-ss', f'{base:.3f}', '-to', f'{max(b for _, b in S) + 1:.3f}', '-i', str(src),
@@ -470,6 +481,22 @@ def e_revisa():
         print('  OK' if not achou else f'  {len(achou)} ponto(s)')
 
 
+# partes isoladas por tipo de painel (as chaves batem com <Pt k=…> no panels.tsx)
+PARTES = {
+    'checklist': lambda p: [('titulo', f"título {p.get('title', '')} {p.get('accent', '')}")]
+        + [(f'item{k}', f"item {it['text']}") for k, it in enumerate(p.get('items', []))]
+        + ([('risco', f"risco {p['strike']['text']}")] if p.get('strike') else []),
+    'timeline': lambda p: ([('titulo', f"título {p['title']}")] if p.get('title') else []) + [('linha', 'linha do tempo')]
+        + [(f'item{k}', f"marco {e['text']}") for k, e in enumerate(p.get('events', []))],
+}
+
+
+def _at_parte(p, k):
+    if k == 'risco':
+        return p['strike']['at']
+    return (p.get('items') or p.get('events'))[int(k[4:])]['at']
+
+
 def e_davinci():
     """pacote editável e fragmentado para o DaVinci (07_davinci/<nome>/), pedido do editor em 14/10/2026.
     Camadas inteiras: câmera renderizada (referência), mídia, fundo dos painéis, legenda. Elementos isolados, cada um no seu
@@ -489,7 +516,12 @@ def e_davinci():
     man = []
     for i, p in enumerate(pr.get('panels', [])):
         a, b = q(p['s'] - 0.6), q(p['e'] + 0.7)
-        jobs.append((f'painel_{i}', 'painel', str(i), a, b, alfa)); man.append(dict(arq=f'el/painel_{i}.mov', a=a, grupo='painel', nome=f"{p['type']} {p.get('title', '')} {p.get('accent', '')}"))
+        # painel com partes marcadas (<Pt> no panels.tsx): um arquivo por título, item, linha e risco (17/10/2026)
+        partes = PARTES.get(p['type'], lambda p: [])(p)
+        for k, nm in partes or [(None, f"{p['type']} {p.get('title', '')} {p.get('accent', '')}")]:
+            a2 = a if k in (None, 'titulo', 'linha') else q(_at_parte(p, k) - 0.2)
+            nome = f'painel_{i}' + (f'_{k}' if k else '')
+            jobs.append((nome, 'painel', str(i), a2, b, alfa, k)); man.append(dict(arq=f'el/{nome}.mov', a=a2, grupo='painel', nome=nm))
         if p.get('step'):
             jobs.append((f'step_{i}', 'step', str(i), a, b, alfa)); man.append(dict(arq=f'el/step_{i}.mov', a=a, grupo='step', nome=f"etapa {p['step'].get('n', '')}"))
         for k, g in enumerate(p.get('tags') or []):
@@ -506,12 +538,20 @@ def e_davinci():
     if pr.get('lower'):
         lw = pr['lower']; a, b = q(lw.get('s', 0) - 0.2), q(lw.get('e', pr['duration']) + 0.6)
         jobs.append(('titulo_lower', 'titulo', 'lower', a, b, alfa)); man.append(dict(arq='el/titulo_lower.mov', a=a, grupo='titulo', nome='tarja'))
+    # palavras-chave (tela cheia + B-roll, Growth Leaders 18/10/2026) e cartão final: um arquivo cada, véu junto da palavra
+    for k, kw in enumerate(pr.get('keywords') or []):
+        a, b = q(kw['s'] - 0.2), q(kw['e'] + 0.6)
+        jobs.append((f'titulo_k{k}', 'titulo', f'k{k}', a, b, alfa))
+        man.append(dict(arq=f'el/titulo_k{k}.mov', a=a, grupo='titulo', nome=f"palavra-chave {kw.get('sub', '')} {kw.get('text', '')} {kw.get('accent', '')}".strip()))
+    if pr.get('endCard'):
+        ec = pr['endCard']; a = q(ec['s'] - 0.1)
+        jobs.append(('titulo_end', 'titulo', 'end', a, N - 1, alfa)); man.append(dict(arq='el/titulo_end.mov', a=a, grupo='titulo', nome=f"cartão final {ec.get('l1', '')}"))
     json.dump(man, open(cam / 'elementos.json', 'w'), ensure_ascii=False, indent=1)
-    for nome, lay, el, a, b, codec in jobs:
+    for nome, lay, el, a, b, codec, *pt in jobs:
         f = cam / (f'el/{nome}.mov' if el is not None else f'{nome}.mov')
         if f.exists() and (not ARGS or not any(x in nome for x in ARGS)) and (ARGS or f.stat().st_mtime > (PUB / R / 'props.json').stat().st_mtime):
             continue                                            # já renderizado e props sem mudança
-        pf = PUB / R / f'props_{nome}.json'; json.dump({**pr, 'layer': lay, **({'el': el} if el is not None else {})}, open(pf, 'w'), ensure_ascii=False)
+        pf = PUB / R / f'props_{nome}.json'; json.dump({**pr, 'layer': lay, **({'el': el} if el is not None else {}), **({'part': pt[0]} if pt and pt[0] else {})}, open(pf, 'w'), ensure_ascii=False)
         t0 = time.time(); remotion(f, [f'--frames={a}-{b}'] if a is not None else [], pf, codec)
         print(f'{nome}: {time.time() - t0:.0f}s', flush=True)
     sh([AUDIOPY, str(ENG / 'scripts/davinci.py'), str(P), R, str(out)])

@@ -102,8 +102,10 @@ for f in (OUT / 'burns').glob('*'):
     f.unlink()
 for i, b in enumerate(PR.get('burns', [])):
     dst = OUT / 'burns' / f'burn_{i:02d}.mov'
-    tint = ('scale=1080:1920,colorchannelmixer=rr=0.6735:rg=0.4235:rb=0.1040:gr=0.1925:gg=0.8355:gb=0.0925:br=0.1500:bg=0.2970:bb=0.6185,'
-            'hue=h=-12:s=1.6,colorchannelmixer=rr=1.05:gg=1.05:bb=1.05,format=rgb24')   # aproximação do burnFilter CSS
+    # aproximação do burnFilter CSS do tema (theme.burnFF); sem ele, o sépia da Priscilla (antes fixo para todo cliente)
+    tint = 'scale=1080:1920,' + ((PR.get('theme') or {}).get('burnFF') or
+            'colorchannelmixer=rr=0.6735:rg=0.4235:rb=0.1040:gr=0.1925:gg=0.8355:gb=0.0925:br=0.1500:bg=0.2970:bb=0.6185,'
+            'hue=h=-12:s=1.6,colorchannelmixer=rr=1.05:gg=1.05:bb=1.05') + ',format=rgb24'
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-t', f"{b['dur'] + 0.1:.3f}", '-i', str(PUB / b['src']), '-vf', tint, '-r', '30000/1001',
                           '-f', 'rawvideo', '-'], capture_output=True, check=True).stdout
     q = np.frombuffer(raw, np.uint8).reshape(-1, 1920, 1080, 3).astype(np.float32) / 255

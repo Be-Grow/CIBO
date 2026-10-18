@@ -3,7 +3,7 @@ import {
   Img, AbsoluteFill, Easing, OffthreadVideo, Sequence, continueRender, delayRender, interpolate,
   staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion';
-import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, cl, ramp, useT} from './theme';
+import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, cl, ramp, useT, sh, scr, Pt} from './theme';
 import {Pill, MediaFrame, Title, I, Counter, DropCard, StrikeChip, PhotoFrame} from './primitives';
 
 const PanelStat: React.FC<{p: Panel; t: number}> = ({p, t}) => {
@@ -12,7 +12,7 @@ const PanelStat: React.FC<{p: Panel; t: number}> = ({p, t}) => {
   return (
     <>
       <MediaFrame src={p.media} t={t} s={p.s} e={p.e} from={p.from}>
-        <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(20,16,14,0) 35%, rgba(20,16,14,0.72) 100%)'}} />
+        <div style={{position: 'absolute', inset: 0, background: `linear-gradient(180deg, ${scr(0)} 35%, ${scr(0.72)} 100%)`}} />
         <div style={{position: 'absolute', left: 48, bottom: 40, color: C.video, opacity: show, transform: `translateY(${(1 - show) * 24}px)`}}>
           <div style={{...fTitle(190), lineHeight: 0.9}}>{p.prefix ?? '+'}{n}<span style={{...fAcc(), fontSize: z(110)}}> {p.unit ?? 'anos'}</span></div>
           <div style={{...fLab(), fontSize: 26, letterSpacing: 3, textTransform: 'uppercase', opacity: 0.85, marginTop: 10}}>{p.sub ?? 'escolhendo o que vai na prateleira'}</div>
@@ -53,7 +53,7 @@ const PanelEmptyChart: React.FC<{p: Panel; t: number}> = ({p, t}) => {
         {[0, 1].map((k) => {
           const q = ramp(t, p.sameAt + k * 0.14, 0.4, OUT);
           return <div key={k} style={{opacity: q * same, transform: `translateY(${(1 - q) * 16}px)`, padding: '12px 22px', borderRadius: 16,
-            background: C.white, boxShadow: '0 8px 24px rgba(43,37,34,0.12)', ...fLab(), fontSize: 27, letterSpacing: 2.4, color: C.ink2}}>{k === 0 ? 'MESMA INFORMAÇÃO' : 'PARA TODO MUNDO'}</div>;
+            background: C.white, boxShadow: `0 8px 24px ${sh(0.12)}`, ...fLab(), fontSize: 27, letterSpacing: 2.4, color: C.ink2}}>{k === 0 ? 'MESMA INFORMAÇÃO' : 'PARA TODO MUNDO'}</div>;
         })}
       </div>
     </>
@@ -95,7 +95,7 @@ const PanelMedia: React.FC<{p: Panel; t: number}> = ({p, t}) => {
     <MediaFrame src={p.media} t={t} s={p.s} e={p.e} from={p.from} height={590}>
       {p.label && <div style={{position: 'absolute', left: 40, bottom: 40}}><Pill text={p.label} p={lab} dark size={30} /></div>}
       {p.stampAt && (
-        <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `rgba(20,16,14,${0.35 * stamp})`}}>
+        <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: scr(0.35 * stamp)}}>
           <div style={{border: `8px solid ${C.video}`, borderRadius: 18, padding: '18px 40px', color: C.video, ...fLab(), fontSize: 70,
             letterSpacing: 6, opacity: stamp, transform: `rotate(-6deg) scale(${1.5 - 0.5 * stamp})`}}>{p.stamp}</div>
         </div>
@@ -193,7 +193,7 @@ const PanelCards: React.FC<{p: Panel; t: number}> = ({p, t}) => (
       const q = ramp(t, c.at, 0.5, OUT);
       return (
         <div key={i} style={{display: 'flex', alignItems: 'center', gap: 34, padding: '34px 44px', borderRadius: 30,
-          background: i === 0 ? C.ink : C.white, color: i === 0 ? C.white : C.ink, boxShadow: '0 20px 50px rgba(43,37,34,0.16)',
+          background: i === 0 ? C.ink : C.white, color: i === 0 ? C.white : C.ink, boxShadow: `0 20px 50px ${sh(0.16)}`,
           opacity: q, transform: `translateX(${(1 - q) * (i === 0 ? -60 : 60)}px)`, filter: `blur(${(1 - q) * 10}px)`}}>
           <div style={{...fTitle(120), ...fAcc(), lineHeight: 0.8, color: C.terra}}>{i + 1}</div>
           <div style={{...fTitle(82), lineHeight: 1}}>{c.text}</div>
@@ -209,7 +209,7 @@ const PanelSides: React.FC<{p: Panel; t: number}> = ({p, t}) => {
   const ln = ramp(t, p.lineAt, 0.6);
   const l = ramp(t, p.leftAt, 0.45, OUT), r = ramp(t, p.rightAt, 0.45, OUT), ti = ramp(t, p.titleAt, 0.5, OUT);
   const side = (q: number, _txt: string, dark: boolean, dx: number): React.CSSProperties => ({position: 'absolute', top: p.cardTop ?? 470, width: p.cardW ?? 380, padding: '30px 0', borderRadius: 26,
-    textAlign: 'center', background: dark ? C.ink : C.white, color: dark ? C.onAccent : C.ink, boxShadow: '0 16px 40px rgba(43,37,34,0.14)', ...fTitle(p.cardSize ?? 64),
+    textAlign: 'center', background: dark ? C.ink : C.white, color: dark ? C.onAccent : C.ink, boxShadow: `0 16px 40px ${sh(0.14)}`, ...fTitle(p.cardSize ?? 64),
     whiteSpace: 'nowrap', opacity: q, transform: `translateX(${(1 - q) * dx}px)`, filter: `blur(${(1 - q) * 8}px)`});
   const subS: React.CSSProperties = {...fLab(), fontSize: 30, letterSpacing: 2, textTransform: 'uppercase', marginTop: 12, opacity: 0.85};
   return (
@@ -238,7 +238,7 @@ const PanelGrid: React.FC<{p: Panel; t: number}> = ({p, t}) => {
         const x = X0 + (k % cols) * (Wc + gx), y = Y0 + Math.floor(k / cols) * (Hc + gx);
         return (
           <div key={k} style={{position: 'absolute', left: x, top: y, width: Wc, height: Hc, borderRadius: 24, background: hot && push > 0.5 ? C.terra : C.white,
-            boxShadow: '0 10px 26px rgba(43,37,34,0.12)', opacity: q, transform: `translateY(${-wv * 18}px) scale(${(0.7 + 0.3 * q) * (hot ? 1 + 0.18 * push : 1)})`, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: hot ? 2 : 1}}>
+            boxShadow: `0 10px 26px ${sh(0.12)}`, opacity: q, transform: `translateY(${-wv * 18}px) scale(${(0.7 + 0.3 * q) * (hot ? 1 + 0.18 * push : 1)})`, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: hot ? 2 : 1}}>
             <svg width={70} height={84} viewBox="0 0 70 84"><rect x={22} y={2} width={26} height={12} rx={4} fill={hot && push > 0.5 ? C.white : C.ink2} opacity={0.8} />
               <rect x={10} y={16} width={50} height={66} rx={14} fill={hot && push > 0.5 ? C.white : C.ink} opacity={hot && push > 0.5 ? 1 : 0.85} /></svg>
           </div>
@@ -256,30 +256,30 @@ const PanelChecklist: React.FC<{p: Panel; t: number}> = ({p, t}) => {
   const ti = ramp(t, p.s + 0.1, 0.5, OUT);
   return (
     <>
-      <Title top={p.titleTop ?? 110} size={p.titleSize ?? 92} p={ti} text={<>{p.title} <I>{p.accent}</I></>} />
+      <Pt k="titulo"><Title top={p.titleTop ?? 110} size={p.titleSize ?? 92} p={ti} text={<>{p.title} <I>{p.accent}</I></>} /></Pt>
       <div style={{position: 'absolute', top: p.top ?? 300, left: p.left ?? 150, display: 'flex', flexDirection: 'column', gap: p.rowGap ?? 30}}>
         {p.items.map((it: any, i: number) => {
           const q = ramp(t, it.at, 0.4, OUT), ck = ramp(t, it.at + 0.15, 0.35), B = p.box ?? 70;
           const pu = it.pulseAt !== undefined ? Math.sin(Math.PI * ramp(t, it.pulseAt, 0.5)) : 0;   // o item é retomado na fala: pulsa
-          return (
-            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 30, opacity: q, transform: `translateX(${(1 - q) * -40}px) scale(${1 + 0.07 * pu})`, transformOrigin: 'left center'}}>
+          return (<Pt key={i} k={`item${i}`}>
+            <div style={{display: 'flex', alignItems: 'center', gap: 30, opacity: q, transform: `translateX(${(1 - q) * -40}px) scale(${1 + 0.07 * pu})`, transformOrigin: 'left center'}}>
               <svg width={B} height={B} viewBox="0 0 70 70"><rect x={3} y={3} width={64} height={64} rx={16} fill={ck > 0.5 ? C.terra : 'none'} stroke={ck > 0.5 ? C.terra : C.ink} strokeWidth={4} />
                 <path d="M 18 36 L 31 49 L 53 23" fill="none" stroke={C.white} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray="1" strokeDashoffset={1 - ck} /></svg>
               <div style={{...fTitle(p.size ?? 76), color: pu > 0.05 ? C.terra : C.ink, lineHeight: 1, whiteSpace: 'nowrap'}}>{it.text}</div>
             </div>
-          );
+          </Pt>);
         })}
       </div>
       {p.strike && (() => {
         const a = ramp(t, p.strike.at, 0.4, OUT), st = ramp(t, p.strike.strikeAt, 0.35);
-        return (
+        return (<Pt k="risco">
           <div style={{position: 'absolute', top: 700, left: 0, right: 0, textAlign: 'center', ...fTitle(70), ...fAcc(), color: C.ink2, opacity: a * (1 - 0.4 * st)}}>
             <span style={{position: 'relative', display: 'inline-block'}}>{p.strike.text}
               <svg style={{position: 'absolute', left: -10, top: '55%', overflow: 'visible'}} width="calc(100% + 20px)" height="10" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M 0 6 Q 42 -2 100 4" fill="none" stroke={C.terra} strokeWidth={7} strokeLinecap="round" pathLength={1} strokeDasharray="1" strokeDashoffset={1 - st} opacity={st > 0.002 ? 1 : 0} /></svg>
             </span>
           </div>
-        );
+        </Pt>);
       })()}
     </>
   );
@@ -293,12 +293,12 @@ const PanelRank: React.FC<{p: Panel; t: number}> = ({p, t}) => {
     <>
       <div style={{position: 'absolute', top: 70, left: 90, ...fLab(), fontSize: 26, letterSpacing: 3, color: C.ink2, opacity: ramp(t, p.s + 0.1, 0.45, OUT)}}>{p.title}</div>
       <img src={staticFile(p.img)} style={{position: 'absolute', right: 40, top: 150, width: 380, height: 520, objectFit: 'contain', opacity: img,
-        transform: `translateY(${(1 - img) * 40}px) rotate(${(1 - img) * 6}deg)`, filter: `drop-shadow(0 30px 40px rgba(43,37,34,0.25)) blur(${(1 - img) * 8}px)`}} />
+        transform: `translateY(${(1 - img) * 40}px) rotate(${(1 - img) * 6}deg)`, filter: `drop-shadow(0 30px 40px ${sh(0.25)}) blur(${(1 - img) * 8}px)`}} />
       {p.rows.map((r: any, i: number) => {
         const q = ramp(t, r.at, 0.45, OUT), hl = r.hl;
         return (
           <div key={i} style={{position: 'absolute', left: 90, top: 150 + i * 120, width: 520, height: 96, borderRadius: 22, display: 'flex', alignItems: 'center', gap: 26, padding: '0 30px',
-            background: hl ? C.terra : C.white, color: hl ? C.white : C.ink, boxShadow: '0 12px 30px rgba(43,37,34,0.12)', opacity: q * (r.dim ? 0.45 : 1),
+            background: hl ? C.terra : C.white, color: hl ? C.white : C.ink, boxShadow: `0 12px 30px ${sh(0.12)}`, opacity: q * (r.dim ? 0.45 : 1),
             transform: `translateX(${(1 - q) * -50}px) scale(${hl ? 1 + 0.05 * Math.sin(Math.PI * ramp(t, r.at + 0.3, 0.5)) : 1})`}}>
             <div style={{...fTitle(64), ...fAcc(), width: 70}}>{i + 1}º</div>
             <div style={{...fTitle(58), filter: r.dim ? 'blur(6px)' : undefined}}>{r.text}</div>
@@ -335,7 +335,7 @@ const PanelCoins: React.FC<{p: Panel; t: number}> = ({p, t}) => {
     <>
       <div style={{position: 'absolute', top: 90, left: 0, right: 0, textAlign: 'center', opacity: ramp(t, p.tagAt, 0.45, OUT)}}><Pill text={p.tag} p={1} size={28} /></div>
       <img src={staticFile(p.img)} style={{position: 'absolute', left: 60, top: 170, width: 400, height: 560, objectFit: 'contain', opacity: img,
-        transform: `translateY(${(1 - img) * 40}px) scale(${0.9 + 0.1 * img})`, filter: `drop-shadow(0 30px 40px rgba(43,37,34,0.25))`}} />
+        transform: `translateY(${(1 - img) * 40}px) scale(${0.9 + 0.1 * img})`, filter: `drop-shadow(0 30px 40px ${sh(0.25)})`}} />
       <div style={{position: 'absolute', left: 520, top: 260, display: 'grid', gridTemplateColumns: '200px 200px', gap: 30}}>
         {[0, 1, 2, 3].map((k) => {
           const q = ramp(t, p.coinsAt + k * 0.12, 0.4, OUT), on = k < 3 ? ramp(t, p.fillAt + k * 0.15, 0.35) : 0;
@@ -344,13 +344,13 @@ const PanelCoins: React.FC<{p: Panel; t: number}> = ({p, t}) => {
             const lit = ramp(t, p.fillAt, 0.4);
             return <div key={k} style={{width: 200, height: 200, borderRadius: 100, opacity: q * (k < 3 ? 1 : 1 - 0.55 * lit),
               transform: `scale(${(0.6 + 0.4 * q) * (1 + 0.1 * Math.sin(Math.PI * on))}) rotate(${(1 - q) * -40}deg)`,
-              boxShadow: on > 0.5 ? `0 0 0 8px ${C.terra}, 0 16px 34px rgba(43,37,34,0.3)` : '0 14px 30px rgba(43,37,34,0.22)',
+              boxShadow: on > 0.5 ? `0 0 0 8px ${C.terra}, 0 16px 34px ${sh(0.3)}` : `0 14px 30px ${sh(0.22)}`,
               filter: k === 3 && lit > 0 ? `grayscale(${lit})` : undefined}}>
               <Img src={staticFile(p.coin)} style={{width: 200, height: 200}} /></div>;
           }
           return <div key={k} style={{width: 200, height: 200, borderRadius: 100, background: on > 0.5 ? C.terra : C.white, border: `6px solid ${on > 0.5 ? C.terra : C.ink}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', ...fTitle(84), color: on > 0.5 ? C.white : C.ink,
-            opacity: q, transform: `scale(${(0.6 + 0.4 * q) * (1 + 0.08 * Math.sin(Math.PI * on))})`, boxShadow: '0 14px 30px rgba(43,37,34,0.14)'}}>R$1</div>;
+            opacity: q, transform: `scale(${(0.6 + 0.4 * q) * (1 + 0.08 * Math.sin(Math.PI * on))})`, boxShadow: `0 14px 30px ${sh(0.14)}`}}>R$1</div>;
         })}
       </div>
       <div style={{position: 'absolute', left: 520, width: 430, top: 730, textAlign: 'center', opacity: lab, transform: `translateY(${(1 - lab) * 14}px)`}}><Pill text={p.label} p={1} dark size={28} /></div>
@@ -367,7 +367,7 @@ const PanelTickets: React.FC<{p: Panel; t: number}> = ({p, t}) => (
       const n = Math.round(interpolate(t, [k.countAt, k.countAt + 0.9], [0, k.value], {...cl, easing: OUT}));
       return (
         <div key={i} style={{position: 'absolute', top: 200, left: i === 0 ? 90 : 560, width: 430, height: 520, borderRadius: 34, background: i === 0 ? C.ink : C.white,
-          color: i === 0 ? C.white : C.ink, boxShadow: '0 22px 50px rgba(43,37,34,0.18)', opacity: q, transform: `translateY(${(1 - q) * 50}px)`, filter: `blur(${(1 - q) * 8}px)`,
+          color: i === 0 ? C.white : C.ink, boxShadow: `0 22px 50px ${sh(0.18)}`, opacity: q, transform: `translateY(${(1 - q) * 50}px)`, filter: `blur(${(1 - q) * 8}px)`,
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14}}>
           <div style={{...fLab(), fontSize: 24, letterSpacing: 3, opacity: 0.75}}>{k.label}</div>
           <div style={{...fTitle(150), lineHeight: 1, color: i === 0 ? C.peach : C.ink}}><span style={{fontSize: z(70)}}>R$</span>{n}</div>
@@ -386,7 +386,7 @@ const PanelOscillate: React.FC<{p: Panel; t: number}> = ({p, t}) => {
   const mn = ramp(t, p.minAt, 0.4, OUT), mx = ramp(t, p.maxAt, 0.4, OUT);
   return (
     <>
-      <img src={staticFile(p.img)} style={{position: 'absolute', left: 340, top: 90, width: 400, height: 520, objectFit: 'contain', opacity: img, filter: 'drop-shadow(0 30px 40px rgba(43,37,34,0.25))'}} />
+      <img src={staticFile(p.img)} style={{position: 'absolute', left: 340, top: 90, width: 400, height: 520, objectFit: 'contain', opacity: img, filter: `drop-shadow(0 30px 40px ${sh(0.25)})`}} />
       <div style={{position: 'absolute', left: 0, right: 0, top: 600, textAlign: 'center', ...fTitle(130), color: C.terra, opacity: go,
         transform: `rotate(${Math.sin(f) * 2}deg)`}}><span style={{fontSize: z(64)}}>R$</span>{v}</div>
       <div style={{position: 'absolute', left: 90, top: 640}}><Pill text={`mín. R$ ${p.min}`} p={mn} size={28} /></div>
@@ -535,14 +535,16 @@ const PanelTimeline: React.FC<PanelProps> = ({p, t}) => {
   const last = [...ev].reverse().find((e) => t >= e.at), prog = last ? (ev.indexOf(last) + ramp(t, last.at, 0.6)) / Math.max(n - 1, 1) : 0;
   return (
     <>
-      {p.title && <div style={{position: 'absolute', top: 80, left: 0, right: 0, textAlign: 'center', ...fTitle(100), color: C.ink,
-        opacity: ramp(t, p.s + 0.1, 0.45, OUT)}}>{p.title}</div>}
+      {p.title && <Pt k="titulo"><div style={{position: 'absolute', top: 80, left: 0, right: 0, textAlign: 'center', ...fTitle(100), color: C.ink,
+        opacity: ramp(t, p.s + 0.1, 0.45, OUT)}}>{p.title}</div></Pt>}
+      <Pt k="linha">
       <div style={{position: 'absolute', left: X0, top: Y - 3, width: X1 - X0, height: 6, borderRadius: 3, background: C.white}} />
       <div style={{position: 'absolute', left: X0, top: Y - 3, width: (X1 - X0) * Math.min(prog, 1), height: 6, borderRadius: 3, background: C.terra}} />
+      </Pt>
       {ev.map((e, i) => {
         const x = X0 + (X1 - X0) * (n === 1 ? 0.5 : i / (n - 1)), q = ramp(t, e.at, 0.45, OUT), up = i % 2 === 0;
         return (
-          <div key={i}>
+          <Pt key={i} k={`item${i}`}>
             <div style={{position: 'absolute', left: x, top: Y, translate: '-50% -50%', width: 34 * (0.4 + 0.6 * q), height: 34 * (0.4 + 0.6 * q), borderRadius: 99,
               background: q > 0.5 ? (e.hot ? C.terra : C.ink) : C.white, boxShadow: e.hot && q > 0.5 ? `0 0 26px ${C.terra}` : 'none'}} />
             <div style={{position: 'absolute', left: x, top: up ? Y - 60 : Y + 60, translate: up ? '-50% -100%' : '-50% 0', textAlign: 'center', opacity: q,
@@ -550,7 +552,7 @@ const PanelTimeline: React.FC<PanelProps> = ({p, t}) => {
               <div style={{...fTitle(70), color: e.hot ? C.terra : C.ink, whiteSpace: 'nowrap'}}>{e.text}</div>
               {e.sub && <div style={{...fLab(), fontSize: 24, letterSpacing: 2, color: C.ink2, textTransform: 'uppercase', marginTop: 6, whiteSpace: 'nowrap'}}>{e.sub}</div>}
             </div>
-          </div>
+          </Pt>
         );
       })}
     </>

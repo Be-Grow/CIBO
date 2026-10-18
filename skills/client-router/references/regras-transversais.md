@@ -86,7 +86,16 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 
 ## DaVinci Resolve pela API (medido no Resolve 20.2.3, EP 06, 18/10/2026)
 
-O editor prefere fazer o render final no DaVinci a partir de um XML com todas as camadas. A API funciona
+**Padrão do CIBO para todo cliente (18/10/2026): o render final é do editor, no DaVinci.** Entregue prévias de
+conferência (baixa, rápidas) + pacote com cada camada isolada (câmera, mídia/B-roll, painéis, legenda com alfa,
+títulos, cartão final, voz/trilha/SFX em WAV separados) + XML. **Não rode o render final queimado** (CRF baixo,
+preset lento): ele custa o maior tempo do job e o editor refaz a cor e o acabamento no Resolve de qualquer jeito.
+MP4 pronto para postar só se o editor pedir. Valide importando pela API num **projeto novo com o nome do job**
+(ex.: "Growth Leaders – Reels"), nunca no projeto que ele tem aberto (no dia era o do Bombordo e Boreste), e
+devolva o projeto anterior ao terminar. ("o DaVinci acaba sendo mais eficiente nessa parte", Bombordo EP 06;
+"isso deveria ser na cibo mesmo, no geral", João/Growth Leaders, 18/10/2026)
+
+A API funciona
 (`DaVinciResolveScript`, ambiente em `RESOLVE_SCRIPT_API`/`RESOLVE_SCRIPT_LIB`/`PYTHONPATH`).
 - **XML do FCP7 no Resolve:** clipe encaixado antes do Movimento; centro relativo ao clipe encaixado;
   `<when>` do keyframe conta do início da mídia (soma o `<in>`); áudio de MP4 numa trilha derruba a
@@ -144,10 +153,9 @@ O editor prefere fazer o render final no DaVinci a partir de um XML com todas as
   `video-render-optimizer`, testado de novo a cada 10 renders) e uma codificação só (`overlays`,
   `BURN_END_INLINE`). Nunca recodifique o MP4 entregue para pôr cartão ou burn. ("demora
   muito", 12/10/2026)
-- **Projeto editável: sempre oferecer, só gerar se pedirem.** Na entrega, pergunte se o editor
-  quer o projeto para Premiere Pro e/ou DaVinci Resolve (XML do Final Cut 7). ("só deve gerar caso o
-  editor peça, mas sempre deve ser fornecida a opção", 12/10/2026). Para o DaVinci, use as regras da
-  seção "DaVinci Resolve pela API" e valide importando e renderizando antes de entregar.
+- **Pacote DaVinci é a entrega padrão** (substitui a regra de 12/10 "só gerar se pedirem"): camadas + XML
+  validados num projeto novo, render final com o editor; ver "DaVinci Resolve pela API". Premiere Pro só
+  se pedirem. MP4 queimado só se pedirem (ex.: postar direto sem passar pelo Resolve).
 - **Ritmo e som de referência** (6 reels de criadores; `kurbaitaev/ghost-editor` e
   `kmilo93sd/agent-video-editor`, 12/10/2026): ~95% das transições são corte seco; plano médio
   de ~3 s; algo novo na tela a cada 5–7 s em Reels; SFX 0,4–0,9 a cada 10 s, nos grafismos e

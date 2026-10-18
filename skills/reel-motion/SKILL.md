@@ -30,7 +30,8 @@ e `PROJ/04_work/public/` (pasta pública do Remotion: camera.mov, mídia, fontes
 rastreio de rosto, `"crop"` para fonte já editada/multicâmera com `crops: [{at, cx}]`).
 
 Etapas: `fonte` → `takes` → `voz` → `legenda` → `props` → `camera` → `mix` → `previa` → (aprovação) →
-`final`; ajustes com `trecho A B` e `entrega`. Igual ao fluxo da `priscilla-daher` (ver lá os detalhes de
+`davinci` (padrão do CIBO desde 18/10/2026: o editor faz o render final no Resolve; pacote validado num projeto NOVO,
+ver client-router/regras-transversais "DaVinci Resolve pela API") — `final` (MP4 queimado, lento) só se pedirem; ajustes com `trecho A B` e `entrega`. Igual ao fluxo da `priscilla-daher` (ver lá os detalhes de
 takes, MFA e capa).
 
 ## Biblioteca de componentes (regra)
@@ -39,6 +40,8 @@ takes, MFA e capa).
   de `PANELS` serve com outros textos/tempos; depois, se dá para montar com as peças existentes.
   Só crie peça nova quando nenhuma serve — e ela entra em `primitives.tsx`, genérica, usando só o
   tema (`C`, `fTitle`, `fAcc`, `fLab`), para o próximo cliente herdar.
+- Sombra e escurecimento também são do tema (`C.shadow`, `C.scrim` em r,g,b; helpers `sh(a)`/`scr(a)`); destaque com fonte própria em `accent.family`; burn do pacote DaVinci em `theme.burnFF` (filtro ffmpeg). Antes ficavam no marrom da Priscilla em todo cliente (17/10/2026).
+- Pacote DaVinci separa as partes de cada painel: envolva título, cada item, linha e risco em `<Pt k=…>` e liste as chaves em `PARTES` no `reel.py` (feito em checklist e timeline; faça igual ao usar outro tipo de painel). Pedido do editor, 17/10/2026.
 - Nenhuma cor ou fonte fixa em componente: sempre `C.<papel>` e os helpers do tema. Papéis das cores:
   `paper/paper2` fundo do painel; `ink/ink2` texto no painel; `terra` destaque; `terraDark` faixa;
   `peach` destaque sobre vídeo; `white` superfície de card; `video` texto sobre vídeo;

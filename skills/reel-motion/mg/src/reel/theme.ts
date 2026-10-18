@@ -8,6 +8,7 @@ export const C: Record<string, string> = {
   paper: '#F2ECE4', paper2: '#E9E1D6', ink: '#2B2522', ink2: '#6E625B',
   terra: '#D9694A', terraDark: '#B9533A', peach: '#FFC7A8', white: '#FFFBF5',
   video: '#FFFBF5', onAccent: '#FFFBF5', pill: 'rgba(255,251,245,0.92)', bg: '#0f0d0c',
+  shadow: '43,37,34', scrim: '15,13,12',   // r,g,b das sombras dos cards e do escurecimento sobre o vídeo (antes fixos no marrom da Priscilla)
 };
 type FontSpec = {family: string; file: string; weight?: string; style?: string};
 export type Theme = {
@@ -16,7 +17,7 @@ export type Theme = {
   title?: {family?: string; weight?: number; upper?: boolean; ls?: number; scale?: number};
   caption?: {family?: string; weight?: number; upper?: boolean; ls?: number; scale?: number};
   label?: {family?: string; weight?: number};
-  accent?: {italic?: boolean; weight?: number};
+  accent?: {family?: string; italic?: boolean; weight?: number};
   mediaFilter?: string; burnFilter?: string; burnOpacity?: number; grain?: number;
   // splitH = altura do painel (940 = metade; 768 = 40/60); camShift = quanto a pessoa desce na tela dividida;
   // capSplitY = legenda da tela dividida sobre o vídeo nessa altura (senão fica no rodapé do painel); capMaxW = largura máxima (zona segura)
@@ -32,7 +33,7 @@ export const T = {
   title: {family: 'ISerif', weight: 400, upper: false, ls: 0, scale: 1},
   caption: {family: 'ISerif', weight: 400, upper: false, ls: 0, scale: 1},
   label: {family: 'MSans', weight: 600},
-  accent: {italic: true, weight: 400},
+  accent: {italic: true, weight: 400} as {family?: string; italic: boolean; weight: number},
   mediaFilter: 'saturate(0.88) sepia(0.10) contrast(1.03) brightness(0.98)',
   burnFilter: 'sepia(0.55) saturate(1.6) hue-rotate(-12deg) brightness(1.05)', burnOpacity: 0.85, grain: 0.08,
   layout: {splitH: 940, camShift: 600, capSplitY: 0, capFullY: 1300, capMaxW: 0, autoTags: false} as {splitH: number; camShift: number; capSplitY: number; capFullY: number; capMaxW: number; autoTags: boolean},
@@ -48,11 +49,19 @@ export const applyTheme = (th?: Theme) => {
   });
 };
 export const q = (f: string) => `'${f}'`;
+export const sh = (a: number) => `rgba(${C.shadow},${a})`, scr = (a: number) => `rgba(${C.scrim},${a})`;
+// parte isolada de um painel para o DaVinci (props.part, 17/10/2026: "não tá separando os elementos"): cada título, item,
+// linha e risco vira um arquivo. <Pt k="item0">…</Pt> esconde (sem tirar do layout) tudo que não é a parte pedida.
+let PART: string | null = null;
+export const setPart = (k?: string | null) => { PART = k ?? null; };
+export const Pt: React.FC<{k: string; children: React.ReactNode}> = ({k, children}) =>
+  React.createElement('div', {style: {display: 'contents', visibility: PART === null || PART === k ? 'inherit' : 'hidden'}}, children);
 // texto de título/painel (serifa na Priscilla, Montserrat Black em caixa alta no João); size é escalado pelo tema
 export const fTitle = (size?: number): React.CSSProperties => ({fontFamily: q(T.title.family), fontWeight: T.title.weight,
   textTransform: T.title.upper ? 'uppercase' : 'none', letterSpacing: T.title.ls, ...(size ? {fontSize: size * T.title.scale} : {})});
 export const z = (size: number) => size * T.title.scale;
-export const fAcc = (): React.CSSProperties => (T.accent.italic ? {fontStyle: 'italic'} : {fontStyle: 'normal', fontWeight: T.accent.weight});
+export const fAcc = (): React.CSSProperties => ({...(T.accent.family ? {fontFamily: q(T.accent.family)} : {}),
+  ...(T.accent.italic ? {fontStyle: 'italic'} : {fontStyle: 'normal', fontWeight: T.accent.weight})});
 export const fLab = (): React.CSSProperties => ({fontFamily: q(T.label.family), fontWeight: T.label.weight});
 export const fCap = (): React.CSSProperties => ({fontFamily: q(T.caption.family), fontWeight: T.caption.weight,
   textTransform: T.caption.upper ? 'uppercase' : 'none', letterSpacing: T.caption.ls});

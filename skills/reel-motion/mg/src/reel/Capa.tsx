@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Img, staticFile} from 'remotion';
 import {measureText} from '@remotion/layout-utils';
-import {C, T, Theme, applyTheme} from './Reel';
+import {C, T, Theme, applyTheme, scr} from './Reel';
 
 // Capa do reel com o tema do cliente.
 // layout "serif" (Priscilla): manchete no topo, destaque em itálico, rodapé com o nome.
@@ -51,7 +51,7 @@ export const Capa: React.FC<CapaProps> = ({frame, l1, l2, accent, y = 170, shift
         <Img src={staticFile(frame)} style={{position: 'absolute', width: 1080, height: 1920, objectFit: 'cover', filter: 'blur(40px) brightness(0.8)', transform: 'scale(1.1)'}} />
       )}
       <Img src={staticFile(frame)} style={{position: 'absolute', width: 1080, height: 1920, objectFit: 'cover', transform: `translateY(${shift}px)`}} />
-      <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,13,12,0.78) 0%, rgba(15,13,12,0.45) 26%, rgba(15,13,12,0) 44%)'}} />
+      <AbsoluteFill style={{background: `linear-gradient(180deg, ${scr(0.78)} 0%, ${scr(0.45)} 26%, ${scr(0)} 44%)`}} />
       <div style={{position: 'absolute', top: y, left: 60, right: 60, textAlign: 'center', color: C.video, ...tf, textShadow: '0 4px 24px rgba(0,0,0,0.45)'}}>
         <div style={{fontSize: 128 * T.title.scale, lineHeight: 0.98}}>{l1}</div>
         <div style={{fontSize: 150 * T.title.scale, lineHeight: 1.0}}>{l2} <span style={{...(T.accent.italic ? {fontStyle: 'italic'} : {fontWeight: T.accent.weight}), color: C.peach}}>{accent}</span></div>

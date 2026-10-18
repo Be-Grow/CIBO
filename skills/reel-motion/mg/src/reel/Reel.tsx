@@ -7,9 +7,9 @@ import {
 import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, cl, ramp, useT} from './theme';
 import {Fonts, VBlur, Grain, Pill, I} from './primitives';
 import {PANELS} from './panels';
-export {C, T, applyTheme} from './theme';
+export {C, T, applyTheme, sh, scr} from './theme';
 export type {Theme} from './theme';
-import {applyTheme, Theme} from './theme';
+import {applyTheme, Theme, scr, setPart} from './theme';
 
 // Reel com tela dividida: pessoa embaixo, painel de motion em cima, ou pessoa em tela cheia.
 // Tudo em segundos do vídeo editado; a câmera (cortes, recorte) vem pronta em camera.mov.
@@ -29,8 +29,14 @@ export type ReelProps = {
   theme?: Theme;
   // vídeo de inserção (B-roll): cobre a pessoa quando a fonte não mostra quem fala, ou ilustra a fala.
   // area "bottom" = parte da pessoa na tela dividida; "full" = tela inteira (abaixo do painel, legenda por cima)
-  inserts?: {s: number; e: number; src: string; from?: number; area?: 'bottom' | 'full'; push?: number; pos?: string}[];
+  // tr "zoom": entra com zoom 1,18→1 e blur (corte com energia para drone com speed ramp)
+  inserts?: {s: number; e: number; src: string; from?: number; area?: 'bottom' | 'full'; push?: number; pos?: string; tr?: 'zoom'}[];
+  // palavra-chave em tela cheia (formato tela cheia + B-roll): sub pequeno em cima, texto, accent numa faixa do destaque que varre
+  keywords?: Kw[];
+  // cartão final: logo do tema (capa.logo) + duas linhas, sobre o vídeo escurecido
+  endCard?: {s: number; logo?: string; symbol?: string; l1?: string; l2?: string};
 };
+type Kw = {s: number; e: number; text?: string; accent?: string; sub?: string; y?: number; veil?: boolean; hideCaps?: boolean};
 
 // presença da tela dividida (0 = tela cheia, 1 = dividida) e velocidade, para o blur de movimento
 const splitAmount = (t: number, split: Seg[]) => {
@@ -93,7 +99,7 @@ const Captions: React.FC<{blocks: Block[]; t: number; sp: number; hide?: boolean
           return (
             <span key={k} style={{display: 'inline-block', marginRight: k < b.words.length - 1 ? '0.22em' : 0, opacity: p,
               transform: `translateY(${(1 - p) * 16}px) scale(${w.hl ? 1.08 - 0.08 * p : 1})`, filter: `blur(${(1 - p) * 7}px)`,
-              ...(w.hl ? fAcc() : {}), color: w.hl ? hl : color, fontSize: w.hl ? '1.12em' : '1em'}}>{w.t}</span>
+              ...(w.hl && (T.caption as any).hlAccent !== false ? fAcc() : {}), color: w.hl ? hl : color, fontSize: w.hl ? '1.12em' : '1em'}}>{w.t}</span>
           );
         })}
       </div>
@@ -141,9 +147,65 @@ const Lower: React.FC<{l: NonNullable<ReelProps['lower']>; t: number; sp: number
   );
 };
 
+// ---------- palavra-chave e cartão final ----------
+// identidade Growth Leaders (manual da marca + convite do site, 18/10/2026): rótulo dourado espaçado, título creme em Metropolis,
+// destaque em texto com gradiente dourado (#F2A902 → #FFD575, sem caixa), filete dourado curto; véu marinho para leitura
+const GOLD = 'linear-gradient(90deg, #F2A902 0%, #FFD575 100%)';
+const goldText = (): React.CSSProperties => ({backgroundImage: GOLD, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+  filter: 'drop-shadow(0 3px 14px rgba(0,8,30,0.55))'});
+const Keyword: React.FC<{k: Kw; t: number}> = ({k, t}) => {
+  if (t < k.s - 0.1 || t > k.e + 0.4) return null;
+  const a = ramp(t, k.s, 0.38, OUT), b = ramp(t, k.s + 0.1, 0.42, OUT), rule = ramp(t, k.s + 0.22, 0.45, OUT), out = ramp(t, k.e - 0.05, 0.32, EASE);
+  const sub = ramp(t, k.s - 0.06, 0.34, OUT);
+  const veil = ramp(t, k.s - 0.1, 0.35) * (1 - ramp(t, k.e - 0.05, 0.35));
+  // tamanho em px reais (fTitle sem size); encolhe só o que não cabe em 920 px
+  const fit = (txt: string, base: number) => {
+    const w = measureText({text: txt, fontFamily: `'${T.title.family}'`, fontSize: base, fontWeight: String(T.title.weight), letterSpacing: '0px'}).width * 1.06;
+    return w > 920 ? base * 920 / w : base;
+  };
+  const lift = (p: number, d = 30): React.CSSProperties => ({opacity: p * (1 - out), transform: `translateY(${(1 - p) * d - out * 12}px)`,
+    filter: `blur(${(1 - p) * 10 + out * 6}px)`});
+  const font: React.CSSProperties = {...fTitle(), textTransform: 'none', letterSpacing: '-0.01em', lineHeight: 1.02, textAlign: 'center'};
+  return (
+    <>
+    {k.veil !== false && <AbsoluteFill style={{background: `linear-gradient(180deg, ${scr(0.78)} 0%, ${scr(0.5)} 21%, ${scr(0)} 38%)`, opacity: veil}} />}
+    <div style={{position: 'absolute', top: k.y ?? 150, left: 40, right: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12}}>
+      {k.sub && <div style={{...fTitle(), fontSize: 34, letterSpacing: '0.3em', textTransform: 'uppercase', color: C.terra, ...lift(sub, 18),
+        textShadow: '0 2px 12px rgba(0,8,30,0.6)'}}>{k.sub}</div>}
+      {k.text && <div style={{...font, fontSize: fit(k.text, 112), color: C.video, ...lift(a), textShadow: '0 3px 22px rgba(0,8,30,0.6)'}}>{k.text}</div>}
+      {k.accent && <div style={{...font, fontSize: fit(k.accent, 138), ...lift(b), ...goldText(), padding: '0 6px 6px'}}>{k.accent}</div>}
+      <div style={{width: 120 * rule, height: 4, borderRadius: 2, background: GOLD, opacity: 1 - out, marginTop: 6}} />
+    </div>
+    </>
+  );
+};
+
+const EndCard: React.FC<{c: NonNullable<ReelProps['endCard']>; t: number}> = ({c, t}) => {
+  if (t < c.s) return null;
+  const bg = ramp(t, c.s, 0.5), sym = ramp(t, c.s, 1.6, OUT), lg = ramp(t, c.s + 0.18, 0.65, OUT), rule = ramp(t, c.s + 0.5, 0.5, OUT),
+    l1 = ramp(t, c.s + 0.6, 0.5, OUT), l2 = ramp(t, c.s + 0.78, 0.5, OUT);
+  const up = (p: number): React.CSSProperties => ({opacity: p, transform: `translateY(${(1 - p) * 22}px)`, filter: `blur(${(1 - p) * 8}px)`});
+  return (
+    <AbsoluteFill style={{opacity: bg}}>
+      {/* marinho com o vídeo ainda respirando por baixo; símbolo de raios gigante em marca d'água (manual, capa) */}
+      <AbsoluteFill style={{background: `linear-gradient(180deg, rgba(0,18,54,0.80) 0%, rgba(0,18,54,0.94) 55%, rgba(1,26,74,0.97) 100%)`}} />
+      {c.symbol && <img src={staticFile(c.symbol)} style={{position: 'absolute', width: 1500, left: -210, top: 360, opacity: 0.07 * sym,
+        transform: `rotate(${-12 + 10 * sym}deg) scale(${0.92 + 0.08 * sym})`, filter: 'grayscale(1) brightness(2.2)'}} />}
+      <AbsoluteFill style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 30, paddingBottom: 120}}>
+        {c.logo && <img src={staticFile(c.logo)} style={{width: 700, ...up(lg), transform: `translateY(${(1 - lg) * 22}px) scale(${0.94 + 0.06 * lg})`}} />}
+        <div style={{width: 140 * rule, height: 4, borderRadius: 2, background: GOLD, marginTop: 14}} />
+        {c.l1 && <div style={{...fTitle(), fontSize: 44, textTransform: 'none', letterSpacing: '0.01em', color: C.video, ...up(l1)}}>{c.l1}</div>}
+        {c.l2 && <div style={{...fTitle(), fontSize: 30, letterSpacing: '0.3em', textTransform: 'uppercase', color: C.terra, ...up(l2)}}>{c.l2}</div>}
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+
 // ---------- composição ----------
 export const Reel: React.FC<ReelProps> = (props) => {
   applyTheme(props.theme);
+  setPart((props as any).part);
   const t = useT();
   const {fps} = useVideoConfig();
   // trecho com inv: true = tela dividida invertida (ela em cima com o topo da cabeça cortado, painel embaixo; pedido da Priscilla, 13/10/2026)
@@ -190,12 +252,13 @@ export const Reel: React.FC<ReelProps> = (props) => {
         const glueIn = all.some((o) => Math.abs(o.e - v.s) < 0.05), glueOut = all.some((o) => Math.abs(o.s - v.e) < 0.05);
         const f = (glueIn ? (t >= v.s ? 1 : 0) : ramp(t, v.s - 0.22, 0.16)) * (glueOut ? (t < v.e ? 1 : 0) : 1 - ramp(t, v.e + 0.04, 0.16));
         const top = v.area === 'full' ? 0 : inv ? 0 : H * sp;
-        const push = interpolate(t, [v.s, v.e], [1.0, 1 + (v.push ?? 0.06)], cl);
+        const push = interpolate(t, [v.s, v.e], [1.0, 1 + (v.push ?? 0.06)], cl) * (v.tr === 'zoom' ? 1.18 - 0.18 * ramp(t, v.s, 0.32, OUT) : 1);
+        const zb = v.tr === 'zoom' ? (1 - ramp(t, v.s, 0.28, OUT)) * 16 : 0;
         return (
           <div key={k} style={{position: 'absolute', left: 0, right: 0, top, bottom: 0, overflow: 'hidden', opacity: f}}>
             <Sequence from={Math.round((v.s - 0.25) * fps)} layout="none">
               <OffthreadVideo src={staticFile(v.src)} muted startFrom={Math.round((v.from ?? 0) * fps)}
-                style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: v.pos ?? 'center', transform: `scale(${push})`, filter: T.mediaFilter}} />
+                style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: v.pos ?? 'center', transform: `scale(${push})`, filter: `${T.mediaFilter}${zb > 0.2 ? ` blur(${zb}px)` : ''}`}} />
             </Sequence>
           </div>
         );
@@ -230,13 +293,14 @@ export const Reel: React.FC<ReelProps> = (props) => {
         </div>
       )}
       {tit('hookbg') && props.hook && t < props.hook.e + 0.3 && (
-        <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,13,12,0.62) 0%, rgba(15,13,12,0.28) 22%, rgba(15,13,12,0) 38%)',
+        <AbsoluteFill style={{background: `linear-gradient(180deg, ${scr(0.62)} 0%, ${scr(0.28)} 22%, ${scr(0)} 38%)`,
           opacity: ramp(t, 0, 0.3) * (1 - ramp(t, props.hook.e - 0.25, 0.3))}} />
       )}
       {tit('hook') && props.hook && <Hook h={props.hook} t={t} />}
       {(props.titles || []).map((h, k) => tit(`t${k}`) && <Hook key={k} h={h} t={t} />)}
       {tit('lower') && props.lower && <Lower l={props.lower} t={t} sp={sp} />}
-      {on('legenda') && <Captions blocks={props.captions} t={t} sp={sp} inv={inv} hide={!!panel && panel.hideCapsFrom !== undefined && t >= panel.hideCapsFrom && t < panel.e} />}
+      {(props.keywords || []).map((k, i) => tit(`k${i}`) && <Keyword key={`k${i}`} k={k} t={t} />)}
+      {on('legenda') && <Captions blocks={props.captions} t={t} sp={sp} inv={inv} hide={(!!panel && panel.hideCapsFrom !== undefined && t >= panel.hideCapsFrom && t < panel.e) || (props.keywords || []).some((k) => k.hideCaps && t >= k.s && t < k.e + 0.2) || (!!props.endCard && t >= props.endCard.s)} />}
       {!L && (props.burns || []).map((b, k) => (
         <Sequence key={k} from={Math.round((b.t - b.peak) * fps)} durationInFrames={Math.round(b.dur * fps)} layout="none">
           <AbsoluteFill style={{mixBlendMode: 'screen', pointerEvents: 'none', opacity: T.burnOpacity}}>
@@ -244,8 +308,9 @@ export const Reel: React.FC<ReelProps> = (props) => {
           </AbsoluteFill>
         </Sequence>
       ))}
+      {tit('end') && props.endCard && <EndCard c={props.endCard} t={t} />}
       {on('camera') && <Grain opacity={0.035} />}
-      {on('camera') && <AbsoluteFill style={{background: '#0f0d0c', opacity: endF * 0.85}} />}
+      {on('camera') && <AbsoluteFill style={{background: C.bg, opacity: endF * 0.85}} />}
     </AbsoluteFill>
   );
 };

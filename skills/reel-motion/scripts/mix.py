@@ -3,7 +3,7 @@ import numpy as np, soundfile as sf
 W=sys.argv[1]; SR=48000
 A='/Volumes/SSD/CIBO Acervo/sfx/_global/'
 segs=json.load(open(f'{W}/segs.json'))
-TAIL=0.8
+TAIL=json.load(open(f'{W}/reel.json')).get('tail',0.8)   # cauda depois da última palavra (cartão final pede ~2 s)
 # 1) voz: mesmos trechos do job, do áudio 48 kHz da câmera, fades de 6 ms nas emendas
 f=''.join(f"[0:a]atrim={s:.4f}:{e:.4f},asetpts=PTS-STARTPTS,afade=t=in:d=0.006,afade=t=out:st={e-s-0.006:.4f}:d=0.006[a{i}];" for i,(s,e) in enumerate(segs))
 f+=''.join(f'[a{i}]' for i in range(len(segs)))+f"concat=n={len(segs)}:v=0:a=1,apad=pad_dur={TAIL},highpass=f=80,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=140:makeup=2[o]"
@@ -19,11 +19,13 @@ N=len(voz); DUR=N/SR
 MUS=json.load(open(f'{W}/reel.json'))['music']; MUS=MUS if os.path.isabs(MUS) else '/Volumes/SSD/CIBO Acervo/musica/_global/'+MUS   # trilha alterna por reel
 mdur=float(subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',MUS],capture_output=True,text=True).stdout)
 off=max(0,mdur-DUR)
+# music_offset: trecho escolhido da faixa (ex.: a entrada da batida no gancho) em vez do backtiming (talking-head-music, passo 7)
+off=json.load(open(f'{W}/reel.json')).get('music_offset',off)
 # music_level: nivela o volume da TRILHA no tempo (o trecho escolhido pode ter um começo 12 dB mais forte que o resto;
 # João, 13/10/2026: "no começo a música ficou muito alta"). Só na trilha; a voz nunca passa por normalização dinâmica.
 LVL=json.load(open(f'{W}/reel.json')).get('music_level',False)
 PRE=min(4.0,off) if LVL else 0.0   # o nivelador começa antes (aquecimento) e a sobra é descartada
-af=(f'dynaudnorm=f=250:g=15:p=0.9:m=8,atrim=start={PRE:.3f},asetpts=PTS-STARTPTS,' if LVL else '')+'afade=t=in:d=0.8'
+af=(f'dynaudnorm=f=250:g=15:p=0.9:m=8,atrim=start={PRE:.3f},asetpts=PTS-STARTPTS,' if LVL else '')+'afade=t=in:d=0.8'+(f',afade=t=out:st={max(DUR-1.6,0):.3f}:d=1.6' if 'music_offset' in json.load(open(f'{W}/reel.json')) else '')   # trecho escolhido não termina na resolução da faixa
 subprocess.run(['ffmpeg','-v','error','-y','-ss',f'{off-PRE:.3f}','-t',f'{DUR+PRE:.3f}','-i',MUS,'-af',af,'-ac','1','-ar',str(SR),f'{W}/musica_raw.wav'],check=True)
 # 2b) music_env: ganho da trilha por tempo, [[t, dB], ...] interpolado (ajuste pontual pedido pelo editor, sem mexer no resto)
 ENV=json.load(open(f'{W}/reel.json')).get('music_env')

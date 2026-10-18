@@ -1,0 +1,104 @@
+{
+ "cliente": "Growth Leaders — Begrow / João Campos",
+ "origem": "Tema específico deste projeto, a partir do brief e dos assets oficiais fornecidos pelo cliente em 17/10/2026. Não reutiliza identidade do canal Vai Lá e Faz. | identidade revista pelo manual \"Growth Leaders - Marca.pdf\" e o convite do site (/Users/Dev/projects/growthLeadersLP), 18/10/2026",
+ "theme": {
+  "colors": {
+   "paper": "#001236",
+   "paper2": "#011A4A",
+   "ink": "#FFF7E5",
+   "ink2": "#FFD575",
+   "terra": "#F2A902",
+   "terraDark": "#013186",
+   "peach": "#FFD575",
+   "white": "#013186",
+   "video": "#FFF7E5",
+   "onAccent": "#001236",
+   "pill": "#013186",
+   "bg": "#001236",
+   "gold": "#F2A902",
+   "shadow": "0,8,30",
+   "scrim": "0,10,32"
+  },
+  "fonts": [
+   {
+    "family": "MetroRegular",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/growth-leaders/Metropolis-Regular.otf",
+    "weight": "400"
+   },
+   {
+    "family": "MetroBold",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/growth-leaders/Metropolis-ExtraBold.otf",
+    "weight": "800"
+   },
+   {
+    "family": "GrideaGL",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/growth-leaders/MBF-GRIDEA.ttf",
+    "weight": "400"
+   }
+  ],
+  "title": {
+   "family": "MetroBold",
+   "weight": 800,
+   "upper": true,
+   "ls": 0.4,
+   "scale": 0.62
+  },
+  "caption": {
+   "family": "MetroBold",
+   "weight": 800,
+   "upper": false,
+   "ls": 0.15,
+   "scale": 0.76,
+   "hlAccent": false
+  },
+  "label": {
+   "family": "MetroRegular",
+   "weight": 400
+  },
+  "accent": {
+   "family": "GrideaGL",
+   "italic": false,
+   "weight": 400
+  },
+  "mediaFilter": "contrast(1.03) saturate(1.02)",
+  "burnFilter": "sepia(1) hue-rotate(175deg) saturate(1.35) brightness(0.95)",
+  "burnOpacity": 0.55,
+  "grain": 0.035,
+  "layout": {
+   "splitH": 768,
+   "camShift": 460,
+   "capSplitY": 1370,
+   "capFullY": 1300,
+   "capMaxW": 820,
+   "autoTags": true
+  },
+  "burnFF": "colorchannelmixer=rr=0.6735:rg=0.4235:rb=0.1040:gr=0.1925:gg=0.8355:gb=0.0925:br=0.1500:bg=0.2970:bb=0.6185,hue=h=175:s=1.35,colorchannelmixer=rr=0.95:gg=0.95:bb=0.95"
+ },
+ "pares_extra": [
+  [
+   "ink",
+   "paper",
+   4.5,
+   "texto principal"
+  ],
+  [
+   "terra",
+   "paper",
+   4.5,
+   "destaque dourado"
+  ]
+ ],
+ "capa": {
+  "layout": "faixa",
+  "y": 58,
+  "logo": "/Volumes/SSD/CIBO Acervo/logo/growth-leaders/gl-logo.svg",
+  "logoY": 1530,
+  "logoW": 460
+ },
+ "regras": [
+  "Usar Metropolis para leitura e MBF Gridea apenas em destaque editorial curto.",
+  "Título e degradê ocupam a base; nunca encobrem o rosto.",
+  "Painéis devem representar o sentido da fala e não repetir o mesmo formato entre reels.",
+  "Música fica 18 a 22 dB abaixo da voz e em faixa separada no pacote editável."
+ ]
+}
