@@ -16,6 +16,9 @@ Para cada corte grava `PROJETO - <filename>.xml`, `<filename>.srt` e um LEIAME n
   A5  os cliques (`work/clicks_<clip>.wav` ou --clicks)
 O tempo do projeto não tem o quadro da capa: é a edição. Adaptado de `kvrancic/oneshot-video`
 premiere.py (MIT), 12/10/2026.
+ATENÇÃO (18/10/2026): no DaVinci Resolve 20 este XML sai errado (Daniel pequeno, keyframes fora do clipe,
+voz do MP4 recusada). As regras medidas e um gerador validado estão em bombordo-boreste SKILL.md,
+seção "Histórias do Porto → XML para o DaVinci".
 """
 import json, os, subprocess, sys
 from pathlib import Path

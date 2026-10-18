@@ -69,6 +69,41 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   regere a câmera de um reel entregue para um ajuste (a nova sai com outro zoom).
 - **Não apague temporários de um job em andamento** sem o editor liberar: servem para o CIBO aprender com a demanda.
 
+- **Leia este arquivo inteiro antes do primeiro comando do job.** No Histórias do Porto do EP 06 (18/10/2026),
+  três erros já registrados aqui se repetiram por falta de leitura: espera com `pgrep -f` travada em si mesma,
+  whoosh no burn de abertura/fechamento e um clique só em vez dos dois alternados.
+- **Valide o caminho difícil primeiro, pequeno, antes de produzir tudo.** No EP 06 o XML inteiro (legenda,
+  painéis, trilha) foi gerado antes de testar a importação no Resolve, e cada erro custou uma volta inteira.
+  Ordem certa: XML mínimo (V1 + 1 painel + 1 trilha de áudio) → importar e renderizar 1 s → só então o resto.
+- **Gravação bruta longa com silêncio ou repetição: Whisper com `--condition-on-previous-text False
+  --hallucination-silence-threshold 2` desde a primeira passada.** Sem isso o large-v3 entrou em loop
+  ("não! não!") do minuto 3:40 até o fim e precisou de uma segunda passada de 8 min.
+- **zsh não separa variável sem aspas**: `for x in ${=lista}` (ou um array), nunca `for x in $lista`.
+- **Pergunte o que o editor quis dizer antes de investigar** quando o tempo citado não existe no vídeo
+  (ex.: "3:05" num corte de 2:24 era do bruto).
+
+## DaVinci Resolve pela API (medido no Resolve 20.2.3, EP 06, 18/10/2026)
+
+O editor prefere fazer o render final no DaVinci a partir de um XML com todas as camadas. A API funciona
+(`DaVinciResolveScript`, ambiente em `RESOLVE_SCRIPT_API`/`RESOLVE_SCRIPT_LIB`/`PYTHONPATH`).
+- **XML do FCP7 no Resolve:** clipe encaixado antes do Movimento; centro relativo ao clipe encaixado;
+  `<when>` do keyframe conta do início da mídia (soma o `<in>`); áudio de MP4 numa trilha derruba a
+  importação inteira (extraia WAV); cada trilha de áudio vira mono centralizada a −3 dB (voz dual-mono numa
+  trilha só +3 dB; estéreo em duas com `audiopan` −1/+1). Gerador validado e detalhes: `bombordo-boreste`
+  SKILL.md, seção "XML para o DaVinci". O `projeto_nle.py` antigo ainda tem esses erros.
+- **Render:** chame `LoadRenderPreset('H.264 Master')` antes de `SetRenderSettings`. Uma chave inválida
+  (ex.: `FrameRate`) faz o `SetRenderSettings` falhar inteiro, e uma configuração antiga presa na Deliver
+  gerou MP4 só de áudio duas vezes. Confira o retorno e os streams (`ffprobe`) de todo arquivo.
+- **AAC sai a 64 kb/s** e não há chave para o bitrate: renderize também um MOV com `AudioCodec: lpcm` e
+  remonte o MP4 com `-c:v copy -c:a aac -b:a 256k`.
+- **`SetLUT` só aceita LUT da pasta do sistema** (`/Library/Application Support/Blackmagic Design/DaVinci
+  Resolve/LUT`) e precisa de `RefreshLUTList()`; aplique pelo `GetNodeGraph().SetLUT(1, nome)`. A API não
+  cria Adjustment Clip.
+- **Arquivo trocado no mesmo caminho fica em cache** no Media Pool: para medir de novo, use nome novo.
+- **O projeto aberto é do editor:** teste num projeto próprio ("TESTE XML CIBO"), devolva o projeto que
+  estava aberto ao terminar, e não reabra/renomeie timeline dele sem avisar. Corte feito pelo editor na
+  timeline importada não acompanha a legenda (clipe único): refaça o corte no pipeline e reimporte.
+
 ## Regras editoriais de todo corte
 
 - **Fala limpa** (skill `fala-limpa`): só a voz de quem fala, sem hesitação, sem palavra
@@ -108,10 +143,9 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
   `BURN_END_INLINE`). Nunca recodifique o MP4 entregue para pôr cartão ou burn. ("demora
   muito", 12/10/2026)
 - **Projeto editável: sempre oferecer, só gerar se pedirem.** Na entrega, pergunte se o editor
-  quer o projeto para Premiere Pro e/ou DaVinci Resolve (`podcast-reels/scripts/projeto_nle.py`:
-  XML do Final Cut 7 que os dois importam, com trechos, reenquadramento, burn, grafismos, voz,
-  trilha, cliques, marcadores e `.srt`). ("só deve gerar caso o editor peça, mas sempre deve ser
-  fornecida a opção", 12/10/2026)
+  quer o projeto para Premiere Pro e/ou DaVinci Resolve (XML do Final Cut 7). ("só deve gerar caso o
+  editor peça, mas sempre deve ser fornecida a opção", 12/10/2026). Para o DaVinci, use as regras da
+  seção "DaVinci Resolve pela API" e valide importando e renderizando antes de entregar.
 - **Ritmo e som de referência** (6 reels de criadores; `kurbaitaev/ghost-editor` e
   `kmilo93sd/agent-video-editor`, 12/10/2026): ~95% das transições são corte seco; plano médio
   de ~3 s; algo novo na tela a cada 5–7 s em Reels; SFX 0,4–0,9 a cada 10 s, nos grafismos e
