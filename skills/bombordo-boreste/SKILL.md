@@ -238,6 +238,14 @@ grilos no silêncio constrangedor); **palavrão leva bipe** 1 kHz (acervo `bipe-
 voz cortada na palavra) e a legenda mostra "c*". Uma gravação de Histórias pode ter duas histórias e
 muitas tomadas: use só a última tomada completa de cada uma, mais a vinheta de outra tomada.
 
+**Início de tomada ("pode ir, vai"):** o Daniel dá a deixa antes de começar, e o Whisper engole o "vai" no
+"A história" (põe as duas palavras coladas e erra o tempo). Não identifique a sílaba pelo Whisper: no perfil
+de energia em 10 ms do `voz_bruto.wav` a sequência é deixa → "vai" → **respiração** (~-40 dB, 0,3 s) →
+"A história"; o início vai no vale entre a respiração e o "A" (EP 06: "vai" 205,58–205,72, respiração
+205,95–206,25, "A" 206,30 → início 206,267). Mover o início é deslocar **todas** as camadas (edit.json,
+words/blocks, `edit_a_fc.txt`, refs/música/SFX em `STORIES`, SRT) e refazer XML e MP4; confira com
+correlação do MP4 contra o bruto, não com transcrição (o Whisper "ouve" o "vai" mesmo depois de ele sair).
+
 ## Choosing `keeps`
 
 `keeps` is the edit. Drop filler, false starts, repeated phrases and dead air; keep

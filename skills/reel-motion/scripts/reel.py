@@ -508,7 +508,8 @@ def e_davinci():
         e_mix()
     pr = json.load(open(PUB / R / 'props.json'))
     alfa = ('--codec=prores', '--prores-profile=4444', '--pixel-format=yuva444p10le', '--image-format=png')
-    N = int(round(pr['duration'] * FPS)); q = lambda t: min(N - 1, max(0, int(round(t * FPS))))
+    CF = 29.97                                                  # quadros da composição Reel (Root.tsx), não o fps da câmera
+    N = int(round(pr['duration'] * CF)); q = lambda t: min(N - 1, max(0, int(round(t * CF))))
     jobs = [('camera', 'camera', None, None, None, ('--codec=prores', '--prores-profile=standard')),
             ('legenda', 'legenda', None, None, None, alfa)] + ([('painel_fundo', 'painel_fundo', None, None, None, alfa)] if pr.get('panels') else [])
     if pr.get('inserts'):
