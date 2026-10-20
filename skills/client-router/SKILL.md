@@ -19,8 +19,8 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Transcrição de aula/live longa | `transcricao-aulas` |
 | Escolha dos momentos (portão, começo/fim) | `podcast-reels` → "Escolha dos momentos" + `scripts/checa_cortes.py` |
 | Fala: outra voz, hesitação, palavra engolida | `fala-limpa` |
-| Trilha por corte | `talking-head-music` |
-| B-roll / referência em tela | `semantic-broll-validator` |
+| Trilha por corte | `talking-head-music`; trilha nova (acervo → Openverse CC0/CC BY): `busca-trilha` |
+| B-roll / referência em tela | `semantic-broll-validator` (sentido) + `busca-stock` (acervo → Pixabay → Pexels, folha, nota, download catalogado) |
 | Cartão Seguir, título, lower third, legenda animada | `lettering-motion` (+ `anthropic-skills:motion-graphics`) |
 | Reel com motion em tela dividida (painel em cima, pessoa embaixo), qualquer cliente | `reel-motion` — motor único com `temas/<cliente>.json` e biblioteca de componentes; nunca copie o motor para o projeto |
 | Vinheta, intro, abertura, logo animada | `vinheta-marca` (template Remotion 16:9/4K) |

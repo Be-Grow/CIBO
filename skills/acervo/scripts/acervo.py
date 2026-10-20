@@ -7,11 +7,13 @@ em ~/.cibo/acervo.json. O catálogo (`catalog.json`) fica dentro da biblioteca e
   acervo.py where                          onde está a biblioteca e se está acessível
   acervo.py init CAMINHO                   cria a biblioteca (pergunte ao editor antes)
   acervo.py move-library CAMINHO           copia a biblioteca para outro lugar e passa a usar lá
-  acervo.py add ARQ [--type T] [--client C] [--tags a,b] [--note "..."] [--license "..."] [--ref]
-                                           copia para a biblioteca e cataloga (--ref: só indexa)
+  acervo.py add ARQ [--type T] [--client C] [--tags a,b] [--note "..."] [--license "..."] [--ref] [--meta JSON]
+                                           copia para a biblioteca e cataloga (--ref: só indexa); --meta guarda a
+                                           origem de stock/trilha baixada: {"fonte","url","autor","query","nota",...}
   acervo.py index PASTA [--type T] [--client C] [--tags a,b]
                                            indexa uma pasta inteira como referência (sem copiar)
-  acervo.py find TERMOS... [--type T] [--client C] [-n 10] [--json]
+  acervo.py find TERMOS... [--type T] [--client C] [--sem-uso CLIENTE] [-n 10] [--json]
+  acervo.py usa ID --client C [--proj PASTA]   registra que o cliente usou o item (não repetir stock/trilha)
   acervo.py path ID [--segment N]          caminho absoluto (para scripts)
   acervo.py get ID --to PASTA [--segment N]
                                            copia para o projeto e registra em 07_manifests/assets_usados.md
@@ -189,7 +191,7 @@ def cmd_where(a):
                       "config": str(CONF)}, ensure_ascii=False))
 
 
-def add_one(cat, src: Path, typ, client, tags, note, lic, ref, want_id=None) -> str:
+def add_one(cat, src: Path, typ, client, tags, note, lic, ref, want_id=None, meta=None) -> str:
     src = src.expanduser().resolve()
     qh = qhash(src)
     known = by_hash(cat).get(qh)
@@ -198,6 +200,8 @@ def add_one(cat, src: Path, typ, client, tags, note, lic, ref, want_id=None) -> 
         it["tags"] = sorted(set(it["tags"]) | set(tags))
         if note and note not in (it.get("note") or ""):
             it["note"] = ((it.get("note") or "") + " | " + note).strip(" |")
+        if meta:
+            it["meta"] = {**it.get("meta", {}), **meta}
         it.setdefault("seen_at", [])
         if str(src) not in it["seen_at"] and str(src) != str(resolve(it)):
             it["seen_at"].append(str(src))
@@ -208,6 +212,8 @@ def add_one(cat, src: Path, typ, client, tags, note, lic, ref, want_id=None) -> 
     it = {"id": k, "name": src.name, "type": typ, "client": client, "tags": sorted(set(tags)),
           "note": note or "", "license": lic or "", "qhash": qh, "size": src.stat().st_size,
           "source": str(src), "added": time.strftime("%Y-%m-%d"), **media_info(src)}
+    if meta:
+        it["meta"] = dict(meta)
     if ref:
         it.update(kind="ref", path=str(src))
     else:
@@ -227,7 +233,7 @@ def add_one(cat, src: Path, typ, client, tags, note, lic, ref, want_id=None) -> 
 def cmd_add(a):
     cat = load()
     k = add_one(cat, Path(a.arquivo), a.type, a.client, [t for t in (a.tags or "").split(",") if t],
-                a.note, a.license, a.ref, a.id)
+                a.note, a.license, a.ref, a.id, json.loads(a.meta) if a.meta else None)
     save(cat)
     it = cat["items"][k]
     print(f"{k}  [{it['kind']}]  {resolve(it)}")
@@ -267,6 +273,8 @@ def cmd_find(a):
             continue
         if a.client and it["client"] not in (a.client, "_global"):
             continue
+        if a.sem_uso and any(u.get("client") == a.sem_uso for u in it.get("usos", [])):
+            continue
         s = score(it, a.termos) if a.termos else 1
         if s:
             res.append((s, it))
@@ -282,6 +290,19 @@ def cmd_find(a):
               + (f"\n      nota: {it['note']}" if it.get("note") else ""))
     if not res:
         print("nada encontrado — se o editor apontar o arquivo, rode `acervo.py add` na hora")
+
+
+def registra_uso(it, client, proj=None):
+    """histórico de uso por cliente: stock e trilha não se repetem no mesmo cliente (busca-stock, busca-trilha)"""
+    it.setdefault("usos", []).append({"client": client, "proj": str(proj or ""), "data": time.strftime("%Y-%m-%d")})
+
+
+def cmd_usa(a):
+    cat = load()
+    it = get_item(cat, a.id)
+    registra_uso(it, a.client, a.proj)
+    save(cat)
+    print(f"{it['id']}: {len(it['usos'])} usos ({', '.join(sorted({u['client'] for u in it['usos']}))})")
 
 
 def get_item(cat, key):
@@ -336,6 +357,8 @@ def cmd_get(a):
             f.write(f"| {time.strftime('%Y-%m-%d')} | {it['id']}{f' #{a.segment}' if a.segment else ''} | "
                     f"{dst.relative_to(proj)} | {resolve(it)} | {it.get('license') or '?'} |\n")
     it["uses"] = it.get("uses", 0) + 1
+    if a.client:
+        registra_uso(it, a.client, proj)
     save(cat)
     print(dst)
 
@@ -451,12 +474,16 @@ def main():
         if name == "add":
             p.add_argument("--note"); p.add_argument("--license"); p.add_argument("--ref", action="store_true")
             p.add_argument("--id", help="ID curto (ex.: filmburn-pack)")
+            p.add_argument("--meta", help='JSON com a origem: {"fonte","url","autor","query","nota"}')
         p.set_defaults(f=fn)
     p = sp.add_parser("find"); p.add_argument("termos", nargs="*"); p.add_argument("--type"); p.add_argument("--client")
+    p.add_argument("--sem-uso", metavar="CLIENTE", help="esconde o que esse cliente já usou")
     p.add_argument("-n", type=int, default=10); p.add_argument("--json", action="store_true"); p.set_defaults(f=cmd_find)
     p = sp.add_parser("path"); p.add_argument("id"); p.add_argument("--segment", type=int); p.set_defaults(f=cmd_path)
     p = sp.add_parser("get"); p.add_argument("id"); p.add_argument("--to", required=True); p.add_argument("--segment", type=int)
-    p.set_defaults(f=cmd_get)
+    p.add_argument("--client", help="registra o uso por esse cliente"); p.set_defaults(f=cmd_get)
+    p = sp.add_parser("usa"); p.add_argument("id"); p.add_argument("--client", required=True); p.add_argument("--proj")
+    p.set_defaults(f=cmd_usa)
     p = sp.add_parser("segments"); p.add_argument("id"); p.add_argument("--min-black", type=float, default=0.3)
     p.set_defaults(f=cmd_segments)
     p = sp.add_parser("edit"); p.add_argument("id")

@@ -26,6 +26,8 @@ O MFA (alinhamento forçado de palavras, `fala-limpa/scripts/alinha_mfa.py`) mor
 `tests/regressao.py check` renderiza o mesmo material sintético em cada motor de corte
 (podcast-reels, katia, bombordo-boreste, autismo-cast, content-hub) e compara vídeo, áudio e capa
 com `tests/golden/`. Rode antes de todo push que mexa em motor; travamento vira erro (240 s).
+`busca-stock` e `busca-trilha` entram no mesmo `check` sem rede: respostas de API simuladas (`CIBO_BUSCA_MOCK`)
+e acervo isolado (`CIBO_ACERVO_CONF`); conferem filtros, licença, nota, download e o não repetir no cliente.
 
 ## Como está organizado
 
@@ -90,6 +92,7 @@ Cada skill é autocontida: lê seu próprio `SKILL.md` antes de qualquer coisa, 
 | `fala-limpa` | Audita a fala antes do render e no QA: corta outra voz (entrevistador, alguém ao fundo), hesitações e pausas de pensamento, e impede a palavra final engolida pelo fade. |
 | `video-delivery-safety-check` | Checking final antes da entrega: confronta o MP4 com o job esperado, falhas técnicas/visuais/sonoras. |
 | `semantic-broll-validator` | Valida se um B-roll casa com o sentido completo da fala, não só com uma palavra-chave isolada. |
+| `busca-stock` | Busca B-roll: acervo → Pixabay (API) → Pexels (aba do Chrome), queries de cena inteira, filtro por slot/resolução/duração, sem repetir no cliente, folha de quadros, nota de naturalidade + matriz semântica, top 3 e download catalogado no acervo. Chaves em `~/.cibo/chaves.env`. |
 
 ### Produção e infraestrutura
 | Skill | O que faz |
@@ -97,6 +100,7 @@ Cada skill é autocontida: lê seu próprio `SKILL.md` antes de qualquer coisa, 
 | `video-project-structure` | Cria e audita a estrutura fixa de pastas de um projeto de edição (fontes, transcrições, QA, entregas). |
 | `video-render-optimizer` | Detecta CPU/GPU/encoders FFmpeg, escolhe o encoder mais eficiente por benchmark e revalida sozinho (`hw_profile.py`: refaz quando a máquina muda ou a cada 30 dias, teste rápido a cada 10 renders, cai para CPU se o hardware falhar). |
 | `talking-head-music` | Escolhe, compara e mixa trilha de fundo para vídeos de talking head sem atropelar a inteligibilidade da fala. |
+| `busca-trilha` | Busca trilha de fundo: acervo → Openverse (só CC0 e CC BY) → Freesound (CC0), mede BPM, loudness e energia em 1–4 kHz, prévia de 10 s sob a voz, crédito do CC BY e registro no acervo sem repetir no cliente. |
 | `clickup-thumb-podcast` | Cria a demanda de thumb de episódio de podcast no ClickUp (ContentHub > Max > Edição) no padrão da equipe; o token fica fora do repositório. |
 | `limpeza-gravacao-bruta` | Tira bastidores, pausas, retakes, bip e assuntos que a equipe pediu para cortar de gravações longas, com emendas pelo sinal de áudio e trava de duração do áudio. |
 | `transcricao-aulas` | Transcrição em lote de aulas e cursos (série, retomável, pouca RAM), sempre com tempo, intervalos para o DaVinci, sumário e estrutura pronta para o Drive. |

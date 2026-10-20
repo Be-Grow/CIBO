@@ -21,6 +21,9 @@ Read [references/semantic-scoring.md](references/semantic-scoring.md) before eva
 8. Test the candidate in the real layout with captions and speaker visible. Confirm it improves comprehension without creating a second competing story.
 9. Download only the approved asset. Record the transcript window, semantic brief, queries, selected time range, score, rejection reasons, source, item-level license, and hash.
 
+Busca, filtros, folha de quadros, nota (naturalidade + esta matriz) e download catalogado: skill `busca-stock`
+(`busca_stock.py`). Use as queries de cena inteira do passo 4 no plano dela.
+
 ## Hard rejection rules
 
 - Do not convert metaphors into literal stock footage unless the speaker is explicitly discussing the literal action.

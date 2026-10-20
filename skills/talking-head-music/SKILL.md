@@ -28,6 +28,9 @@ Read [references/scoring.md](references/scoring.md) before selecting or replacin
 8. Measure the final mixed file and listen again after AAC encoding. Reconsider the track if the voice feels smaller, the rhythm fights sentence endings, or the conclusion loses impact.
 
 
+Trilha nova (o acervo não tem uma que sirva): skill `busca-trilha` — acervo → Openverse (CC0/CC BY) → Freesound,
+medidas pela métrica de banda de voz abaixo, prévia de 10 s sob a voz real, crédito do CC BY e registro no acervo.
+
 ## Escolher pela banda da voz, nao pelo genero
 
 A metrica que decide se uma faixa abafa a fala e **quanta energia ela coloca em
