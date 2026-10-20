@@ -89,7 +89,7 @@ const palavras = (n: React.ReactNode, wrap: (x: React.ReactNode, k: string) => R
 // título: perfil "atual" entra inteiro (fade + sobe + desfoque); "palavra" sobe cada palavra de trás de uma máscara, uma depois
 // da outra (M.stagger s entre elas), que é a entrada de tipografia mais limpa e mais cara de se ver
 export const Title: React.FC<{text: React.ReactNode; p: number; size?: number; top: number; color?: string; align?: 'center' | 'left'}> = ({text, p, size = 92, top, color = C.ink, align = 'center'}) => {
-  const base: React.CSSProperties = {position: 'absolute', top, left: 70, right: 70, textAlign: align, ...fTitle(), fontSize: size, lineHeight: 1.02, color};
+  const base: React.CSSProperties = {position: 'absolute', top, left: 70, right: 70, textAlign: align, ...fTitle(), fontSize: size, lineHeight: T.title.lh ?? 1.02, color};
   if (M.reveal !== 'palavra') return <div style={{...base, opacity: p, transform: `translateY(${(1 - p) * 30}px)`, filter: `blur(${(1 - p) * 10}px)`}}>{text}</div>;
   const ws = palavras(text), n = ws.filter((w) => w !== ' ' && !(React.isValidElement(w) && w.type === 'br')).length;
   const g = Math.min(M.stagger / 0.5, 0.6 / Math.max(n - 1, 1));   // fração do título entre uma palavra e a outra (o grupo inteiro cabe em ~0,8 s)
@@ -98,9 +98,11 @@ export const Title: React.FC<{text: React.ReactNode; p: number; size?: number; t
     <div style={base}>{ws.map((w, k) => {
       if (w === ' ' || (React.isValidElement(w) && w.type === 'br')) return w;
       const q = Math.min(1, Math.max(0, (p * (1 + (n - 1) * g) - i++ * g)));
+      // palavra de destaque (<I>) engrossa enquanto sobe, se o perfil tiver peso e a fonte for variável
+      const fw = M.peso && React.isValidElement(w) && w.type === I ? Math.round(M.peso[0] + (M.peso[1] - M.peso[0]) * q) : undefined;
       return (
         <span key={k} style={{display: 'inline-block', overflow: 'hidden', verticalAlign: 'top', padding: '0 0.08em 0.16em', margin: '0 -0.08em -0.16em'}}>
-          <span style={{display: 'inline-block', transform: `translateY(${(1 - q) * 105}%)`, opacity: Math.min(1, q * 3)}}>{w}</span>
+          <span style={{display: 'inline-block', transform: `translateY(${(1 - q) * 105}%)`, opacity: Math.min(1, q * 3), fontWeight: fw}}>{w}</span>
         </span>
       );
     })}</div>

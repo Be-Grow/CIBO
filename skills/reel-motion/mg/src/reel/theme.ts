@@ -14,7 +14,7 @@ type FontSpec = {family: string; file: string; weight?: string; style?: string};
 export type Theme = {
   colors?: Partial<typeof C>;
   fonts?: FontSpec[];
-  title?: {family?: string; weight?: number; upper?: boolean; ls?: number; scale?: number};
+  title?: {family?: string; weight?: number; upper?: boolean; ls?: number | string; scale?: number; lh?: number};   // lh = entrelinha; ls aceita '-0.015em'
   caption?: {family?: string; weight?: number; upper?: boolean; ls?: number; scale?: number};
   label?: {family?: string; weight?: number};
   accent?: {family?: string; italic?: boolean; weight?: number};
@@ -27,7 +27,7 @@ export type Theme = {
   layoutH?: {panelW?: number; capSplitY?: number; capFullY?: number; capSize?: number; hookScale?: number};
   // jeito de mexer do cliente (20/10/2026, pedido do editor para subir a qualidade do motion): perfil = atual | editorial | premium | energetico
   // (ver PERFIS); os campos soltos sobrescrevem o perfil. Sem motion no tema = "atual" (sai idêntico ao motor de antes).
-  motion?: {perfil?: string; enter?: number[]; dur?: number; overshoot?: number; reveal?: 'bloco' | 'palavra'; stagger?: number; settle?: number; ambient?: number};
+  motion?: {perfil?: string; enter?: number[]; dur?: number; overshoot?: number; reveal?: 'bloco' | 'palavra'; stagger?: number; settle?: number; ambient?: number; peso?: number[]};
 };
 export const T = {
   fonts: [
@@ -82,8 +82,9 @@ export const EASE = Easing.bezier(0.33, 0, 0.67, 1);
 // overshoot = quanto do "passa do ponto e volta" dos elementos com quique fica (0 = nenhum: conteúdo sério/bem-estar
 // com quique parece brinquedo); reveal = título inteiro ou palavra por palavra subindo de trás de uma máscara;
 // stagger = segundos entre palavras/itens; settle = atraso do detalhe que assenta depois do elemento principal
-// (subtítulo do card); ambient = intensidade do fundo vivo (gradiente que deriva devagar, 0 = desligado).
-const PERFIS: Record<string, {enter: number[]; dur: number; overshoot: number; reveal: 'bloco' | 'palavra'; stagger: number; settle: number; ambient: number}> = {
+// (subtítulo do card); ambient = intensidade do fundo vivo (gradiente que deriva devagar, 0 = desligado);
+// peso = [inicial, final] da palavra de destaque que "engrossa" ao aparecer (só com fonte variável; vazio = desligado).
+const PERFIS: Record<string, {enter: number[]; dur: number; overshoot: number; reveal: 'bloco' | 'palavra'; stagger: number; settle: number; ambient: number; peso?: number[]}> = {
   atual:      {enter: [0.22, 0.61, 0.36, 1], dur: 1,    overshoot: 1,   reveal: 'bloco',   stagger: 0,    settle: 0,    ambient: 0},
   editorial:  {enter: [0.3, 0, 0.15, 1],     dur: 1.15, overshoot: 0,   reveal: 'palavra', stagger: 0.07, settle: 0.09, ambient: 1},
   premium:    {enter: [0.4, 0, 0.2, 1],      dur: 1.2,  overshoot: 0,   reveal: 'palavra', stagger: 0.08, settle: 0.1,  ambient: 0.7},

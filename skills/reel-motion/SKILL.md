@@ -108,6 +108,9 @@ Tudo no Remotion, só princípios de animação (o editor não usa After Effects
   grupo entra escalonado (40–80 ms por item, grupo inteiro ≤ 0,8 s); elemento maior ou que anda mais leva mais tempo;
   conteúdo sério/bem-estar sem quique; pelo menos 0,3 s parado depois de cada movimento.
 - Escolha o perfil no briefing pelo tom do cliente; mostre antes/depois de 10 s quando mudar.
+- Tipografia (20/10/2026, ajuste fino aprovado sem diferença perceptível; o ganho visível está no movimento): título com
+  `title.lh` 1,1 e `title.ls` '-0.015em' (serifa grande); legenda ≥ 60 px na tela dividida; `motion.peso` [ini, fim] faz a
+  palavra de destaque engrossar ao aparecer (só fonte variável; Andrea [400, 750]).
 
 ## Cor: identidade sem perder leitura (regra do editor, 13/10/2026)
 

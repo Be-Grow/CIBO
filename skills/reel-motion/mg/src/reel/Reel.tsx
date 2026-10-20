@@ -4,7 +4,7 @@ import {
   AbsoluteFill, Easing, OffthreadVideo, Sequence, continueRender, delayRender, interpolate,
   staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion';
-import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, cl, ramp, useT} from './theme';
+import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, M, cl, ramp, useT} from './theme';
 import {Fonts, VBlur, Grain, Pill, I, Ambient} from './primitives';
 import {PANELS} from './panels';
 export {C, T, applyTheme, sh, scr} from './theme';
@@ -101,10 +101,11 @@ const Captions: React.FC<{blocks: Block[]; t: number; sp: number; hide?: boolean
         textShadow: !onVideo ? 'none' : '0 0 3px rgba(0,0,0,0.55), 0 2px 14px rgba(0,0,0,0.7), 0 0 44px rgba(0,0,0,0.55)'}}>
         {b.words.map((w, k) => {
           const p = ramp(t, w.s - 0.05, 0.22, OUT);
+          const fw = w.hl && M.peso ? Math.round(M.peso[0] + (M.peso[1] - M.peso[0]) * ramp(t, w.s - 0.05, 0.5, OUT)) : undefined;   // destaque engrossa
           return (
             <span key={k} style={{display: 'inline-block', marginRight: k < b.words.length - 1 ? '0.22em' : 0, opacity: p,
               transform: `translateY(${(1 - p) * 16}px) scale(${w.hl ? 1.08 - 0.08 * p : 1})`, filter: `blur(${(1 - p) * 7}px)`,
-              ...(w.hl && (T.caption as any).hlAccent !== false ? fAcc() : {}), color: w.hl ? hl : color, fontSize: w.hl ? '1.12em' : '1em'}}>{w.t}</span>
+              ...(w.hl && (T.caption as any).hlAccent !== false ? fAcc() : {}), color: w.hl ? hl : color, fontSize: w.hl ? '1.12em' : '1em', ...(fw ? {fontWeight: fw} : {})}}>{w.t}</span>
           );
         })}
       </div>

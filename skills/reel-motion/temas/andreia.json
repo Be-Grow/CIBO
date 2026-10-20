@@ -42,15 +42,16 @@
       "family": "CormA",
       "weight": 600,
       "upper": false,
-      "ls": 0,
-      "scale": 1.08
+      "ls": "-0.015em",
+      "scale": 1.08,
+      "lh": 1.1
     },
     "caption": {
       "family": "MontA",
       "weight": 600,
       "upper": false,
       "ls": 0,
-      "scale": 0.8,
+      "scale": 0.86,
       "hlAccent": false
     },
     "label": {
@@ -80,7 +81,11 @@
       "hookScale": 0.82
     },
     "motion": {
-      "perfil": "editorial"
+      "perfil": "editorial",
+      "peso": [
+        400,
+        750
+      ]
     }
   },
   "pares_extra": [
