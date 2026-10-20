@@ -7,6 +7,15 @@ description: Ponto de entrada de todo trabalho de edição de vídeo do CIBO (co
 
 O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente — mesmo quando o motor por baixo é compartilhado. Duas skills de clientes distintos podem ter nascido do mesmo código (`bombordo-boreste`, `autismo-cast` e `podcast-reels` são o mesmo motor com defaults e assets próprios; `katia` é um fork de `podcast-reels`), mas isso não significa que os arquivos são intercambiáveis. Identidade de cliente é definida pelos assets, pela fonte, pela trilha e pelas regras editoriais daquele cliente específico, não pelo motor de render.
 
+## Tudo roda no SSD (regra fixa)
+
+O disco interno tem pouco espaço livre. Quando ele enche, o Resolve cai e o render se perde. Por isso, nenhum arquivo de trabalho vai para o disco interno:
+
+- Em **todo** comando Bash do job, comece com `export TMPDIR="<projeto>/04_work/tmp"; mkdir -p "$TMPDIR"`. O estado do shell não persiste entre chamadas, então repita em cada uma. Assim `tempfile`, ffmpeg, whisper e os scripts das skills gravam no SSD.
+- Prévias, folhas de contato, testes, WAV, MP4 e MOV ficam em `<projeto>/04_work/` ou `05_qa/`. Nunca use o scratchpad (`/private/tmp/claude-*`) nem `/tmp`, nem para um arquivo "rápido".
+- No Resolve, render, cache e proxies apontam para a pasta do projeto no SSD.
+- Antes de um render longo, rode `df -h /`. Com menos de 5 GB livres, avise o usuário antes de começar.
+
 ## Mapa de skills por etapa (use sem o usuário pedir)
 
 | Etapa | Skill |
