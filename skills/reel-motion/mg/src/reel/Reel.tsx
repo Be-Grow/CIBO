@@ -67,7 +67,7 @@ const laneTags = (tags: any[]) => {
 };
 
 // ---------- legenda ----------
-const Captions: React.FC<{blocks: Block[]; t: number; sp: number; hide?: boolean; inv?: boolean}> = ({blocks, t, sp, hide, inv}) => {
+const Captions: React.FC<{blocks: Block[]; t: number; sp: number; hide?: boolean; inv?: boolean; hz?: boolean}> = ({blocks, t, sp, hide, inv, hz}) => {
   if (hide) return null;
   const i = blocks.findIndex((b, k) => t >= b.s - 0.08 && t < Math.min(b.e + 0.35, blocks[k + 1] ? blocks[k + 1].s - 0.04 : 1e9));
   if (i < 0) return null;
@@ -78,20 +78,25 @@ const Captions: React.FC<{blocks: Block[]; t: number; sp: number; hide?: boolean
   // em transição de layout a legenda some (nenhum bloco atravessa a troca)
   if (sp > 0.02 && sp < 0.98) return null;
   const split = sp >= 0.98;
-  const L = T.layout, onVideo = !split || L.capSplitY > 0 || !!inv;
+  // horizontal: na tela dividida a legenda fica no rodapé do painel (cor do painel), como no vertical; em tela cheia, sobre o vídeo
+  const L = T.layout, LH = T.layoutH, onVideo = hz ? !split : (!split || L.capSplitY > 0 || !!inv);
   // invertida (ela em cima, painel embaixo): legenda sobre o vídeo, logo acima do painel
-  const y = split ? (inv ? 1920 - L.splitH - (L.invPad ?? 150) - 70 : L.capSplitY > 0 ? L.capSplitY : L.splitH - 78 * L.splitH / SPLIT) : L.capFullY;
+  // horizontal: sempre sobre o vídeo; na tela dividida fica centrada na metade dela (à direita do painel)
+  const y = hz ? (split ? LH.capSplitY : LH.capFullY)
+    : split ? (inv ? 1920 - L.splitH - (L.invPad ?? 150) - 70 : L.capSplitY > 0 ? L.capSplitY : L.splitH - 78 * L.splitH / SPLIT) : L.capFullY;
   const color = onVideo ? C.video : C.ink;
   const hl = onVideo ? C.peach : C.terra;
-  let size = (split ? 70 : 82) * T.caption.scale;
-  if (L.capMaxW > 0) {   // zona segura: encolhe o bloco até caber na largura máxima (a interface do Instagram cobre as bordas)
+  let size = hz ? LH.capSize * (split ? 1 : 1.12) : (split ? 70 : 82) * T.caption.scale;
+  const left = hz ? (split ? 50 : 160) : 60, right = hz ? (split ? 1920 - LH.panelW + 50 : 160) : 60;
+  const maxW = hz ? 1920 - left - right : L.capMaxW;
+  if (maxW > 0) {   // zona segura: encolhe o bloco até caber na largura máxima (a interface do Instagram cobre as bordas)
     const txt = b.words.map((w) => w.t).join(' ');
     const m = measureText({text: T.caption.upper ? txt.toUpperCase() : txt, fontFamily: `'${T.caption.family}'`, fontSize: size,
       fontWeight: String(T.caption.weight), letterSpacing: `${T.caption.ls}px`}).width * 1.06;
-    if (m > L.capMaxW) size *= L.capMaxW / m;
+    if (m > maxW) size *= maxW / m;
   }
   return (
-    <div style={{position: 'absolute', left: 60, right: 60, top: y, height: 0, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+    <div style={{position: 'absolute', left, right, top: y, height: 0, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
       <div style={{whiteSpace: 'nowrap', ...fCap(), fontSize: size, color, opacity: 1 - out, transform: `translateY(${-out * 10}px)`,
         textShadow: !onVideo ? 'none' : '0 0 3px rgba(0,0,0,0.55), 0 2px 14px rgba(0,0,0,0.7), 0 0 44px rgba(0,0,0,0.55)'}}>
         {b.words.map((w, k) => {
@@ -108,20 +113,23 @@ const Captions: React.FC<{blocks: Block[]; t: number; sp: number; hide?: boolean
 };
 
 // ---------- gancho e lower third ----------
-const Hook: React.FC<{h: NonNullable<ReelProps['hook']>; t: number}> = ({h, t}) => {
+const Hook: React.FC<{h: NonNullable<ReelProps['hook']>; t: number; hz?: boolean}> = ({h, t, hz}) => {
   if (t > h.e + 0.3) return null;
+  const k = hz ? T.layoutH.hookScale : 1;
   const l1 = ramp(t, h.s, 0.5, OUT), l2 = ramp(t, h.l2At ?? h.s + 0.35, 0.55, OUT);
   const as = h.asideAt ? ramp(t, h.asideAt, 0.4, OUT) : 0;
   const st = h.strikeAt ? ramp(t, h.strikeAt, 0.35) : 0;
   const out = ramp(t, h.e - 0.25, 0.3);
   const line = (p: number): React.CSSProperties => ({display: 'block', opacity: p * (1 - out), transform: `translateY(${(1 - p) * 34 - out * 20}px)`, filter: `blur(${(1 - p) * 12 + out * 8}px)`});
   return (
-    <div style={{position: 'absolute', top: 120, left: 50, right: 50, textAlign: 'center', ...fTitle(), color: C.video,
+    // horizontal em tela cheia: o rosto fica no meio (x≈970–1210, y≈170–505, r01h 19/10/2026), então gancho/títulos vão
+    // para a coluna esquerda alinhados à esquerda (antes centrados no topo, em cima do rosto: reprovado pelo editor)
+    <div style={{position: 'absolute', top: hz ? 250 : 120, left: hz ? 110 : 50, right: hz ? 1040 : 50, textAlign: hz ? 'left' : 'center', ...fTitle(), color: C.video,
       textShadow: '0 3px 18px rgba(0,0,0,0.45)'}}>
-      <span style={{...line(l1), fontSize: z(104), lineHeight: 1}}>{h.l1}</span>
-      <span style={{...line(l2), fontSize: z(120), lineHeight: 1.05}}>{h.l2} <I color={C.peach}>{h.accent}</I></span>
+      <span style={{...line(l1), fontSize: z(104) * k, lineHeight: 1}}>{h.l1}</span>
+      <span style={{...line(l2), fontSize: z(120) * k, lineHeight: 1.05}}>{h.l2} <I color={C.peach}>{h.accent}</I></span>
       {h.aside && (
-        <span style={{...line(as), fontSize: z(58), ...fAcc(), marginTop: 18, position: 'relative'}}>
+        <span style={{...line(as), fontSize: z(58) * k, ...fAcc(), marginTop: 18, position: 'relative'}}>
           <span style={{position: 'relative', display: 'inline-block'}}>
             {h.aside}
             <svg style={{position: 'absolute', left: -10, top: '50%', overflow: 'visible'}} width="calc(100% + 20px)" height="10" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -134,13 +142,13 @@ const Hook: React.FC<{h: NonNullable<ReelProps['hook']>; t: number}> = ({h, t}) 
   );
 };
 
-const Lower: React.FC<{l: NonNullable<ReelProps['lower']>; t: number; sp: number}> = ({l, t, sp}) => {
+const Lower: React.FC<{l: NonNullable<ReelProps['lower']>; t: number; sp: number; hz?: boolean}> = ({l, t, sp, hz}) => {
   const a = ramp(t, l.s, 0.5, OUT), b = ramp(t, l.e - 0.4, 0.4);
   const p = a * (1 - b);
   if (p <= 0) return null;
-  const top = interpolate(sp, [0, 1], [1420, T.layout.splitH + 46]);
+  const top = hz ? 820 : interpolate(sp, [0, 1], [1420, T.layout.splitH + 46]);
   return (
-    <div style={{position: 'absolute', left: 64, top, display: 'flex', alignItems: 'center', gap: 18, opacity: p, filter: `blur(${(1 - p) * 8}px)`}}>
+    <div style={{position: 'absolute', left: 64 + (hz ? T.layoutH.panelW * sp : 0), top, display: 'flex', alignItems: 'center', gap: 18, opacity: p, filter: `blur(${(1 - p) * 8}px)`}}>
       <div style={{width: 70 * p, height: 3, background: C.peach, borderRadius: 2}} />
       <div style={{...fTitle(54), ...fAcc(), color: C.video, textShadow: '0 2px 14px rgba(0,0,0,0.5)', transform: `translateX(${(1 - p) * -16}px)`}}>{l.name}</div>
     </div>
@@ -153,7 +161,7 @@ const Lower: React.FC<{l: NonNullable<ReelProps['lower']>; t: number; sp: number
 const GOLD = 'linear-gradient(90deg, #F2A902 0%, #FFD575 100%)';
 const goldText = (): React.CSSProperties => ({backgroundImage: GOLD, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
   filter: 'drop-shadow(0 3px 14px rgba(0,8,30,0.55))'});
-const Keyword: React.FC<{k: Kw; t: number}> = ({k, t}) => {
+const Keyword: React.FC<{k: Kw; t: number; hz?: boolean}> = ({k, t, hz}) => {
   if (t < k.s - 0.1 || t > k.e + 0.4) return null;
   const a = ramp(t, k.s, 0.38, OUT), b = ramp(t, k.s + 0.1, 0.42, OUT), rule = ramp(t, k.s + 0.22, 0.45, OUT), out = ramp(t, k.e - 0.05, 0.32, EASE);
   const sub = ramp(t, k.s - 0.06, 0.34, OUT);
@@ -161,15 +169,17 @@ const Keyword: React.FC<{k: Kw; t: number}> = ({k, t}) => {
   // tamanho em px reais (fTitle sem size); encolhe só o que não cabe em 920 px
   const fit = (txt: string, base: number) => {
     const w = measureText({text: txt, fontFamily: `'${T.title.family}'`, fontSize: base, fontWeight: String(T.title.weight), letterSpacing: '0px'}).width * 1.06;
-    return w > 920 ? base * 920 / w : base;
+    const mx = hz ? 770 : 920;   // horizontal: coluna esquerda, longe do rosto
+    return w > mx ? base * mx / w : base;
   };
   const lift = (p: number, d = 30): React.CSSProperties => ({opacity: p * (1 - out), transform: `translateY(${(1 - p) * d - out * 12}px)`,
     filter: `blur(${(1 - p) * 10 + out * 6}px)`});
-  const font: React.CSSProperties = {...fTitle(), textTransform: 'none', letterSpacing: '-0.01em', lineHeight: 1.02, textAlign: 'center'};
+  const font: React.CSSProperties = {...fTitle(), textTransform: 'none', letterSpacing: '-0.01em', lineHeight: 1.02, textAlign: hz ? 'left' : 'center'};
   return (
     <>
-    {k.veil !== false && <AbsoluteFill style={{background: `linear-gradient(180deg, ${scr(0.78)} 0%, ${scr(0.5)} 21%, ${scr(0)} 38%)`, opacity: veil}} />}
-    <div style={{position: 'absolute', top: k.y ?? 150, left: 40, right: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12}}>
+    {k.veil !== false && <AbsoluteFill style={{background: hz ? `linear-gradient(90deg, ${scr(0.72)} 0%, ${scr(0.45)} 30%, ${scr(0)} 48%)`
+      : `linear-gradient(180deg, ${scr(0.78)} 0%, ${scr(0.5)} 21%, ${scr(0)} 38%)`, opacity: veil}} />}
+    <div style={{position: 'absolute', top: k.y ?? (hz ? 250 : 150), left: hz ? 110 : 40, right: hz ? 1040 : 40, display: 'flex', flexDirection: 'column', alignItems: hz ? 'flex-start' : 'center', gap: 12}}>
       {k.sub && <div style={{...fTitle(), fontSize: 34, letterSpacing: '0.3em', textTransform: 'uppercase', color: C.terra, ...lift(sub, 18),
         textShadow: '0 2px 12px rgba(0,8,30,0.6)'}}>{k.sub}</div>}
       {k.text && <div style={{...font, fontSize: fit(k.text, 112), color: C.video, ...lift(a), textShadow: '0 3px 22px rgba(0,8,30,0.6)'}}>{k.text}</div>}
@@ -207,15 +217,23 @@ export const Reel: React.FC<ReelProps> = (props) => {
   applyTheme(props.theme);
   setPart((props as any).part);
   const t = useT();
-  const {fps} = useVideoConfig();
+  const {fps, width: VW, height: VH} = useVideoConfig();
+  // composição ReelH (16:9, Andreia 19/10/2026): painel entra pela esquerda com largura layoutH.panelW e a pessoa desliza para a
+  // direita (props.camX = centro dela no quadro cheio; vai para o meio da área à direita do painel). Sem tela dividida invertida.
+  const HZ = VW > VH, PW = T.layoutH.panelW;
+  // camX = número ou [[t, x], …] (rastreio do rosto no tempo editado: a pessoa acompanha o centro da área dela)
+  const cX = (props as any).camX;
+  const camX = Array.isArray(cX) ? interpolate(t, cX.map((r: number[]) => r[0]), cX.map((r: number[]) => r[1]), cl) : (cX ?? VW / 2);
+  const camDX = HZ ? (PW + (VW - PW) / 2) - camX : 0;
   // trecho com inv: true = tela dividida invertida (ela em cima com o topo da cabeça cortado, painel embaixo; pedido da Priscilla, 13/10/2026)
   const spI = splitAmount(t, props.split.filter((g) => g.inv));
   const sp = splitAmount(t, props.split);
   const sp2 = splitAmount(t + 1 / fps, props.split);
-  const inv = spI > 0.001;
+  const inv = !HZ && spI > 0.001;
   const vel = Math.abs(sp2 - sp) * fps;               // presença por segundo
   const blurPx = Math.min(vel * 22, 26);
   const H = T.layout.splitH, K = H / SPLIT;
+  const KH = Math.min(T.layoutH.panelW / 1080, VH / SPLIT);
   // invertida: o painel sobe invPad acima da borda (a interface do Instagram cobre a parte de baixo); a faixa extra é papel
   const PAD = inv ? (T.layout.invPad ?? 150) : 0;
   const panelY = inv ? 1920 - H - PAD + (H + PAD) * (1 - sp) : -H * (1 - sp);
@@ -241,9 +259,9 @@ export const Reel: React.FC<ReelProps> = (props) => {
   return (
     <AbsoluteFill style={{background: !L || L === 'camera' ? C.bg : 'transparent'}}>
       <Fonts />
-      <VBlur id="vb" amount={blurPx} />
-      {on('camera') && <AbsoluteFill style={{transform: `translateY(${camY}px)`, filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
-        <OffthreadVideo src={staticFile(props.camera)} muted style={{width: 1080, height: 1920, filter: `blur(${endF * 14}px)`}} />
+      <VBlur id="vb" amount={blurPx} x={HZ} />
+      {on('camera') && <AbsoluteFill style={{transform: HZ ? `translateX(${camDX * sp}px)` : `translateY(${camY}px)`, filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
+        <OffthreadVideo src={staticFile(props.camera)} muted style={{width: VW, height: VH, filter: `blur(${endF * 14}px)`}} />
       </AbsoluteFill>}
       {on('midia') && (props.inserts || []).map((v, k) => {
         if (t < v.s - 0.25 || t > v.e + 0.25) return null;
@@ -251,11 +269,12 @@ export const Reel: React.FC<ReelProps> = (props) => {
         const all = props.inserts || [];
         const glueIn = all.some((o) => Math.abs(o.e - v.s) < 0.05), glueOut = all.some((o) => Math.abs(o.s - v.e) < 0.05);
         const f = (glueIn ? (t >= v.s ? 1 : 0) : ramp(t, v.s - 0.22, 0.16)) * (glueOut ? (t < v.e ? 1 : 0) : 1 - ramp(t, v.e + 0.04, 0.16));
-        const top = v.area === 'full' ? 0 : inv ? 0 : H * sp;
+        const top = v.area === 'full' || HZ ? 0 : inv ? 0 : H * sp;
+        const lft = HZ && v.area !== 'full' ? PW * sp : 0;
         const push = interpolate(t, [v.s, v.e], [1.0, 1 + (v.push ?? 0.06)], cl) * (v.tr === 'zoom' ? 1.18 - 0.18 * ramp(t, v.s, 0.32, OUT) : 1);
         const zb = v.tr === 'zoom' ? (1 - ramp(t, v.s, 0.28, OUT)) * 16 : 0;
         return (
-          <div key={k} style={{position: 'absolute', left: 0, right: 0, top, bottom: 0, overflow: 'hidden', opacity: f}}>
+          <div key={k} style={{position: 'absolute', left: lft, right: 0, top, bottom: 0, overflow: 'hidden', opacity: f}}>
             <Sequence from={Math.round((v.s - 0.25) * fps)} layout="none">
               <OffthreadVideo src={staticFile(v.src)} muted startFrom={Math.round((v.from ?? 0) * fps)}
                 style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: v.pos ?? 'center', transform: `scale(${push})`, filter: `${T.mediaFilter}${zb > 0.2 ? ` blur(${zb}px)` : ''}`}} />
@@ -264,11 +283,14 @@ export const Reel: React.FC<ReelProps> = (props) => {
         );
       })}
       {(tudoP || ['painel_fundo', 'painel', 'tag', 'step'].includes(L as string)) && sp > 0.001 && (
-        <div style={{position: 'absolute', left: 0, top: 0, width: 1080, height: H + PAD, transform: `translateY(${panelY}px)`, overflow: 'hidden',
+        <div style={{position: 'absolute', left: 0, top: 0, width: HZ ? PW : 1080, height: HZ ? VH : H + PAD,
+          transform: HZ ? `translateX(${-PW * (1 - sp)}px)` : `translateY(${panelY}px)`, overflow: 'hidden',
           background: tudoP || L === 'painel_fundo' ? C.paper : 'transparent',
-          boxShadow: tudoP || L === 'painel_fundo' ? (inv ? '0 -18px 40px rgba(0,0,0,0.25)' : '0 18px 40px rgba(0,0,0,0.25)') : 'none', filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
+          boxShadow: tudoP || L === 'painel_fundo' ? (HZ ? '18px 0 40px rgba(0,0,0,0.25)' : inv ? '0 -18px 40px rgba(0,0,0,0.25)' : '0 18px 40px rgba(0,0,0,0.25)') : 'none', filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
           {(tudoP || L === 'painel_fundo') && <Grain opacity={T.grain} />}
-          <div style={{position: 'absolute', left: 0, top: 0, width: 1080, height: SPLIT, transform: `scale(${K})`, transformOrigin: 'top center'}}>
+          {/* horizontal: o desenho 1080×940 do painel cabe inteiro na coluna da esquerda, centrado na altura */}
+          <div style={HZ ? {position: 'absolute', left: (PW - 1080 * KH) / 2, top: (VH - SPLIT * KH) / 2, width: 1080, height: SPLIT, transform: `scale(${KH})`, transformOrigin: 'top left'}
+            : {position: 'absolute', left: 0, top: 0, width: 1080, height: SPLIT, transform: `scale(${K})`, transformOrigin: 'top center'}}>
           {PrevComp && prev && (tudoP || (L === 'painel' && E === pid(prev))) && (
             <div style={{position: 'absolute', inset: 0, opacity: 1 - pIn, transform: `translateX(${-pIn * 120}px)`, filter: `blur(${pIn * 10}px)`}}>
               <PrevComp p={prev} t={t} />
@@ -296,15 +318,15 @@ export const Reel: React.FC<ReelProps> = (props) => {
         <AbsoluteFill style={{background: `linear-gradient(180deg, ${scr(0.62)} 0%, ${scr(0.28)} 22%, ${scr(0)} 38%)`,
           opacity: ramp(t, 0, 0.3) * (1 - ramp(t, props.hook.e - 0.25, 0.3))}} />
       )}
-      {tit('hook') && props.hook && <Hook h={props.hook} t={t} />}
-      {(props.titles || []).map((h, k) => tit(`t${k}`) && <Hook key={k} h={h} t={t} />)}
-      {tit('lower') && props.lower && <Lower l={props.lower} t={t} sp={sp} />}
-      {(props.keywords || []).map((k, i) => tit(`k${i}`) && <Keyword key={`k${i}`} k={k} t={t} />)}
-      {on('legenda') && <Captions blocks={props.captions} t={t} sp={sp} inv={inv} hide={(!!panel && panel.hideCapsFrom !== undefined && t >= panel.hideCapsFrom && t < panel.e) || (props.keywords || []).some((k) => k.hideCaps && t >= k.s && t < k.e + 0.2) || (!!props.endCard && t >= props.endCard.s)} />}
+      {tit('hook') && props.hook && <Hook h={props.hook} t={t} hz={HZ} />}
+      {(props.titles || []).map((h, k) => tit(`t${k}`) && <Hook key={k} h={h} t={t} hz={HZ} />)}
+      {tit('lower') && props.lower && <Lower l={props.lower} t={t} sp={sp} hz={HZ} />}
+      {(props.keywords || []).map((k, i) => tit(`k${i}`) && <Keyword key={`k${i}`} k={k} t={t} hz={HZ} />)}
+      {on('legenda') && <Captions blocks={props.captions} t={t} sp={sp} inv={inv} hz={HZ} hide={(!!panel && panel.hideCapsFrom !== undefined && t >= panel.hideCapsFrom && t < panel.e) || (props.keywords || []).some((k) => k.hideCaps && t >= k.s && t < k.e + 0.2) || (!!props.endCard && t >= props.endCard.s)} />}
       {!L && (props.burns || []).map((b, k) => (
         <Sequence key={k} from={Math.round((b.t - b.peak) * fps)} durationInFrames={Math.round(b.dur * fps)} layout="none">
           <AbsoluteFill style={{mixBlendMode: 'screen', pointerEvents: 'none', opacity: T.burnOpacity}}>
-            <OffthreadVideo src={staticFile(b.src)} muted style={{width: 1080, height: 1920, filter: T.burnFilter}} />
+            <OffthreadVideo src={staticFile(b.src)} muted style={{width: VW, height: VH, objectFit: 'cover', filter: T.burnFilter}} />
           </AbsoluteFill>
         </Sequence>
       ))}

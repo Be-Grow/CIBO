@@ -5,6 +5,13 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 
 ## Antes de começar
 
+- **Som e trilha com prévia no trecho real antes do render.** Trilha alta ou de clima errado e SFX que
+  oscilam entre "falta" e "feliz demais" são as correções mais repetidas do CIBO (11 de trilha em 68, João,
+  Priscilla, Andrea, LPA, Bombordo). Monte 2–3 opções de 10 s no ponto onde entram, já niveladas, e só renderize
+  depois da escolha.
+- **Grafia de todo nome que aparece na tela** (lower, capa, rodapé) confirmada no briefing, com a fonte
+  (perfil, contrato). "Andreia" no cadastro virou "Andrea" depois de 8 renders.
+
 - **Briefing antes de editar** (`briefing-criativo`). O fluxo estava automático demais: a IA
   decidia gancho, capa, cartão, trilha e cliques sozinha e o editor só via no render. Pergunte
   o que o perfil do cliente não responde, com opções do histórico, registre o brief e peça
@@ -86,6 +93,39 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 
 ## DaVinci Resolve pela API (medido no Resolve 20.2.3, EP 06, 18/10/2026)
 
+**Projeto organizado (regra do CIBO, 20/10/2026: "os projetos que são feitos no DaVinci precisam estar sim organizados"):**
+todo projeto entregue no Resolve sai arrumado, não só a timeline.
+- Project Manager: pasta `CIBO/<Cliente>/` e projeto com o nome do job (`EP 07 - Izaac Nava`), nunca solto na raiz nem "Untitled".
+- Media Pool em bins por tipo, na ordem: `01 BRUTO`, `02 VOZ`, `03 TRILHA`, `04 SFX`, `05 LEGENDA`, `06 GRAFISMOS` (painéis, títulos,
+  lower, cartões), `07 BURNS`, `08 CAPAS`, `09 REFERÊNCIA` (prévias/renders de conferência) e `00 TIMELINES` com uma sub-bin por
+  formato (`Episódio`, `Cortes 9x16`, `Versão 15 min`...). Nada solto na Master.
+- Timelines com o nome da entrega (`NN - HEADLINE`, `EPISÓDIO - …`, `15 MIN - …`), faixas nomeadas e clipes coloridos (tabela abaixo).
+- Nome de arquivo único por pacote (ver Lições da Andrea) para os bins não misturarem mídia de vídeos diferentes.
+- Feito pela API (`MediaPool.AddSubFolder`, `MoveClips`, `pm.CreateFolder`); confira a árvore lendo de volta antes de dizer que está pronto.
+
+**Cores e nomes das camadas (regra do CIBO, 19/10/2026, pedido do editor para organizar a timeline):** toda timeline
+entregue no DaVinci sai com cada clipe na cor do seu tipo e cada faixa com o nome do tipo. A API não pinta a faixa,
+só o clipe. Aplicar com `reel-motion/scripts/resolve_cores.py` (o `resolve_fx.py` já chama no fim).
+
+| Tipo | Cor do clipe | Nome da faixa |
+|---|---|---|
+| Câmera (bruto) / áudio da câmera | Blue | CÂMERA bruto / ÁUDIO câmera (ref.) |
+| Fundo desfocado, câmera renderizada de referência | Navy | CÂMERA fundo desfocado / CÂMERA renderizada (ref.) |
+| Movimento: punch/zoom (clipe de ajuste com Fusion) | Orange | MOV punch/zoom (Fusion) |
+| Movimento: troca de tela dividida (ajuste com Fusion) | Apricot | MOV tela dividida (Fusion) |
+| Mídia / B-roll | Teal | MÍDIA / B-roll |
+| Fundo do painel | Purple | PAINEL fundo |
+| Partes do painel (título, itens, linha) e etapa | Violet | PAINEL partes |
+| Etiquetas | Pink | ETIQUETAS |
+| Títulos, gancho, tarja, palavra-chave | Yellow | TÍTULOS / gancho / tarja |
+| Legenda (um bloco por frase) | Lime | LEGENDA (frase) |
+| Burns | Tan | BURNS |
+| Extras (cartão de marca etc.) | Beige | EXTRAS |
+| Capa | Brown | CAPA |
+| Voz | Green | VOZ |
+| Trilha | Olive | TRILHA |
+| SFX | Chocolate | SFX |
+
 **Padrão do CIBO para todo cliente (18/10/2026): o render final é do editor, no DaVinci.** Entregue prévias de
 conferência (baixa, rápidas) + pacote com cada camada isolada (câmera, mídia/B-roll, painéis, legenda com alfa,
 títulos, cartão final, voz/trilha/SFX em WAV separados) + XML. **Não rode o render final queimado** (CRF baixo,
@@ -114,6 +154,17 @@ A API funciona
 - **O projeto aberto é do editor:** teste num projeto próprio ("TESTE XML CIBO"), devolva o projeto que
   estava aberto ao terminar, e não reabra/renomeie timeline dele sem avisar. Corte feito pelo editor na
   timeline importada não acompanha a legenda (clipe único): refaça o corte no pipeline e reimporte.
+
+- **Lições da Andrea (20/10/2026, 4 vídeos × 2 formatos; o editor achou os defeitos um por um na tela):**
+  - Nunca edite a timeline por ciclos de exportar/importar .drt: o GlobalIn do Fusion sobe e o render falha. Edite o XML do
+    backup e importe uma vez (`reel-motion/scripts/resolve_refaz_de_backup.py`).
+  - Arquivo de mesmo nome em pacotes diferentes (`voz.wav`, `trilha.wav`, `sfx/*.wav`) vira um item só no Media Pool: o
+    vídeo 03 tocou a voz do 01. Nome único por pacote ou religar com `pacote_certo()`.
+  - Clipe recolocado pela API entra com Scaling 0 e sem RotationAngle: copie as propriedades dos irmãos.
+  - **Antes de dizer "corrigido": `reel-motion/scripts/qa_resolve.py`** (offline, outro pacote, transform diferente entre
+    os trechos, GlobalIn) com o render parado, e depois do render `qa_render.py PROJ` (sincronia por trecho, offline, preto),
+    nos dois formatos. Conferir só o trecho mexido deixou passar o mesmo defeito na outra versão.
+  - Renderize só o que mudou, na ordem que o editor precisa; não refaça os 8 por mudança num só.
 
 ## Regras editoriais de todo corte
 
@@ -237,3 +288,6 @@ A API funciona
 - **Suba para o CIBO** (`~/CIBO`, `git@github.com:Be-Grow/CIBO.git`): copie a skill,
   confira o diff, atualize o README se a skill for nova, commit e push. Nada vai para
   `~/.codex/skills`.
+
+- **Render no Deliver pela API (19/10/2026):** H.264 com qualidade limitada a **25.000 kb/s** (`SetRenderSettings({'VideoQuality': 25000})`),
+  nunca o automático/80.000 do preset. Resolução de cada job = a da timeline. Pedido do editor (Andreia).

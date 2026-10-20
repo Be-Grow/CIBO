@@ -38,7 +38,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Entrega no Drive (com links) | `scripts/entrega_drive.py` desta skill — simula sem `--confirmo`; confirme o destino |
 | Correção do editor | `scripts/feedback.py add` no mesmo turno em que a skill é corrigida; `resumo` mostra onde investir |
 | Cor de fotos | `foto-evento-cor` |
-| SEO / thumb do episódio / demanda ClickUp | `seo-youtube-podcast`, `clickup-thumb-podcast` |
+| SEO / thumb do episódio / demanda ClickUp | `seo-youtube-podcast` e, **logo em seguida e sempre**, `clickup-thumb-podcast` (SEO pronto = demanda criada; nunca esperar pedido) |
 
 ## Workflow
 

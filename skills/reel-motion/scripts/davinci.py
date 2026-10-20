@@ -20,6 +20,8 @@ import numpy as np, soundfile as sf
 P, R, OUT = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3]).resolve()
 W = P / '04_work' / R; PUB = P / '04_work' / 'public'; CAM = OUT / '_camadas'
 C = json.load(open(W / 'reel.json')); PR = json.load(open(PUB / R / 'props.json'))
+# versão horizontal 16:9 ("orient": "h", Andreia 19/10/2026): timeline 1920×1080, painel à esquerda, deslocamento da pessoa em x
+HZ = C.get('orient') == 'h'; VW, VH = (1920, 1080) if HZ else (1080, 1920)
 SFXDIR = '/Volumes/SSD/CIBO Acervo/sfx/_global/'
 FD = Fraction(1001, 30000)
 fr = lambda t: max(0, round(t / FD))                       # segundos → quadros
@@ -103,20 +105,22 @@ for f in (OUT / 'burns').glob('*'):
 for i, b in enumerate(PR.get('burns', [])):
     dst = OUT / 'burns' / f'burn_{i:02d}.mov'
     # aproximação do burnFilter CSS do tema (theme.burnFF); sem ele, o sépia da Priscilla (antes fixo para todo cliente)
-    tint = 'scale=1080:1920,' + ((PR.get('theme') or {}).get('burnFF') or
+    tint = f'scale={VW}:{VH}:force_original_aspect_ratio=increase,crop={VW}:{VH},' + ((PR.get('theme') or {}).get('burnFF') or
             'colorchannelmixer=rr=0.6735:rg=0.4235:rb=0.1040:gr=0.1925:gg=0.8355:gb=0.0925:br=0.1500:bg=0.2970:bb=0.6185,'
             'hue=h=-12:s=1.6,colorchannelmixer=rr=1.05:gg=1.05:bb=1.05') + ',format=rgb24'
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-t', f"{b['dur'] + 0.1:.3f}", '-i', str(PUB / b['src']), '-vf', tint, '-r', '30000/1001',
                           '-f', 'rawvideo', '-'], capture_output=True, check=True).stdout
-    q = np.frombuffer(raw, np.uint8).reshape(-1, 1920, 1080, 3).astype(np.float32) / 255
+    q = np.frombuffer(raw, np.uint8).reshape(-1, VH, VW, 3).astype(np.float32) / 255
     a = q.max(3, keepdims=True); c = np.where(a > 1e-3, q / np.maximum(a, 1e-3), 0)   # Screen ≈ Normal com alfa = canal mais forte
-    sh('ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', '1080x1920', '-r', '30000/1001', '-i', '-',
+    sh('ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', f'{VW}x{VH}', '-r', '30000/1001', '-i', '-',
        '-c:v', 'prores_ks', '-profile:v', '4444', '-pix_fmt', 'yuva444p10le', dst, input=(np.concatenate([c, a], 3) * 255 + 0.5).astype(np.uint8).tobytes())
     burns.append((dst, fr(b['t'] - b['peak']), max(1, round(b['dur'] / FD))))
 BOP = (PR.get('theme') or {}).get('burnOpacity') or 0.85
 # ---- capa e SRT ----
-CP = next(P.glob(f"06_deliverables/CAPA - {R[1:]} -*"))
-sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', CP, '-frames:v', '1', '-r', '30000/1001', '-vf', 'scale=1080:1920',
+CP = P / '06_deliverables' / f"CAPA - {C['name']}.jpg"
+if not CP.exists():
+    CP = next(P.glob(f"06_deliverables/CAPA - {R[1:]} -*"))
+sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', CP, '-frames:v', '1', '-r', '30000/1001', '-vf', f'scale={VW}:{VH}',
    '-c:v', 'prores_videotoolbox', '-profile:v', 'standard', OUT / 'capa.mov')
 hms = lambda t: f'{int(t // 3600):02d}:{int(t % 3600 // 60):02d}:{int(t % 60):02d},{int(round(t % 1 * 1000)) % 1000:03d}'
 txt = lambda b: ' '.join(w['t'] for w in b['words'])
@@ -163,10 +167,35 @@ def bezier(x1, y1, x2, y2):
 
 
 EASE = bezier(0.33, 0, 0.67, 1)
-JOB = json.load(open(W / 'job.json'))
+# modo crop (fonte com recorte fixo ou que segue o rastreio do rosto, "track"): sem job.json do face track
+CROP = not (W / 'job.json').exists()
+if CROP:
+    _src = Path(C['src']) if os.path.isabs(C['src']) else P / '01_sources' / C['src']
+    JOB = {'src': str(_src), 'rotate': C.get('rotate', ''), 'tc_drop': C.get('tc_drop', False), 'camera_moves': C.get('camera_moves', [])}
+    _iw, _ih = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', str(_src)],
+                                       capture_output=True, text=True).stdout.strip().split(',')[:2])
+    RW, RH = (_ih, _iw) if C.get('rotate') in ('clock', 'cclock') else (_iw, _ih)      # quadro já girado
+    # unidade do position no Resolve: VH/100 px na timeline vertical (no r01 da Andreia, com RH/RW a câmera desceu 2,1×
+    # demais, 19/10/2026); na horizontal com clipe girado, VH/100 * RH/RW (medido no r01h)
+    PU = VH / 100 * (RH / RW if C.get('rotate') in ('clock', 'cclock') and VW > VH else 1)
+    TRK = json.load(open(P / '04_work' / C['track'])) if C.get('track') else None
+    CRP = sorted(C.get('crops', [{'at': 0, 'cx': RW / 2}]), key=lambda c: c['at'])
+else:
+    JOB = json.load(open(W / 'job.json'))
 LAY = {'camShift': 600, 'camUp': 300, **((PR.get('theme') or {}).get('layout') or {})}
 TR = 0.42                                                       # troca de layout do Reel.tsx
 ramp = lambda t, a, d: EASE((t - a) / d)
+
+
+# movimentos de câmera em camadas de ajuste com Transform do Fusion (Andreia 19/10/2026: "mover os movimentos de câmera
+# para dentro do transform do Fusion com shutter angle e blur, uma camada de clip de ajuste por zoom ou movimento"):
+# com "camera_fusion" no reel.json o bruto leva só o enquadramento base; ON escolhe quais movimentos entram na conta
+FX = bool(C.get('camera_fusion'))
+ON = {'z': None, 's': None}                                     # None = todos; set() = nenhum
+
+
+def SPL(inv=False):
+    return [g for i, g in enumerate(PR['split']) if (ON['s'] is None or i in ON['s']) and (not inv or g.get('inv'))]
 
 
 def split_amt(t, gs):
@@ -180,7 +209,9 @@ def split_amt(t, gs):
 def zlog(t):
     import math
     s = 0.0
-    for m in JOB.get('camera_moves') or []:
+    for i, m in enumerate(JOB.get('camera_moves') or []):
+        if ON['z'] is not None and i not in ON['z']:
+            continue
         t0, t1, Lg = float(m['t']), float(m['until']), math.log1p(float(m['amount']))
         if t < t0:
             continue
@@ -196,6 +227,38 @@ def zlog(t):
 def transf(k, t):
     """(posição x, y em % da altura, escala) do take k no instante editado t"""
     import math
+    if CROP:
+        st = takes[k][2] + (t - TK0[k])                               # instante na fonte
+        if TRK:
+            cx = float(np.interp(st, [r[0] for r in TRK], [r[1] for r in TRK])); fy = float(np.interp(st, [r[0] for r in TRK], [r[2] for r in TRK]))
+        else:
+            cx = [c for c in CRP if c['at'] <= st + 1e-3][-1]['cx'] if any(c['at'] <= st + 1e-3 for c in CRP) else CRP[0]['cx']; fy = RH * 0.42
+        w = RW if HZ else RH * 9 / 16
+        if not HZ and VW / w > 1:                                     # vertical sem zoom além da escala nativa (Andreia 19/10/2026:
+            w = VW                                                    # "a cabeça ficou muito pequena… tira zoom e põe background com blur")
+        cx = min(max(cx, w / 2), RW - w / 2); sc0 = VW / w
+        # zoom in/out (camera_moves do reel.json, Easy Ease em espaço log) centrado no rosto: o ponto do rosto fica parado
+        z = math.exp(zlog(t)); sc = sc0 * z
+        dx, dy = (RW / 2 - cx) * sc, (fy - RH / 2) * sc0 * (1 - z)
+        sp = split_amt(t, SPL())
+        if HZ:
+            # tela dividida lado a lado (Andreia 19/10/2026, "ela não tá na lateral direita centralizada"): o rosto do rastreio
+            # vai para o meio da área à direita do painel, com o zoom ancorado nele; na tela cheia o rosto fica onde está.
+            # Antes usava o camX das props e o zoom no centro do quadro: rosto medido em x≈1406 com alvo 1600.
+            PW = ((PR.get('theme') or {}).get('layoutH') or {}).get('panelW', 1040)
+            fx = float(np.interp(st, [r[0] for r in TRK], [r[1] for r in TRK])) if TRK else cx
+            alvo = fx + (PW + (VW - PW) / 2 - fx) * sp
+            sc = max(sc, (VW - alvo) / max(1.0, RW - fx))                 # borda direita sempre com imagem
+            dx = alvo - (VW / 2 + (fx - RW / 2) * sc)                      # a esquerda descoberta fica sob o painel
+            dy = (fy - RH / 2) * (sc0 - sc)
+        else:
+            spI = split_amt(t, SPL(True))
+            if RH * sc0 < VH - 1:                                     # imagem mais baixa que o quadro: na tela dividida o topo dela
+                shift = LAY.get('splitH', 940) + RH * sc0 / 2 - VH / 2    # encosta no painel; o resto é o fundo desfocado (BLUR)
+            else:
+                shift = LAY['camShift']
+            dy += -LAY['camUp'] * sp if spI > 0.001 else shift * sp
+        return dx / PU, -dy / PU, sc
     fm = JOB['framings'][min(k, len(JOB['framings']) - 1)]
     if isinstance(fm, dict):                                    # enquadramento que acompanha o rosto: kx/ky = [[s no take, px]]
         u = t - TK0[k]; w, h = fm['w'], fm['h']
@@ -211,7 +274,7 @@ def transf(k, t):
     sc = 1080 / (w / z)
     SW, SH = (2160, 3840) if JOB.get('rotate', 'clock') in ('clock', 'cclock') else (3840, 2160)
     dx, dy = (SW / 2 - cx) * sc, (SH / 2 - cy) * sc
-    spI = split_amt(t, [g for g in PR['split'] if g.get('inv')]); sp = split_amt(t, PR['split'])
+    spI = split_amt(t, SPL(True)); sp = split_amt(t, SPL())
     cam = -LAY['camUp'] * sp if spI > 0.001 else LAY['camShift'] * sp
     return dx / 19.2, -(dy + cam) / 19.2, sc
 
@@ -275,7 +338,10 @@ def bruto(k, a, b, s0):
     """take k do bruto: offset a..b (quadros editados), in-point s0 (s na fonte), com transformação animada"""
     ref = asset(SRC, 1, 1, TC0)
     st = TC0 + fr(s0)
+    if FX:
+        ON.update(z=set(), s=set())
     vals = [(n, transf(k, float((a + n) * FD))) for n in range(0, b - a + 1)]
+    ON.update(z=None, s=None)
     px = kf([(n, v[0]) for n, v in vals], 0); py = kf([(n, v[1]) for n, v in vals], 0); sc = kf([(n, v[2] * 100) for n, v in vals], 0)
     x0, y0, s_ = vals[0][1]
     pv = dict(vals)
@@ -311,13 +377,22 @@ def faixas(itens, nomear):
         L.append(clip(f, base + 1 + k, off, n, nome, start=st))
 
 
+BLUR = CROP and not HZ and RH * VW / min(RW, RH * 9 / 16) > RH * 1.001 and (PUB / R / 'camera.mov').exists()
+if BLUR:                                                      # fundo desfocado sob o bruto sem zoom (vertical): câmera editada, cobrindo o quadro
+    bg = OUT / '_camadas' / 'fundo_desfocado.mov'
+    if not bg.exists():
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(PUB / R / 'camera.mov'), '-an', '-vf',
+                        f'scale={VW // 8}:{VH // 8}:force_original_aspect_ratio=increase,crop={VW // 8}:{VH // 8},gblur=sigma=6,eq=brightness=-0.06,scale={VW}:{VH}',
+                        '-c:v', 'libx264', '-crf', '20', '-pix_fmt', 'yuv420p', '-r', '30000/1001', str(bg)], check=True)
+    L.append(clip(bg, nova(), 0, D, 'fundo desfocado'))
 V1 = nova()                                                   # bruto, take a take, com alça
 for k, (a, b, s0, s1) in enumerate(takes):
     L.append(bruto(k, a, b, s0).replace('lane="1"', f'lane="{V1}"', 1))
     L.append(clip(OUT / 'voz.wav', -1, a, b - a, f'voz {s0:.2f}-{s1:.2f}', start=a, video=False, audio=True))
 V2 = nova()                                                   # câmera renderizada por cima (imagem aprovada); para estender um
 for a, b, s0, s1 in takes:                                    # take, desligue o clipe dela e use o bruto embaixo
-    L.append(clip(CAM / 'camera.mov', V2, a, b - a, f'câmera renderizada {s0:.2f}', start=a))
+    if (CAM / 'camera.mov').exists() and not C.get('camera_davinci'):   # "camera_davinci": o DaVinci monta a câmera do bruto (validado 19/10/2026)
+        L.append(clip(CAM / 'camera.mov', V2, a, b - a, f'câmera renderizada {s0:.2f}', start=a))
 if midia:
     V = nova()
     for f, off, n, nome in midia:
@@ -347,11 +422,40 @@ for f, ins_, off, n, db in sorted(sfx, key=lambda z: z[2]):
         fim.append(0)
     fim[k] = off + n
     L.append(clip(f, -3 - k, off, n, f.stem, start=ins_, video=False, audio=True, extra=f'<adjust-volume amount="{db:.1f}dB"/>'))
+if FX:                                                        # movimentos.json: uma camada de ajuste por movimento (resolve_fx.py)
+    U = PU if CROP else 19.2
+    def estado(n, z, s_):
+        ON.update(z=z, s=s_); t = float(n * FD)
+        k = next(i for i, tk in enumerate(takes) if tk[0] <= n < tk[1] or i == len(takes) - 1)
+        x, y, sc = transf(k, t); ON.update(z=None, s=None)
+        return x * U, -y * U, sc
+    MV = []
+    for i, m in enumerate(JOB.get('camera_moves') or []):
+        t0, t1 = float(m['t']), float(m['until'])
+        fim_ = t0 + float(m.get('in', 0.3)) + max(1.2, t1 - t0 - float(m.get('in', 0.3))) if m['kind'] == 'punch' else max(t1, float(m.get('hold_until', t1)))
+        MV.append(('z', i, t0, fim_, f"{'punch' if m['kind'] == 'punch' else 'zoom'} {t0:.2f}s"))
+    for i, g in enumerate(PR['split']):
+        MV.append(('s', i, g['s'] - TR * 0.35, g['e'] - TR * 0.35 + TR, f"tela dividida{' invertida' if g.get('inv') else ''} {g['s']:.2f}s"))
+    camadas = []
+    for j, (tipo, i, a_, b_, nome) in enumerate(MV):
+        antes = ({x[1] for x in MV[:j] if x[0] == 'z'}, {x[1] for x in MV[:j] if x[0] == 's'})
+        depois = (antes[0] | ({i} if tipo == 'z' else set()), antes[1] | ({i} if tipo == 's' else set()))
+        n0, n1 = max(0, int(a_ / FD) - 1), min(D, int(b_ / FD) + 2)
+        kfs = []
+        for n in range(n0, n1):
+            x0, y0, s0 = estado(n, *antes); x1, y1, s1 = estado(n, *depois); kk = s1 / s0
+            kfs.append((n - n0, kk, 0.5 + (x1 - x0 * kk) / VW, 0.5 - (y1 - y0 * kk) / VH))
+        if max(abs(v[1] - 1) for v in kfs) < 1e-3 and max(abs(v[2] - 0.5) + abs(v[3] - 0.5) for v in kfs) < 2e-4:
+            continue
+        red = kfs                                               # quadro a quadro: o resolve_fx.py tira as poses e põe o ease
+        camadas.append(dict(nome=nome, tipo=tipo, inicio=n0, dur=n1 - n0, kf=[[q[0], round(q[1], 5), round(q[2], 5), round(q[3], 5)] for q in red]))
+    json.dump(dict(src=str(SRC.resolve()), camadas=camadas), open(OUT / 'movimentos.json', 'w'), ensure_ascii=False, indent=1)
+    print(f'movimentos de câmera em camadas de ajuste: {len(camadas)}')
 xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fcpxml>
 <fcpxml version="1.10">
 <resources>
-<format id="r1" name="FFVideoFormat1080x1920p2997" frameDuration="1001/30000s" width="1080" height="1920" colorSpace="1-1-1 (Rec. 709)"/>
+<format id="r1" name="FFVideoFormat{VW}x{VH}p2997" frameDuration="1001/30000s" width="{VW}" height="{VH}" colorSpace="1-1-1 (Rec. 709)"/>
 {chr(10).join(assets)}
 </resources>
 <library><event name={quoteattr(C['name'])}><project name={quoteattr(C['name'])}>

@@ -41,7 +41,7 @@ takes, MFA e capa).
   Só crie peça nova quando nenhuma serve — e ela entra em `primitives.tsx`, genérica, usando só o
   tema (`C`, `fTitle`, `fAcc`, `fLab`), para o próximo cliente herdar.
 - Sombra e escurecimento também são do tema (`C.shadow`, `C.scrim` em r,g,b; helpers `sh(a)`/`scr(a)`); destaque com fonte própria em `accent.family`; burn do pacote DaVinci em `theme.burnFF` (filtro ffmpeg). Antes ficavam no marrom da Priscilla em todo cliente (17/10/2026).
-- Pacote DaVinci separa as partes de cada painel: envolva título, cada item, linha e risco em `<Pt k=…>` e liste as chaves em `PARTES` no `reel.py` (feito em checklist e timeline; faça igual ao usar outro tipo de painel). Pedido do editor, 17/10/2026.
+- Pacote DaVinci separa as partes de cada painel: envolva título, cada item, linha e risco em `<Pt k=…>` e liste as chaves em `PARTES` no `reel.py` (feito em checklist, timeline, waves, balance, root, curve, pillars, strike, cards, sides, route, stack, roles, ladder; faça igual nos demais). Só importar no Resolve, sem render: `SEM_RENDER=1 resolve_render.py …` (deixa o projeto novo aberto). Pedido do editor, 17/10/2026.
 - Nenhuma cor ou fonte fixa em componente: sempre `C.<papel>` e os helpers do tema. Papéis das cores:
   `paper/paper2` fundo do painel; `ink/ink2` texto no painel; `terra` destaque; `terraDark` faixa;
   `peach` destaque sobre vídeo; `white` superfície de card; `video` texto sobre vídeo;
@@ -180,6 +180,7 @@ então o que mais economiza é fazer menos turnos e não encher o contexto.
 | Tema | Cliente | Notas |
 |---|---|---|
 | `priscilla` | Priscilla Daher | padrão do motor; Instrument Serif + destaque itálico terracota; capa "serif" |
+| `andreia` | Andrea Francomano | creme, violeta-escuro e dourado; Cormorant Garamond (títulos, itálico dourado) + Montserrat (legenda); capa "serif" com bgFill cor |
 | `joao-campos` | João Campos / Vai Lá e Faz Caxt | marinho/azul das thumbs, Montserrat Black em caixa alta, destaque por peso + azul claro, faixa azul royal; capa "faixa" |
 
 ## Revisão automática e fila (2ª auditoria, 14/10/2026)
@@ -204,3 +205,73 @@ então o que mais economiza é fazer menos turnos e não encher o contexto.
   e burns; SFX só nos textos (o original fica em sfx_com_paineis.json). Pedido da Priscilla para variar formato (06, 14/10/2026).
 - `"extras": [{"arq": "extras/x.mov", "s": 0, "nome": "…"}]`: elemento feito fora do Remotion (ex.: cartão com logo de
   marca no gancho), entra numa faixa própria do pacote DaVinci junto com o PNG.
+
+## Versão horizontal 16:9 e fonte de celular (Andreia, 19/10/2026)
+- `"orient": "h"` no reel.json → composição `ReelH` (1920×1080): painel à esquerda (`layoutH.panelW`, desenho 1080×940 escalado),
+  pessoa desliza para a direita; legenda sob ela na tela dividida; gancho/títulos com `layoutH.hookScale`. Mesma pasta de dados
+  copiada para `rNNh/` (segs, edit_mfa, blocos, props.py iguais; câmera e mix próprios). Capa 16:9 = `CapaH` (título à esquerda, `shift` em x).
+- Celular gravado deitado (arquivo 1080×1920 com imagem 16:9): `"rotate": "cclock"`; HEVC do iPhone é full range → `"full_range": true`.
+- Câmera de mão / pessoa que se mexe: `scripts/rastreio.py FONTE rosto/vNN_track.json --rotate cclock` + `"track"` no reel.json →
+  o recorte 9:16 segue o rosto quadro a quadro (sendcmd no crop); no 16:9 o props recebe `camX` como trilha [[t, x]].
+- `"layout": {"camShift": …}` no reel.json ajusta o layout só daquele reel (rosto mais alto/baixo na fonte: camShift = 1300 − cy·1,78).
+- **Fim de palavra comido**: segs gerados pelo fim do Whisper cortaram "espiritu|al", "proble|ma", "men|te" (+0,1–0,23 s).
+  Feche cada trecho pela energia (voz abaixo de −45 dB + 0,03 s), não pelo `end` do Whisper; confira todas as emendas antes das props.
+- **SSD lotou**: o bundle do Remotion copiava a pasta pública inteira (12 GB) a cada render/quadro-teste/capa. Agora `pub_enxuta()`
+  monta `04_work/_pub/rNN` com hard links só do reel (etapa `pub`); use `PUBLIC_DIR=04_work/_pub/rNN` no `stills.mjs`.
+  Nunca rode quadros-teste junto de um render: o `limpa_bundles` do render apaga o bundle deles.
+- Painéis novos: `waves` (lê × emite frequência), `balance` (balança que pende), `root` (rótulo na superfície × raiz),
+  `curve` (linha no tempo da fala: pico e volta), `pillars` (pilares + teto). Extras: ladder `labelSize`/`sw`, roles `centerY`/`titleOut`,
+  timeline `x0`/`x1`, balance `arm`/`panSize`. Capa: `bgFill: "cor"` (topo liso em vez do quadro desfocado que mostrava rosto fantasma).
+- `capa_pausas.py rNN camera.mov folha.jpg` = candidatos de capa nas pausas da fala; `so_capa` gera só a capa.
+- Prévia/entrega no próprio DaVinci: `scripts/resolve_render.py "Projeto" "Pasta/Sub" SAIDA pacote…` importa cada timeline.fcpxml num
+  projeto novo, renderiza MOV H.264+LPCM e remonta MP4 AAC 256k; devolve o projeto que estava aberto pela pasta dele.
+- Render por etapa reusa UM bundle (`bundle_unico()`, em `04_work/_bundle/rNN`, apagado ao sair): no pacote DaVinci eram ~35 renders e cada um reempacotava (13 s). Medido: 61 quadros com alfa em 10 s a partir do bundle pronto.
+- Camada `camera` do pacote DaVinci sai pelo ffmpeg (`camera_ffmpeg`: deslocamento da tela dividida por sendcmd + fade final), 92 s contra 5,5 min no Remotion; sem motion blur/grão na troca. `"camera_ffmpeg": false` no reel.json volta ao Remotion.
+- **Correções do editor (Andreia, 19/10/2026):** (1) identidade roxo + dourado tem que aparecer: painel roxo profundo, texto creme,
+  destaque dourado (tema `andreia`); (2) 16:9 em **terços**: painel nos 2/3 da esquerda (`layoutH.panelW` 1280), pessoa centralizada
+  no terço da direita, legenda da tela dividida no rodapé do painel; (3) SFX: whoosh variado (nunca o mesmo em tudo) e temático
+  (`04_work/sfx_andreia.py` do projeto: grupos por tipo de evento girando, kit em `CIBO Acervo/sfx/andreia/wav`), nível medido
+  contra a voz — os do kit global ficaram 8–10 dB abaixo e sumiram; (4) câmera e zoom no DaVinci (`camera_davinci` + `camera_moves`).
+
+## Movimentos de câmera no Fusion (Andreia, 19/10/2026)
+- `"camera_fusion": true` no reel.json: o bruto vai só com o enquadramento base; cada punch/zoom e cada troca de tela dividida
+  vira um clipe de ajuste com Transform do Fusion (Motion Blur, Quality 10, Shutter 360°), keyframes de Size/Center.
+  O davinci.py grava `movimentos.json`; `scripts/resolve_fx.py PACOTE` exporta a timeline em .drt, injeta as faixas de ajuste
+  (modelo `assets/davinci_faixa_ajuste.xml`) logo acima do bruto, reimporta e anima. Zooms embaixo, telas divididas em cima.
+- Entregue também `timeline.drt` no pacote (o FCPXML não leva clipe de ajuste nem Fusion).
+- API do Resolve: sempre com limite de tempo (`perl -e 'alarm N; exec …'`) e sem navegar pastas de projeto com o projeto
+  aberto — o resolve_render.py travou o DaVinci do editor assim. Leia/escreva o .drt em UTF-8 e compare caminhos em NFC.
+- Vertical sem zoom além do nativo: bruto 1080p na escala 1,0, topo encostado no painel, faixa "fundo desfocado" embaixo.
+- Curvas (19/10/2026, "tá muito duro, faz ease in/out"): keyframe só nas poses (começa, para, pico) com alça plana; no meio de
+  movimento, tangente monotônica; keyframe extra só se o S do ease erra > ~12 px (subdivisão recursiva, trecho < 1 s fica no ease).
+  Alças do `SetKeyFrames` são RELATIVAS ao keyframe (absolutas estouram a curva). Conferir lendo de volta (`GetInput` por quadro).
+  `resolve_fx.py --curvas PACOTE` refaz só as curvas na timeline aberta.
+- Cores e nomes das camadas no DaVinci: `scripts/resolve_cores.py` (tabela em client-router/regras-transversais, regra do CIBO 19/10/2026); o resolve_fx.py aplica no fim.
+- **Mix do editor para as outras timelines** (19/10/2026): `scripts/resolve_mix.py --sfx -3 --trilha 10 [--preset NOME] "TIMELINE"…`.
+  A API não lê nem grava volume de clipe nem efeito de faixa: o volume vai pelo .drt (`EffectFiltersBA`, parâmetro 124, dB em
+  double) e a timeline volta com o mesmo nome (Fusion e camadas preservados). O ducker da faixa TRILHA (Inspector > Audio, fonte VOZ)
+  não vai no .drt: o editor salva um preset do Fairlight na timeline dele e o `--preset` aplica nas outras.
+- **FPS da fonte (Andreia 19/10/2026, "Media Offline" no fim + áudio atrasado):** `davinci.py` fixa 29,97 (`FD`); bruto de iPhone
+  em 30 fps é forçado 1:1 pelo Resolve (escorrega 1 quadro/1000 e o último trecho passa do fim do arquivo → offline).
+  Até o davinci.py ler o fps da fonte: converta o bruto para 29,97 por tempo antes do pacote
+  (`ffmpeg -vf "fps=30000/1001,tpad=stop_mode=clone:stop_duration=1" -af apad=pad_dur=1`, em `01_sources/_2997/`).
+  Timeline já montada: `scripts/resolve_refaz_audio.py` (ReplaceClip do bruto; trilha/SFX novos no lugar dos arquivos).
+- **.drt não troca mídia:** o Resolve religa pelo `MediaRef` e ignora `MediaFilePath`; ele também junta arquivos de mesmo nome
+  entre pacotes (o 03 abriu com a trilha.wav do 01). Troca de mídia: `MediaPoolItem.ReplaceClip` ou arquivo novo no mesmo caminho.
+  Trecho sem media pool item: `DeleteClips` + `AppendToTimeline` (endFrame exclusivo) copiando Pan/Zoom/Rotation do vizinho.
+- **Crítica da cliente (Andreia):** trilha dramática/espiritual (Heavy Heart, STEYL) a 22 dB abaixo da voz, sem ducker; SFX só nas
+  trocas de painel e com um som só (tigela tibetana), nada nas frases/legendas.
+- **Cache de render do Resolve** fica no disco interno (`~/Movies/CacheClip`) e lotou o Mac: aponte para o SSD.
+- **Nunca encadeie ciclos de .drt (exportar→importar) na mesma timeline** (Andreia, 20/10/2026): cada ciclo soma 1 ao `GlobalIn`
+  do `MediaIn1` das camadas de ajuste (Fusion) e o render falha com "The Fusion composition at 00:00:00:02 could not be processed".
+  A API não grava esse valor. Confira com `FindTool('MediaIn1').GetInput('GlobalIn')` (tem que ser 0) e refaça a partir do
+  backup numa importação só: `scripts/resolve_refaz_de_backup.py BACKUP.drt "NOME"`. Guarde o .drt antes de qualquer edição por XML.
+- **Mesmo nome entre pacotes = mídia trocada** (Andreia, 20/10/2026): o Resolve junta `voz.wav`/`trilha.wav` de pacotes diferentes
+  num item só; o 03 tocou trechos da voz do 01 ("o áudio parece de outro vídeo"). Depois de importar, audite se cada clipe vem
+  de `07_davinci/<próprio pacote>/` — `resolve_refaz_de_backup.py` faz isso (`pacote_certo`) e também recoloca o clipe offline
+  da câmera com `RotationAngle 90` (o bruto do iPhone sai deitado sem ele). QA de sincronia por trecho: correlação do áudio do
+  render com o áudio da câmera no mesmo quadro (atraso ≈ 0 ms, corr > 0,9).
+- **Corrigir texto de um elemento sem remontar o pacote:** `reel.py PROJ rNN davinci titulo_lower --so-el` (não chama o davinci.py,
+  que regravaria voz/trilha/SFX) + `so_capa`; depois `ReplaceClip` no item para o Resolve reler o arquivo.
+- **Tigela da Andrea:** `tibetan-singing-bowl` grave em todos os vídeos (editor, 20/10/2026: a aguda `sfx-singing-bowl-hit-agudo-36st` soou "feliz demais"), 16 LUFS abaixo da voz, só nas trocas de painel; escolha o som pelo tom do vídeo, com prévia no trecho real (voz+trilha). A grave "não combina
+  com a ideia de frequência" (editor, 20/10/2026); agudo alto incomoda. Prévias de tom: asetrate+atempo encadeado (atempo ≥ 0,5 por filtro).

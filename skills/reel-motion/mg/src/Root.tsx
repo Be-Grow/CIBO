@@ -18,6 +18,12 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Reel" component={Reel as any} fps={29.97} width={1080} height={1920} durationInFrames={300}
       defaultProps={{camera: 'r01/camera.mov', duration: 10, split: [], panels: [], captions: []} as ReelProps}
       calculateMetadata={({props}) => ({durationInFrames: Math.round((props as ReelProps).duration * 29.97)})} />
+    {/* versão horizontal 16:9 do mesmo reel (lado a lado: painel à esquerda, pessoa à direita; Andreia 19/10/2026) */}
+    <Composition id="ReelH" component={Reel as any} fps={29.97} width={1920} height={1080} durationInFrames={300}
+      defaultProps={{camera: 'r01h/camera.mov', duration: 10, split: [], panels: [], captions: []} as ReelProps}
+      calculateMetadata={({props}) => ({durationInFrames: Math.round((props as ReelProps).duration * 29.97)})} />
+    <Composition id="CapaH" component={Capa as any} fps={30} width={1920} height={1080} durationInFrames={1}
+      defaultProps={{frame: 'r01h/capa_frame.png', l1: 'Ninguém sabe', l2: 'vender no', accent: 'TikTok'}} />
     <Composition id="Capa" component={Capa as any} fps={30} width={1080} height={1920} durationInFrames={1}
       defaultProps={{frame: 'r01/capa_frame.png', l1: 'Ninguém sabe', l2: 'vender no', accent: 'TikTok'}} />
     <Composition id="PriscillaReel" component={Reel as any} fps={29.97} width={1080} height={1920} durationInFrames={300}

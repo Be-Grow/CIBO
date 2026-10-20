@@ -71,18 +71,18 @@ const PanelStrike: React.FC<{p: Panel; t: number}> = ({p, t}) => {
       <div style={{position: 'absolute', top: 250, left: 0, right: 0, textAlign: 'center', ...fTitle(84), color: C.ink2,
         opacity: a * (1 - 0.45 * st), transform: `translateY(${(1 - a) * 24}px)`, filter: `blur(${(1 - a) * 8}px)`}}>
         <span style={{position: 'relative', display: 'inline-block'}}>
-          {p.a ?? 'quem tem informação'}
+          <Pt k="titulo">{p.a ?? 'quem tem informação'}</Pt>
           {/* o risco acompanha a largura do texto (viewBox esticado); antes a curva fixa de 700 px passava do fim de "uma marca" (Priscilla 03) */}
-          <svg style={{position: 'absolute', left: -12, top: '52%', overflow: 'visible'}} width="calc(100% + 24px)" height="10" viewBox="0 0 100 10" preserveAspectRatio="none">
+          <Pt k="risco"><svg style={{position: 'absolute', left: -12, top: '52%', overflow: 'visible'}} width="calc(100% + 24px)" height="10" viewBox="0 0 100 10" preserveAspectRatio="none">
             <path d="M 0 6 Q 43 -2 100 4" fill="none" stroke={C.terra} strokeWidth={7} strokeLinecap="round" pathLength={1} strokeDasharray="1" strokeDashoffset={1 - st} opacity={st > 0.002 ? 1 : 0} />
-          </svg>
+          </svg></Pt>
         </span>
       </div>
-      <div style={{position: 'absolute', top: 420, left: 0, right: 0, textAlign: 'center', ...fTitle(118), lineHeight: 1.0, color: C.ink,
+      <Pt k="item0"><div style={{position: 'absolute', top: 420, left: 0, right: 0, textAlign: 'center', ...fTitle(118), lineHeight: 1.0, color: C.ink,
         opacity: b, transform: `translateY(${(1 - b) * 40}px)`, filter: `blur(${(1 - b) * 12}px)`}}>
         {p.b ?? 'quem sabe'}<br />
         <span style={{...fAcc(), color: C.terra, display: 'inline-block', transform: `scale(${1.06 - 0.06 * acc})`, opacity: 0.35 + 0.65 * acc}}>{p.accent ?? 'ler categoria'}</span>
-      </div>
+      </div></Pt>
     </>
   );
 };
@@ -191,14 +191,14 @@ const PanelCards: React.FC<{p: Panel; t: number}> = ({p, t}) => (
   <div style={{position: 'absolute', top: 210, left: 90, right: 90, display: 'flex', flexDirection: 'column', gap: 34}}>
     {p.cards.map((c: any, i: number) => {
       const q = ramp(t, c.at, 0.5, OUT);
-      return (
-        <div key={i} style={{display: 'flex', alignItems: 'center', gap: 34, padding: '34px 44px', borderRadius: 30,
+      return (<Pt key={i} k={`item${i}`}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 34, padding: '34px 44px', borderRadius: 30,
           background: i === 0 ? C.ink : C.white, color: i === 0 ? C.white : C.ink, boxShadow: `0 20px 50px ${sh(0.16)}`,
           opacity: q, transform: `translateX(${(1 - q) * (i === 0 ? -60 : 60)}px)`, filter: `blur(${(1 - q) * 10}px)`}}>
           <div style={{...fTitle(120), ...fAcc(), lineHeight: 0.8, color: C.terra}}>{i + 1}</div>
           <div style={{...fTitle(82), lineHeight: 1}}>{c.text}</div>
         </div>
-      );
+      </Pt>);
     })}
   </div>
 );
@@ -214,10 +214,10 @@ const PanelSides: React.FC<{p: Panel; t: number}> = ({p, t}) => {
   const subS: React.CSSProperties = {...fLab(), fontSize: 30, letterSpacing: 2, textTransform: 'uppercase', marginTop: 12, opacity: 0.85};
   return (
     <>
-      <Title top={150} size={92} p={ti} text={<>{p.title}<br /><I>{p.accent}</I></>} />
-      <div style={{position: 'absolute', left: 538, top: 440, width: 4, height: 260 * ln, background: C.terra, borderRadius: 2}} />
-      <div style={{...side(l, p.left, true, -60), left: p.cardW ? 540 - 30 - p.cardW : 110}}>{p.left}{p.leftSub && <div style={subS}>{p.leftSub}</div>}</div>
-      <div style={{...side(r, p.right, false, 60), left: p.cardW ? 570 : 590}}>{p.right}{p.rightSub && <div style={subS}>{p.rightSub}</div>}</div>
+      <Pt k="titulo"><Title top={150} size={92} p={ti} text={<>{p.title}<br /><I>{p.accent}</I></>} /></Pt>
+      <Pt k="linha"><div style={{position: 'absolute', left: 538, top: 440, width: 4, height: 260 * ln, background: C.terra, borderRadius: 2}} /></Pt>
+      <Pt k="item0"><div style={{...side(l, p.left, true, -60), left: p.cardW ? 540 - 30 - p.cardW : 110}}>{p.left}{p.leftSub && <div style={subS}>{p.leftSub}</div>}</div></Pt>
+      <Pt k="item1"><div style={{...side(r, p.right, false, 60), left: p.cardW ? 570 : 590}}>{p.right}{p.rightSub && <div style={subS}>{p.rightSub}</div>}</div></Pt>
     </>
   );
 };
@@ -316,14 +316,14 @@ const PanelRoute: React.FC<{p: Panel; t: number}> = ({p, t}) => {
   const path = `M ${X0} ${Y} C ${X0 + 120} ${Y - 260}, ${X1 - 120} ${Y - 260}, ${X1} ${Y}`;
   return (
     <>
-      <Title top={240} size={96} p={ti} text={<>{p.title} <I>{p.accent}</I></>} />
-      <svg width={1080} height={SPLIT} style={{position: 'absolute', left: 0, top: 0}}>
+      <Pt k="titulo"><Title top={240} size={96} p={ti} text={<>{p.title} <I>{p.accent}</I></>} /></Pt>
+      <Pt k="linha"><svg width={1080} height={SPLIT} style={{position: 'absolute', left: 0, top: 0}}>
         <path d={path} fill="none" stroke={C.terra} strokeWidth={7} strokeLinecap="round" strokeDasharray="2 18" pathLength={1} opacity={0.35 * ln} />
         <path d={path} fill="none" stroke={C.terra} strokeWidth={7} strokeLinecap="round" pathLength={1} strokeDasharray="1" strokeDashoffset={1 - ln} />
         <circle cx={X0} cy={Y} r={16 * a} fill={C.ink} /><circle cx={X1} cy={Y} r={16 * b} fill={C.terra} />
-      </svg>
-      <div style={{position: 'absolute', left: X0 - 150, width: 300, top: Y + 40, textAlign: 'center'}}><Pill text={p.from} p={a} size={30} /></div>
-      <div style={{position: 'absolute', left: X1 - 150, width: 300, top: Y + 40, textAlign: 'center'}}><Pill text={p.to} p={b} dark size={30} /></div>
+      </svg></Pt>
+      <Pt k="item0"><div style={{position: 'absolute', left: X0 - 150, width: 300, top: Y + 40, textAlign: 'center'}}><Pill text={p.from} p={a} size={30} /></div></Pt>
+      <Pt k="item1"><div style={{position: 'absolute', left: X1 - 150, width: 300, top: Y + 40, textAlign: 'center'}}><Pill text={p.to} p={b} dark size={30} /></div></Pt>
     </>
   );
 };
@@ -427,13 +427,13 @@ const PanelStack: React.FC<PanelProps> = ({p, t}) => {
   const H = p.gap ?? 150, base = p.base ?? 760;
   return (
     <>
-      {p.title && <div style={{position: 'absolute', top: 90, left: 0, right: 0, textAlign: 'center', ...fLab(), fontSize: 30, letterSpacing: 4, color: C.ink2,
-        opacity: ramp(t, p.s + 0.1, 0.4, OUT)}}>{p.title}</div>}
+      {p.title && <Pt k="titulo"><div style={{position: 'absolute', top: 90, left: 0, right: 0, textAlign: 'center', ...fLab(), fontSize: 30, letterSpacing: 4, color: C.ink2,
+        opacity: ramp(t, p.s + 0.1, 0.4, OUT)}}>{p.title}</div></Pt>}
       {cards.map((c, i) => {
         // cada card novo aperta os de baixo um pouco (peso)
         const press = cards.slice(i + 1).reduce((a, n) => a + 10 * ramp(t, n.at + 0.3, 0.25), 0);
-        return <DropCard key={i} t={t} at={c.at} text={c.text} hot={c.hot} y={base - i * H} size={c.hot ? 70 : 58} w={c.hot ? 820 : 740}
-          tilt={i % 2 ? 3 : -3} press={press} />;
+        return <Pt key={i} k={`item${i}`}><DropCard t={t} at={c.at} text={c.text} hot={c.hot} y={base - i * H} size={c.hot ? 70 : 58} w={c.hot ? 820 : 740}
+          tilt={i % 2 ? 3 : -3} press={press} /></Pt>;
       })}
     </>
   );
@@ -445,22 +445,22 @@ const PanelRoles: React.FC<PanelProps> = ({p, t}) => {
   const ti = ramp(t, p.titleAt ?? p.s + 0.1, 0.5, OUT), ac = ramp(t, p.accentAt ?? p.s + 0.5, 0.45, OUT);
   return (
     <>
-      <div style={{position: 'absolute', top: 90, left: 60, right: 60, textAlign: 'center', opacity: ti * (1 - 0.6 * cin), transform: `translateY(${(1 - ti) * 24}px)`}}>
+      <Pt k="titulo"><div style={{position: 'absolute', top: 90, left: 60, right: 60, textAlign: 'center', opacity: ti * (1 - (p.titleOut ?? 0.6) * cin), transform: `translateY(${(1 - ti) * 24}px)`}}>
         <div style={{...fTitle(120), color: C.ink, lineHeight: 1.05}}>{p.title}</div>
         {p.accent && <div style={{display: 'inline-block', marginTop: 14, padding: '4px 22px 8px', borderRadius: 10, background: C.terraDark,
           ...fTitle(120), color: C.video, opacity: ac, transform: `scale(${0.92 + 0.08 * ac})`}}>{p.accent}</div>}
-      </div>
+      </div></Pt>
       {(p.roles || []).map((r: any, i: number) => {
         // empurrados para fora quando o papel central cresce
         const dx = (r.x - 540) * 0.22 * grow, dy = (r.y - 520) * 0.22 * grow;
-        return <StrikeChip key={i} t={t} at={r.at} text={r.text} strikeAt={r.strikeAt} pulseAt={r.pulseAt} warnAt={r.warnAt} dim={grow * (r.pulseAt ? 0 : 0.6)} size={p.chipSize ?? 76}
-          style={{left: r.x + dx, top: r.y + dy, translate: '-50% -50%'}} />;
+        return <Pt key={i} k={`item${i}`}><StrikeChip t={t} at={r.at} text={r.text} strikeAt={r.strikeAt} pulseAt={r.pulseAt} warnAt={r.warnAt} dim={grow * (r.pulseAt ? 0 : 0.6)} size={p.chipSize ?? 76}
+          style={{left: r.x + dx, top: r.y + dy, translate: '-50% -50%'}} /></Pt>;
       })}
-      {c && (
-        <div style={{position: 'absolute', left: 540, top: 520, translate: '-50% -50%', padding: '26px 46px', borderRadius: 26, background: C.terra,
+      {c && (<Pt k="centro">
+        <div style={{position: 'absolute', left: 540, top: p.centerY ?? 520, translate: '-50% -50%', padding: '26px 46px', borderRadius: 26, background: C.terra,
           color: C.onAccent, ...fTitle(110 + 40 * grow), opacity: cin, transform: `scale(${0.7 + 0.3 * cin})`, boxShadow: `0 0 ${40 * grow}px ${C.terra}77`,
           whiteSpace: 'nowrap'}}>{c.text}</div>
-      )}
+      </Pt>)}
     </>
   );
 };
@@ -511,19 +511,19 @@ const PanelLadder: React.FC<PanelProps> = ({p, t}) => {
   const n = steps.length, SW = p.sw ?? Math.min(220, 960 / n), SH = p.sh ?? Math.min(96, 560 / n), X0 = (1080 - n * SW) / 2, Y0 = p.base ?? 760;
   return (
     <>
-      {p.title && <div style={{position: 'absolute', top: 70, left: 60, right: 60, textAlign: 'center', ...fTitle(96), color: C.ink, lineHeight: 1.05,
-        opacity: ramp(t, p.titleAt ?? p.s + 0.1, 0.45, OUT)}}>{p.title}</div>}
+      {p.title && <Pt k="titulo"><div style={{position: 'absolute', top: 70, left: 60, right: 60, textAlign: 'center', ...fTitle(96), color: C.ink, lineHeight: 1.05,
+        opacity: ramp(t, p.titleAt ?? p.s + 0.1, 0.45, OUT)}}>{p.title}</div></Pt>}
       {steps.map((st, i) => {
         const q = ramp(t, st.at, 0.45, Easing.bezier(0.3, 1.3, 0.5, 1)), h = SH * (i + 1);
-        return (
-          <div key={i} style={{position: 'absolute', left: X0 + i * SW + 8, width: SW - 16, top: Y0 - h * q, height: h * q, borderRadius: '18px 18px 0 0',
+        return (<Pt key={i} k={`item${i}`}>
+          <div style={{position: 'absolute', left: X0 + i * SW + 8, width: SW - 16, top: Y0 - h * q, height: h * q, borderRadius: '18px 18px 0 0',
             background: st.hot ? C.terra : C.white, boxShadow: st.hot ? `0 0 34px ${C.terra}77` : 'none', overflow: 'visible'}}>
-            <div style={{position: 'absolute', top: -70, left: -40, right: -40, textAlign: 'center', ...fTitle(62), color: st.hot ? C.terra : C.ink,
+            <div style={{position: 'absolute', top: -70, left: -60, right: -60, zIndex: 2, textAlign: 'center', ...fTitle(p.labelSize ?? 62), color: st.hot ? C.terra : C.ink,
               opacity: ramp(t, st.at + 0.15, 0.3, OUT), whiteSpace: 'nowrap'}}>{st.text}</div>
           </div>
-        );
+        </Pt>);
       })}
-      <div style={{position: 'absolute', left: X0, width: n * SW, top: Y0, height: 6, borderRadius: 3, background: C.ink2, opacity: 0.6 * ramp(t, p.s + 0.1, 0.4)}} />
+      <Pt k="linha"><div style={{position: 'absolute', left: X0, width: n * SW, top: Y0, height: 6, borderRadius: 3, background: C.ink2, opacity: 0.6 * ramp(t, p.s + 0.1, 0.4)}} /></Pt>
     </>
   );
 };
@@ -531,7 +531,7 @@ const PanelLadder: React.FC<PanelProps> = ({p, t}) => {
 // 21) linha do tempo: marcos de uma trajetória entrando na ordem em que são ditos
 const PanelTimeline: React.FC<PanelProps> = ({p, t}) => {
   const ev: {text: string; sub?: string; at: number; hot?: boolean}[] = p.events;
-  const X0 = 120, X1 = 960, Y = p.y ?? 470, n = ev.length;
+  const X0 = p.x0 ?? 120, X1 = p.x1 ?? 960, Y = p.y ?? 470, n = ev.length;
   const last = [...ev].reverse().find((e) => t >= e.at), prog = last ? (ev.indexOf(last) + ramp(t, last.at, 0.6)) / Math.max(n - 1, 1) : 0;
   return (
     <>
@@ -621,9 +621,196 @@ const PanelDonut: React.FC<{p: Panel; t: number}> = ({p, t}) => {
   );
 };
 
+// 24) frequência: à esquerda uma onda entra e é LIDA por um receptor; à direita anéis são EMITIDOS de um centro
+// (Andreia 01 "radiestesia lê frequências, radiônica emite frequências", 19/10/2026). p.title/accent, p.a/aSub/aAt, p.b/bSub/bAt
+const PanelWaves: React.FC<PanelProps> = ({p, t}) => {
+  const ti = ramp(t, p.titleAt ?? p.s + 0.1, 0.5, OUT), a = ramp(t, p.aAt, 0.5, OUT), b = ramp(t, p.bAt, 0.5, OUT);
+  const Y = p.y ?? 430, ph = t * 5;
+  const wave = Array.from({length: 61}, (_, i) => {
+    const x = 70 + i * 6.2, amp = 46 * Math.sin(Math.PI * i / 60) ** 0.6;
+    return `${i ? 'L' : 'M'} ${x.toFixed(1)} ${(Y + amp * Math.sin(i * 0.42 - ph)).toFixed(1)}`;
+  }).join(' ');
+  const lab = (q: number, txt: string, sub: string, cx: number) => (
+    <div style={{position: 'absolute', left: cx - 240, width: 480, top: Y + 130, textAlign: 'center', opacity: q, transform: `translateY(${(1 - q) * 24}px)`, filter: `blur(${(1 - q) * 8}px)`}}>
+      <div style={{...fTitle(78), color: C.ink, lineHeight: 1}}>{txt}</div>
+      {sub && <div style={{...fLab(), fontSize: 26, letterSpacing: 3, textTransform: 'uppercase', color: C.terra, marginTop: 14}}>{sub}</div>}
+    </div>
+  );
+  return (
+    <>
+      <Pt k="titulo"><Title top={p.titleTop ?? 90} size={p.titleSize ?? 88} p={ti} text={<>{p.title} <I>{p.accent}</I></>} /></Pt>
+      <Pt k="linha"><div style={{position: 'absolute', left: 538, top: Y - 150, width: 4, height: 420 * ramp(t, p.s + 0.3, 0.6), background: C.ink2, opacity: 0.25, borderRadius: 2}} /></Pt>
+      <Pt k="item0">
+        <svg width={1080} height={SPLIT} style={{position: 'absolute', left: 0, top: 0, opacity: a}}>
+          <path d={wave} fill="none" stroke={C.ink2} strokeWidth={5} strokeLinecap="round" pathLength={1} strokeDasharray="1" strokeDashoffset={1 - a} />
+          <circle cx={470} cy={Y} r={34 + 6 * Math.sin(ph * 0.8)} fill="none" stroke={C.terra} strokeWidth={5} />
+          <circle cx={470} cy={Y} r={12} fill={C.terra} />
+        </svg>
+        {lab(a, p.a, p.aSub, 270)}
+      </Pt>
+      <Pt k="item1">
+        <svg width={1080} height={SPLIT} style={{position: 'absolute', left: 0, top: 0, opacity: b}}>
+          {[0, 1, 2, 3].map((k) => {
+            const u = ((t - (p.bAt ?? 0)) * 0.7 + k / 4) % 1;
+            return t >= (p.bAt ?? 0) ? <circle key={k} cx={810} cy={Y} r={20 + 190 * u} fill="none" stroke={C.terra} strokeWidth={5 * (1 - u) + 1} opacity={(1 - u) * 0.9} /> : null;
+          })}
+          <circle cx={810} cy={Y} r={18} fill={C.terra} />
+        </svg>
+        {lab(b, p.b, p.bSub, 810)}
+      </Pt>
+    </>
+  );
+};
+
+// 25) balança: dois pesos comparados; o braço pende para o lado que pesa e depois vira para o outro em tiltAt
+// (Andreia 02 "a culpa que paralisa e a responsabilidade que movimenta", 19/10/2026). p.left/leftSub/leftAt, p.right/rightSub/rightAt, p.tiltAt
+const PanelBalance: React.FC<PanelProps> = ({p, t}) => {
+  const ti = ramp(t, p.titleAt ?? p.s + 0.1, 0.5, OUT), l = ramp(t, p.leftAt, 0.45, OUT), r = ramp(t, p.rightAt, 0.45, OUT);
+  const sw = Easing.bezier(0.3, 1.35, 0.5, 1);
+  const ang = 9 * ramp(t, p.leftAt + 0.2, 0.7, sw) - 18 * ramp(t, p.tiltAt ?? 1e9, 0.9, sw);   // + = esquerda desce
+  const PX = 540, PY = p.y ?? 400, L = p.arm ?? 360, rad = ang * Math.PI / 180;
+  // ponta do braço (k = -1 esquerda, +1 direita): rotate(-ang) no CSS = anti-horário, a esquerda desce quando ang > 0
+  const pan = (k: number, q: number, txt: string, sub: string, hot: boolean) => {
+    const x = PX + k * L * Math.cos(rad), yy = PY - k * L * Math.sin(rad);
+    return (
+      <>
+        <div style={{position: 'absolute', left: x - 1.5, top: yy, width: 3, height: 120, background: C.ink2, opacity: 0.5}} />
+        <div style={{position: 'absolute', left: x, top: yy + 120, translate: '-50% 0', padding: '22px 34px', borderRadius: 24, textAlign: 'center',
+          background: hot ? C.terra : C.white, color: hot ? C.onAccent : C.ink, boxShadow: hot ? `0 0 34px ${C.terra}66` : `0 16px 40px ${sh(0.16)}`,
+          opacity: q, transform: `scale(${0.85 + 0.15 * q})`, whiteSpace: 'nowrap'}}>
+          <div style={{...fTitle(p.panSize ?? 64), lineHeight: 1}}>{txt}</div>
+          {sub && <div style={{...fLab(), fontSize: 24, letterSpacing: 3, textTransform: 'uppercase', marginTop: 10, opacity: 0.85}}>{sub}</div>}
+        </div>
+      </>
+    );
+  };
+  const hotR = t >= (p.tiltAt ?? 1e9);
+  return (
+    <>
+      <Pt k="titulo"><Title top={p.titleTop ?? 80} size={p.titleSize ?? 88} p={ti} text={<>{p.title} <I>{p.accent}</I></>} /></Pt>
+      <Pt k="linha">
+        <div style={{position: 'absolute', left: PX - 4, top: PY, width: 8, height: 330, background: C.ink, borderRadius: 4, opacity: ramp(t, p.s + 0.2, 0.4)}} />
+        <div style={{position: 'absolute', left: PX - 90, top: PY + 326, width: 180, height: 10, background: C.ink, borderRadius: 5, opacity: ramp(t, p.s + 0.2, 0.4)}} />
+        <div style={{position: 'absolute', left: PX - L, top: PY - 4, width: 2 * L, height: 8, borderRadius: 4, background: C.ink,
+          transform: `rotate(${-ang}deg) scaleX(${ramp(t, p.s + 0.3, 0.5, OUT)})`, transformOrigin: 'center'}} />
+        <div style={{position: 'absolute', left: PX - 16, top: PY - 16, width: 32, height: 32, borderRadius: 99, background: C.terra}} />
+      </Pt>
+      <Pt k="item0">{pan(-1, l, p.left, p.leftSub, false)}</Pt>
+      <Pt k="item1">{pan(1, r, p.right, p.rightSub, hotR)}</Pt>
+    </>
+  );
+};
+
+// 26) raiz: na superfície o que se vê (rótulo, sintoma), embaixo da linha do chão as raízes se desenham até a causa
+// (Andreia 03 "tenta curar o rótulo errado… a transmutação exige entendermos a raiz", 19/10/2026).
+// p.top/topAt/topStrikeAt (chip da superfície), p.items [{text, at, x, y}] (no caminho das raízes), p.root/rootAt (a causa), p.rootsAt
+const PanelRoot: React.FC<PanelProps> = ({p, t}) => {
+  const G = p.ground ?? 330, ti = ramp(t, p.titleAt ?? p.s + 0.1, 0.5, OUT), gr = ramp(t, p.s + 0.2, 0.6, OUT);
+  const ro = ramp(t, p.rootsAt ?? p.s + 0.5, 1.6), rq = ramp(t, p.rootAt ?? 1e9, 0.5, OUT);
+  const RY = p.rootY ?? 700;
+  const roots = ['M 540 ' + G + ' C 530 420, 420 470, 330 560', 'M 540 ' + G + ' C 560 430, 680 470, 760 560',
+    'M 540 ' + G + ' C 545 470, 520 580, 540 ' + (RY - 40), 'M 330 560 C 300 600, 280 640, 250 690', 'M 760 560 C 790 610, 820 640, 840 690'];
+  return (
+    <>
+      {p.title && <Pt k="titulo"><Title top={p.titleTop ?? 50} size={p.titleSize ?? 78} p={ti} text={<>{p.title} <I>{p.accent}</I></>} /></Pt>}
+      <Pt k="linha">
+        <div style={{position: 'absolute', left: 540 - 470 * gr, top: G - 3, width: 940 * gr, height: 6, borderRadius: 3, background: C.ink, opacity: 0.8}} />
+        <div style={{position: 'absolute', left: 70, right: 70, top: G + 3, height: SPLIT - G - 80, background: `linear-gradient(180deg, ${C.paper2} 0%, ${C.paper} 100%)`, opacity: 0.9 * gr}} />
+        <svg width={1080} height={SPLIT} style={{position: 'absolute', left: 0, top: 0}}>
+          {roots.map((d, i) => <path key={i} d={d} fill="none" stroke={C.terra} strokeWidth={i < 3 ? 7 : 4} strokeLinecap="round" pathLength={1}
+            strokeDasharray="1" strokeDashoffset={1 - Math.min(1, Math.max(0, ro * 1.3 - (i < 3 ? 0 : 0.3)))} opacity={0.85} />)}
+        </svg>
+      </Pt>
+      {p.top && <Pt k="item0"><StrikeChip t={t} at={p.topAt} text={p.top} strikeAt={p.topStrikeAt} size={p.topSize ?? 62}
+        style={{left: 540, top: G - 70, translate: '-50% -50%'}} /></Pt>}
+      {(p.items || []).map((it: any, i: number) => (
+        <Pt key={i} k={`item${i + 1}`}>
+          <div style={{position: 'absolute', left: it.x, top: it.y, translate: '-50% -50%'}}><Pill text={it.text} p={ramp(t, it.at, 0.4, OUT)} size={it.size ?? 30} /></div>
+        </Pt>
+      ))}
+      {p.root && <Pt k="raiz">
+        <div style={{position: 'absolute', left: 540, top: RY, translate: '-50% -50%', padding: '18px 40px', borderRadius: 22, background: C.terra, color: C.onAccent,
+          ...fTitle(72), whiteSpace: 'nowrap', opacity: rq, transform: `scale(${0.8 + 0.2 * rq})`, boxShadow: `0 0 ${36 * rq}px ${C.terra}77`}}>{p.root}</div>
+      </Pt>}
+    </>
+  );
+};
+
+// 27) curva: uma linha que se desenha no tempo da fala, ponto a ponto (sobe num pico, volta à linha de base…); rótulo em cada ponto
+// (Andreia 04 "energizado durante uma semana… e volta para a mesma frequência", 19/10/2026).
+// p.points [{at, v (0–1), label?, hot?}] (pontos com at < s já aparecem desenhados), p.base (rótulo da linha de base), p.title/accent
+const PanelCurve: React.FC<PanelProps> = ({p, t}) => {
+  const pts: {at: number; v: number; label?: string; hot?: boolean}[] = p.points;
+  const X0 = 130, X1 = 950, YB = p.yb ?? 640, HH = p.hh ?? 400, n = pts.length;
+  const P = pts.map((q, i) => [X0 + (X1 - X0) * i / (n - 1), YB - q.v * HH]);
+  const seg = pts.slice(0, -1).map((q, i) => ramp(t, q.at, Math.max(0.3, pts[i + 1].at - q.at), EASE));
+  let d = `M ${P[0][0]} ${P[0][1]}`, head = P[0];
+  seg.forEach((u, i) => {
+    if (u <= 0) return;
+    const x = P[i][0] + (P[i + 1][0] - P[i][0]) * u, y = P[i][1] + (P[i + 1][1] - P[i][1]) * u;
+    d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`; head = [x, y];
+  });
+  const ti = ramp(t, p.titleAt ?? p.s + 0.1, 0.5, OUT), b = ramp(t, p.s + 0.2, 0.5, OUT);
+  return (
+    <>
+      {p.title && <Pt k="titulo"><Title top={p.titleTop ?? 70} size={p.titleSize ?? 84} p={ti} text={<>{p.title} <I>{p.accent}</I></>} /></Pt>}
+      <Pt k="linha">
+        <svg width={1080} height={SPLIT} style={{position: 'absolute', left: 0, top: 0}}>
+          <line x1={X0} y1={P[0][1]} x2={X1} y2={P[0][1]} stroke={C.ink2} strokeWidth={3} strokeDasharray="8 12" opacity={0.5 * b} />
+          <path d={d} fill="none" stroke={C.terra} strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" opacity={ramp(t, pts[0].at - 0.3, 0.3)} />
+          <circle cx={head[0]} cy={head[1]} r={14} fill={C.terra} opacity={ramp(t, pts[0].at - 0.3, 0.3)} />
+        </svg>
+        {p.base && <div style={{position: 'absolute', left: X0, top: P[0][1] + 18, ...fLab(), fontSize: 24, letterSpacing: 3, textTransform: 'uppercase', color: C.ink2, opacity: b}}>{p.base}</div>}
+      </Pt>
+      {pts.map((q, i) => q.label && (
+        <Pt key={i} k={`item${i}`}>
+          {/* pontas ancoradas para dentro (o rótulo do último ponto saía pela borda direita; Andreia 04) */}
+          <div style={{position: 'absolute', left: i === 0 ? P[i][0] - 30 : i === n - 1 ? P[i][0] + 30 : P[i][0], top: P[i][1] - 40,
+            translate: `${i === 0 ? '0%' : i === n - 1 ? '-100%' : '-50%'} -100%`}}>
+            <Pill text={q.label} p={ramp(t, q.at, 0.4, OUT)} dark={q.hot} size={28} />
+          </div>
+        </Pt>
+      ))}
+    </>
+  );
+};
+
+// 28) pilares: colunas que sobem uma a uma (os pilares ditos) e um teto que as une; base opcional
+// (Andreia 04 "os quatro pilares: o físico, o mental, o emocional e o espiritual… no eixo", 19/10/2026). p.items [{text, at}], p.roof/roofAt, p.base/baseAt
+const PanelPillars: React.FC<PanelProps> = ({p, t}) => {
+  const it: {text: string; at: number}[] = p.items, n = it.length, GAP = 860 / n, X0 = 110, BY = p.by ?? 700, H = p.ph ?? 300;
+  const rf = ramp(t, p.roofAt ?? 1e9, 0.6, Easing.bezier(0.3, 1.25, 0.5, 1)), bs = ramp(t, p.baseAt ?? p.s + 0.2, 0.5, OUT);
+  const ti = ramp(t, p.titleAt ?? p.s + 0.1, 0.5, OUT);
+  return (
+    <>
+      {p.title && <Pt k="titulo"><Title top={p.titleTop ?? 40} size={p.titleSize ?? 80} p={ti} text={<>{p.title} <I>{p.accent}</I></>} /></Pt>}
+      <Pt k="linha"><div style={{position: 'absolute', left: X0 - 20, width: 900, top: BY, height: 22, borderRadius: 8, background: C.ink, opacity: bs}} />
+        {p.base && <div style={{position: 'absolute', left: 0, right: 0, top: BY + 34, textAlign: 'center', ...fLab(), fontSize: 26, letterSpacing: 4, textTransform: 'uppercase', color: C.ink2, opacity: bs}}>{p.base}</div>}
+      </Pt>
+      {it.map((c, i) => {
+        const q = ramp(t, c.at, 0.5, Easing.bezier(0.3, 1.2, 0.5, 1)), x = X0 + GAP * i + GAP / 2;
+        return (
+          <Pt key={i} k={`item${i}`}>
+            <div style={{position: 'absolute', left: x - 34, width: 68, top: BY - H * q, height: H * q, borderRadius: '10px 10px 0 0', background: C.white,
+              boxShadow: `0 12px 30px ${sh(0.16)}`, border: `3px solid ${C.ink}`, borderBottom: 'none'}} />
+            <div style={{position: 'absolute', left: x, top: BY - H - 80, translate: '-50% 0', ...fTitle(p.labelSize ?? 52), color: C.ink, whiteSpace: 'nowrap',
+              opacity: ramp(t, c.at + 0.1, 0.35, OUT), transform: `translateY(${(1 - ramp(t, c.at + 0.1, 0.35, OUT)) * 16}px)`}}>{c.text}</div>
+          </Pt>
+        );
+      })}
+      {p.roof && <Pt k="teto">
+        <div style={{position: 'absolute', left: X0 - 20, width: 900, top: BY - H - 4 - (1 - rf) * 120, height: 0, opacity: Math.min(1, rf * 1.5)}}>
+          <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: 92, borderRadius: 18, background: C.terraDark, color: C.video,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', ...fTitle(54), boxShadow: `0 16px 40px ${sh(0.25)}`}}>{p.roof}</div>
+        </div>
+      </Pt>}
+    </>
+  );
+};
+
 export const PANELS: Record<string, React.FC<{p: Panel; t: number}>> = {
   stat: PanelStat, empty: PanelEmptyChart, strike: PanelStrike, media: PanelMedia, bars: PanelBars, ruler: PanelRuler, cards: PanelCards, sides: PanelSides, grid: PanelGrid, checklist: PanelChecklist, rank: PanelRank, route: PanelRoute, coins: PanelCoins, tickets: PanelTickets, oscillate: PanelOscillate,
   counter: PanelCounter, stack: PanelStack, roles: PanelRoles,
-  hub: PanelHub, ladder: PanelLadder, timeline: PanelTimeline, niche: PanelNiche, donut: PanelDonut,
+  hub: PanelHub, ladder: PanelLadder, timeline: PanelTimeline, niche: PanelNiche, donut: PanelDonut, waves: PanelWaves, balance: PanelBalance, root: PanelRoot, curve: PanelCurve, pillars: PanelPillars,
 };
 

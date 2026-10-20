@@ -20,10 +20,11 @@ export const Fonts: React.FC = () => {
 };
 
 // filtro de blur só na vertical, proporcional à velocidade (motion blur da troca de layout)
-export const VBlur: React.FC<{id: string; amount: number}> = ({id, amount}) => (
+// x = blur na horizontal (troca de layout lado a lado da versão 16:9)
+export const VBlur: React.FC<{id: string; amount: number; x?: boolean}> = ({id, amount, x}) => (
   <svg width="0" height="0" style={{position: 'absolute'}}>
-    <filter id={id} x="0" y="-20%" width="100%" height="140%">
-      <feGaussianBlur stdDeviation={`0 ${amount.toFixed(2)}`} />
+    <filter id={id} x={x ? '-20%' : '0'} y={x ? '0' : '-20%'} width={x ? '140%' : '100%'} height={x ? '100%' : '140%'}>
+      <feGaussianBlur stdDeviation={x ? `${amount.toFixed(2)} 0` : `0 ${amount.toFixed(2)}`} />
     </filter>
   </svg>
 );

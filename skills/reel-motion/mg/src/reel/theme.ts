@@ -22,6 +22,9 @@ export type Theme = {
   // splitH = altura do painel (940 = metade; 768 = 40/60); camShift = quanto a pessoa desce na tela dividida;
   // capSplitY = legenda da tela dividida sobre o vídeo nessa altura (senão fica no rodapé do painel); capMaxW = largura máxima (zona segura)
   layout?: {splitH?: number; camShift?: number; capSplitY?: number; capFullY?: number; capMaxW?: number; autoTags?: boolean};
+  // versão horizontal 16:9 (composição ReelH, Andreia 19/10/2026): painel à esquerda com largura panelW, pessoa à direita;
+  // capY = linha da legenda; capSize = corpo da legenda; hookScale = escala do gancho/títulos em relação ao vertical
+  layoutH?: {panelW?: number; capSplitY?: number; capFullY?: number; capSize?: number; hookScale?: number};
 };
 export const T = {
   fonts: [
@@ -37,6 +40,7 @@ export const T = {
   mediaFilter: 'saturate(0.88) sepia(0.10) contrast(1.03) brightness(0.98)',
   burnFilter: 'sepia(0.55) saturate(1.6) hue-rotate(-12deg) brightness(1.05)', burnOpacity: 0.85, grain: 0.08,
   layout: {splitH: 940, camShift: 600, capSplitY: 0, capFullY: 1300, capMaxW: 0, autoTags: false} as {splitH: number; camShift: number; capSplitY: number; capFullY: number; capMaxW: number; autoTags: boolean},
+  layoutH: {panelW: 1040, capSplitY: 968, capFullY: 950, capSize: 54, hookScale: 0.66} as {panelW: number; capSplitY: number; capFullY: number; capSize: number; hookScale: number},
 };
 export const C0 = {...C}, T0 = JSON.parse(JSON.stringify(T));
 export const applyTheme = (th?: Theme) => {
@@ -45,7 +49,7 @@ export const applyTheme = (th?: Theme) => {
   Object.assign(T, d, th || {}, {
     title: {...d.title, ...(th?.title || {})}, caption: {...d.caption, ...(th?.caption || {})},
     label: {...d.label, ...(th?.label || {})}, accent: {...d.accent, ...(th?.accent || {})}, fonts: th?.fonts || d.fonts,
-    layout: {...d.layout, ...(th?.layout || {})},
+    layout: {...d.layout, ...(th?.layout || {})}, layoutH: {...d.layoutH, ...(th?.layoutH || {})},
   });
 };
 export const q = (f: string) => `'${f}'`;

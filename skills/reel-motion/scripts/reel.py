@@ -44,6 +44,8 @@ TEMA = json.load(open(ENG / 'temas' / f"{C.get('tema', 'priscilla')}.json"))
 TH = TEMA.get('theme', {})
 os.environ['PUBLIC_DIR'] = str(PUB)
 FPS = C.get('fps', 29.97)
+# "orient": "h" = versão horizontal 16:9 do reel (composição ReelH, painel à esquerda; Andreia 19/10/2026)
+HZ = C.get('orient') == 'h'; VW, VH = (1920, 1080) if HZ else (1080, 1920)
 
 
 def fontes_tema():
@@ -269,6 +271,10 @@ def e_camera_crop():
     cr = sorted(C['crops'], key=lambda c: c['at'])
     iw, ih = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', str(src)],
                                      capture_output=True, text=True).stdout.strip().split(',')[:2])   # HEVC do iPhone imprime vírgula a mais
+    # "rotate": "cclock"/"clock" = gravação deitada no arquivo (Andreia: 16:9 salvo como 1080×1920); cx/cy valem no quadro já girado
+    rot = {'cclock': 'transpose=2,', 'clock': 'transpose=1,'}.get(C.get('rotate'), '')
+    if rot:
+        iw, ih = ih, iw
     S = segs(); base = max(min(a for a, _ in S) - 1, 0)   # trechos podem vir fora de ordem (cold open)
     pieces = []
     for a, b in S:
@@ -277,10 +283,10 @@ def e_camera_crop():
             c = [k for k in cr if k['at'] <= x + 1e-3][-1]
             # escala nativa: altura inteira da fonte (608×1080 em 1080p), nunca close ampliado (regra transversal; João, 09/10/2026)
             # "z" (punch-in no corte seco) só enquanto o recorte continua ≥ 1080 de largura: fonte vertical 1440×2560 aceita até 1,33
-            h = ih; w = round(h * 9 / 16)
-            zz = min(c.get('z', 1.0), w / 1080)
+            h = ih; w = round(h * 9 / 16) if not HZ else min(iw, round(h * 16 / 9))
+            zz = min(c.get('z', 1.0), w / VW)
             if zz > 1.001:
-                h = round(h / zz / 2) * 2; w = round(h * 9 / 16 / 2) * 2
+                h = round(h / zz / 2) * 2; w = round(h * VW / VH / 2) * 2
             x0 = min(max(round(c['cx'] - w / 2), 0), iw - w)
             y0 = min(max(round(c.get('cy', ih * 0.42) - h * 0.42), 0), ih - h) if zz > 1.001 else 0
             pieces.append((x - base, y - base, w, h, x0, y0))
@@ -288,7 +294,28 @@ def e_camera_crop():
     # "tonemap": "hlg" — selfie de iPhone em HDR HLG (arib-std-b67) vira SDR Rec.709; sem isso céu estoura e pele lava (GL, 18/10/2026)
     pre = {'hlg': 'zscale=tin=arib-std-b67:min=bt2020nc:pin=bt2020:t=linear:npl=203,format=gbrpf32le,zscale=p=bt709,'
                   'tonemap=mobius:desat=0:param=0.35,zscale=t=bt709:m=bt709:r=tv,format=yuv422p10le,'}.get(C.get('tonemap'), '')
-    f = ''.join(f'[0:v]trim={x:.4f}:{y:.4f},setpts=PTS-STARTPTS,{pre}crop={w}:{h}:{x0}:{y0},scale=1080:1920:flags=lanczos,'
+    # range: HEVC do iPhone vem yuvj420p (full); sai em tv para o ProRes não lavar/estourar
+    rng = ':in_range=pc:out_range=tv' if C.get('full_range') else ''
+    # "track": rastreio do rosto (rastreio.py, [[t_fonte, cx, cy]]): o recorte 9:16 acompanha o rosto quadro a quadro
+    # por sendcmd no crop (câmera de mão / pessoa que se mexe; Andreia 01, 19/10/2026). No 16:9 o quadro é inteiro e o
+    # rastreio vai para o props (camX) na tela dividida.
+    import bisect
+    def interp(v, xs, ys):
+        k = bisect.bisect_left(xs, v)
+        if k <= 0: return ys[0]
+        if k >= len(xs): return ys[-1]
+        return ys[k - 1] + (ys[k] - ys[k - 1]) * (v - xs[k - 1]) / (xs[k] - xs[k - 1])
+    TR_ = json.load(open(WK / C['track'])) if C.get('track') and not HZ else None
+    cmds = []
+    for i, (x, y, w, h, x0, y0) in enumerate(pieces):
+        if TR_ is None:
+            cmds.append(''); continue
+        tt_ = [k / FPS for k in range(int((y - x) * FPS) + 1)]
+        cx = [interp(t + x + base, [r[0] for r in TR_], [r[1] for r in TR_]) for t in tt_]
+        f_ = W / 'work' / f'crop_{i}.cmd'; f_.parent.mkdir(exist_ok=True)
+        f_.write_text(''.join(f'{t:.4f} crop@c{i} x {min(max(round(c - w / 2), 0), iw - w)};\n' for t, c in zip(tt_, cx)))
+        cmds.append(f"sendcmd=f='{f_}',")
+    f = ''.join(f'[0:v]trim={x:.4f}:{y:.4f},setpts=PTS-STARTPTS,{pre}{rot}{cmds[i]}crop@c{i}={w}:{h}:{x0}:{y0},scale={VW}:{VH}:flags=lanczos{rng},'
                 f'unsharp=5:5:{C.get("sharpen", 0.5)},setsar=1[v{i}];' for i, (x, y, w, h, x0, y0) in enumerate(pieces))
     f += ''.join(f'[v{i}]' for i in range(len(pieces))) + f'concat=n={len(pieces)}:v=1:a=0,fps={FPS}[o]'
     sh(['ffmpeg', '-v', 'error', '-y', '-threads', '4', '-ss', f'{base:.3f}', '-to', f'{max(b for _, b in S) + 1:.3f}', '-i', str(src),
@@ -339,6 +366,10 @@ def e_props():
     out = PUB / R / 'props.json'; out.parent.mkdir(parents=True, exist_ok=True)
     sh([sys.executable, str(W / 'props.py'), str(W), str(out)])
     pr = json.load(open(out)); pr['theme'] = fontes_tema()
+    # reel.json "layout"/"layoutH": ajuste do layout só deste reel (ex.: camShift pela altura do rosto na fonte; Andreia 19/10/2026)
+    for k in ('layout', 'layoutH'):
+        if C.get(k):
+            pr['theme'][k] = {**pr['theme'].get(k, {}), **C[k]}
     if C.get('formato') == 'so_legenda':
         # formato "só legenda" (crítica do 06 da Priscilla, 14/10/2026: nem tudo igual): ela em tela cheia com gancho, títulos
         # e legenda; sem painéis, tela dividida e burns. SFX ficam só nos textos (gancho e títulos); os dos painéis saem.
@@ -385,15 +416,52 @@ def mata_orfaos():
                 pass
 
 
+def pub_enxuta():
+    """pasta pública só deste reel (hard links, sem ocupar disco): o bundle do Remotion COPIA a pasta pública inteira a cada
+    render; com a câmera de todos os reels eram 12 GB por render e o SSD lotou (Andreia, 19/10/2026)"""
+    dst = WK / '_pub' / R
+    for sub in [R] + [d.name for d in PUB.iterdir() if d.is_dir() and not re.fullmatch(r'r\d+h?', d.name)]:
+        src = PUB / sub
+        if not src.is_dir():
+            continue
+        for f in src.rglob('*'):
+            if f.is_file():
+                g = dst / f.relative_to(PUB); g.parent.mkdir(parents=True, exist_ok=True)
+                if g.exists() and g.stat().st_ino == f.stat().st_ino:
+                    continue
+                g.unlink(missing_ok=True)
+                try:
+                    os.link(f, g)
+                except OSError:
+                    shutil.copy2(f, g)
+    return dst
+
+
+_BUNDLE = None
+
+
+def bundle_unico():
+    """empacota UMA vez por processo (pasta pública enxuta dentro) e reusa em todos os renders da etapa: no pacote DaVinci
+    são ~35 renders por reel e cada um reempacotava do zero (13 s cada; Andreia, 19/10/2026). Apagado ao sair."""
+    global _BUNDLE
+    if _BUNDLE is None:
+        import atexit
+        dst = WK / '_bundle' / R; shutil.rmtree(dst, ignore_errors=True)
+        sh(['npx', 'remotion', 'bundle', 'src/index.ts', f'--public-dir={pub_enxuta()}', f'--out-dir={dst}', '--log=error'], cwd=MG)
+        _BUNDLE = dst; atexit.register(lambda: shutil.rmtree(dst, ignore_errors=True))
+    return _BUNDLE
+
+
 def remotion(out, extra, props=None, codec=('--codec=h264',)):
     """render com limite de tempo e uma nova tentativa: a prévia do 05 travou 25 min sem dar erro (13/10/2026).
     Limite = 12 s por segundo de vídeo (render real: ~3-5 s/s com 2 abas), mínimo 6 min; trecho usa o tamanho dos quadros."""
     props = props or PUB / R / 'props.json'
     pr = json.load(open(props))
+    ent = bundle_unico()
     fr = [a for a in extra if a.startswith('--frames=')]
     dur = (lambda a, b: (int(b) - int(a)) / 29.97)(*fr[0][9:].split('-')) if fr else pr['duration']
     lim = max(360, int(dur * 12))
-    cmd = ['npx', 'remotion', 'render', 'src/index.ts', 'Reel', str(out), f'--props={props}', f'--public-dir={PUB}', *codec,
+    cmd = ['npx', 'remotion', 'render', str(ent), 'ReelH' if HZ else 'Reel', str(out), f'--props={props}', *codec,
            '--muted', '--overwrite', '--log=error', '--timeout=180000', '--concurrency=2'] + extra   # 2 abas (RAM do Mac de 16 GB); 180 s por quadro com a máquina ocupada
     mata_orfaos()
     for tentativa in (1, 2):
@@ -430,12 +498,12 @@ def e_previa():
 
 def entrega(video):
     sh(['ffmpeg', '-v', 'error', '-y', '-i', str(video), '-loop', '1', '-i', str(CAPA), '-i', str(W / 'mix.wav'), '-filter_complex',
-        "[1:v]scale=1080:1920,format=yuv420p[c];[0:v][c]overlay=0:0:enable='eq(n,0)':shortest=1,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv,format=yuv420p[v]",
+        f"[1:v]scale={VW}:{VH},format=yuv420p[c];[0:v][c]overlay=0:0:enable='eq(n,0)':shortest=1,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv,format=yuv420p[v]",
         '-map', '[v]', '-map', '2:a', '-c:v', 'libx264', '-crf', '17', '-maxrate', '10M', '-bufsize', '20M', '-preset', 'slow', '-x264-params', 'colorprim=bt709:transfer=bt709:colormatrix=bt709',
         '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-color_range', 'tv', '-c:a', 'aac', '-b:a', '320k', '-shortest', '-movflags', '+faststart', str(W / 'final_tmp.mp4')])
     os.replace(W / 'final_tmp.mp4', ENTREGA)
     v = P / '05_qa' / f'{R}_verify.json'
-    subprocess.run([sys.executable, str(SK / 'video-delivery-safety-check/scripts/verify_video.py'), '--video', str(ENTREGA), '--cover', str(CAPA), '--width', '1080', '--height', '1920',
+    subprocess.run([sys.executable, str(SK / 'video-delivery-safety-check/scripts/verify_video.py'), '--video', str(ENTREGA), '--cover', str(CAPA), '--width', str(VW), '--height', str(VH),
                     '--fps', str(FPS), '--output-json', str(v), '--min-shot', '0'], capture_output=True)
     d = json.load(open(v)); print('checagem técnica:', d['automated_status'], d['errors'])
 
@@ -447,6 +515,7 @@ def faz_capa(cp):
         import shutil; shutil.copy2(W / cp['frame_file'], PUB / R / 'capa_frame.png')
     else:
         sh(['ffmpeg', '-v', 'error', '-y', '-ss', str(cp['frame_t']), '-i', str(PUB / R / 'camera.mov'), '-frames:v', '1', str(PUB / R / 'capa_frame.png')])
+    os.environ['COMP'] = 'CapaH' if HZ else 'Capa'; os.environ['PUBLIC_DIR'] = str(pub_enxuta())
     sh(['node', 'capa.mjs', str(CAPA), json.dumps({'frame': f'{R}/capa_frame.png', 'theme': fontes_tema(), **capa_tema(), **{k: v for k, v in cp.items() if k not in ('frame_t', 'frame_file')}}, ensure_ascii=False)], cwd=MG)
 
 
@@ -488,13 +557,93 @@ PARTES = {
         + ([('risco', f"risco {p['strike']['text']}")] if p.get('strike') else []),
     'timeline': lambda p: ([('titulo', f"título {p['title']}")] if p.get('title') else []) + [('linha', 'linha do tempo')]
         + [(f'item{k}', f"marco {e['text']}") for k, e in enumerate(p.get('events', []))],
+    'waves': lambda p: [('titulo', f"título {p.get('title', '')} {p.get('accent', '')}"), ('linha', 'divisória'),
+                        ('item0', f"lê {p.get('a', '')}"), ('item1', f"emite {p.get('b', '')}")],
+    'balance': lambda p: [('titulo', f"título {p.get('title', '')} {p.get('accent', '')}"), ('linha', 'balança'),
+                          ('item0', f"prato {p.get('left', '')}"), ('item1', f"prato {p.get('right', '')}")],
+    'root': lambda p: ([('titulo', f"título {p.get('title', '')} {p.get('accent', '')}")] if p.get('title') else []) + [('linha', 'chão e raízes')]
+        + ([('item0', f"superfície {p['top']}")] if p.get('top') else []) + [(f'item{k + 1}', f"no caminho {it['text']}") for k, it in enumerate(p.get('items', []))]
+        + ([('raiz', f"raiz {p['root']}")] if p.get('root') else []),
+    'curve': lambda p: ([('titulo', f"título {p.get('title', '')} {p.get('accent', '')}")] if p.get('title') else []) + [('linha', 'curva')]
+        + [(f'item{k}', f"ponto {q['label']}") for k, q in enumerate(p.get('points', [])) if q.get('label')],
+    'pillars': lambda p: ([('titulo', f"título {p.get('title', '')} {p.get('accent', '')}")] if p.get('title') else []) + [('linha', 'base')]
+        + [(f'item{k}', f"pilar {c['text']}") for k, c in enumerate(p.get('items', []))] + ([('teto', f"teto {p['roof']}")] if p.get('roof') else []),
+    'strike': lambda p: [('titulo', f"tese {p.get('a', '')}"), ('risco', 'risco'), ('item0', f"correção {p.get('b', '')} {p.get('accent', '')}")],
+    'cards': lambda p: [(f'item{k}', f"card {c['text']}") for k, c in enumerate(p.get('cards', []))],
+    'sides': lambda p: [('titulo', f"título {p.get('title', '')} {p.get('accent', '')}"), ('linha', 'divisória'), ('item0', f"lado {p.get('left', '')}"), ('item1', f"lado {p.get('right', '')}")],
+    'route': lambda p: [('titulo', f"título {p.get('title', '')} {p.get('accent', '')}"), ('linha', 'rota'), ('item0', f"de {p.get('from', '')}"), ('item1', f"para {p.get('to', '')}")],
+    'stack': lambda p: ([('titulo', f"título {p['title']}")] if p.get('title') else []) + [(f'item{k}', f"card {c['text']}") for k, c in enumerate(p.get('cards', []))],
+    'roles': lambda p: [('titulo', f"título {p.get('title', '')} {p.get('accent', '')}")] + [(f'item{k}', f"papel {r['text']}") for k, r in enumerate(p.get('roles', []))]
+        + ([('centro', f"centro {p['center']['text']}")] if p.get('center') else []),
+    'ladder': lambda p: ([('titulo', f"título {p['title']}")] if p.get('title') else []) + [(f'item{k}', f"degrau {st['text']}") for k, st in enumerate(p.get('steps', []))] + [('linha', 'base')],
 }
 
 
 def _at_parte(p, k):
+    ty = p['type']
+    if ty == 'strike':
+        return p.get('strikeAt', p['s']) if k == 'risco' else p.get('line2At', p['s'])
+    if ty in ('sides', 'route'):
+        return p.get({'sides': ('leftAt', 'rightAt'), 'route': ('fromAt', 'toAt')}[ty][k == 'item1'], p['s'])
+    if ty in ('cards', 'stack', 'roles', 'ladder'):
+        if k == 'centro':
+            return p['center'].get('at', p['s'])
+        return {'cards': p.get('cards'), 'stack': p.get('cards'), 'roles': p.get('roles'), 'ladder': p.get('steps')}[ty][int(k[4:])].get('at', p['s'])
     if k == 'risco':
         return p['strike']['at']
+    if p['type'] == 'curve':
+        return p['points'][int(k[4:])]['at']
+    if p['type'] == 'pillars':
+        return p['roofAt'] if k == 'teto' else p['items'][int(k[4:])]['at']
+    if p['type'] == 'root':
+        return p['rootAt'] if k == 'raiz' else p['topAt'] if k == 'item0' else p['items'][int(k[4:]) - 1]['at']
+    if p['type'] in ('waves', 'balance'):
+        return p[{'waves': ('aAt', 'bAt'), 'balance': ('leftAt', 'rightAt')}[p['type']][k == 'item1']]
     return (p.get('items') or p.get('events'))[int(k[4:])]['at']
+
+
+def camera_ffmpeg(pr, out):
+    """camada 'camera' do pacote DaVinci sem Remotion: camera.mov sobre o fundo do tema, deslocada pela tela dividida
+    (mesma curva do Reel.tsx: TR 0,42, Easy Ease) e escurecida no endFade"""
+    import math
+    TRv = 0.42
+    def ease(u):
+        u = min(1.0, max(0.0, u)); lo, hi = 0.0, 1.0
+        for _ in range(30):
+            m = (lo + hi) / 2; bx = 3 * (1 - m) ** 2 * m * 0.33 + 3 * (1 - m) * m * m * 0.67 + m ** 3
+            lo, hi = (m, hi) if bx < u else (lo, m)
+        m = (lo + hi) / 2
+        return 3 * (1 - m) * m * m + m ** 3
+    def sp(t):
+        v = 0.0
+        for g in pr['split']:
+            a_, b_ = g['s'] - TRv * 0.35, g['e'] - TRv * 0.35
+            v = max(v, min(ease((t - a_) / TRv), 1 - ease((t - b_) / TRv)))
+        return v
+    th = pr.get('theme') or {}; L = th.get('layout') or {}; LH = th.get('layoutH') or {}
+    bg = (th.get('colors') or {}).get('bg', '#0f0d0c').lstrip('#')
+    dur = pr['duration']; N = int(round(dur * 29.97))
+    cX = pr.get('camX', VW / 2)
+    def camx(t):
+        if not isinstance(cX, list): return cX
+        xs = [r[0] for r in cX]; ys = [r[1] for r in cX]
+        if t <= xs[0]: return ys[0]
+        if t >= xs[-1]: return ys[-1]
+        k = next(i for i in range(len(xs)) if xs[i] >= t); return ys[k - 1] + (ys[k] - ys[k - 1]) * (t - xs[k - 1]) / (xs[k] - xs[k - 1])
+    PW = LH.get('panelW', 1040)
+    cmd = W / 'work' / 'camera_ff.cmd'; cmd.parent.mkdir(exist_ok=True)
+    with open(cmd, 'w') as f:
+        for n in range(N):
+            t = n / 29.97; s_ = sp(t)
+            if HZ:
+                f.write(f"{t:.4f} overlay x {round((PW + (VW - PW) / 2 - camx(t)) * s_)};\n")
+            else:
+                f.write(f"{t:.4f} overlay y {round(L.get('camShift', 600) * s_)};\n")
+    ef = pr.get('endFade') or 0
+    fade = f",fade=t=out:st={dur - ef:.3f}:d={ef:.3f}:color=0x{bg}" if ef else ''
+    sh(['ffmpeg', '-v', 'error', '-y', '-f', 'lavfi', '-i', f'color=c=0x{bg}:s={VW}x{VH}:r=30000/1001:d={dur:.3f}', '-i', str(PUB / R / 'camera.mov'),
+        '-filter_complex', f"[1:v]setpts=PTS-STARTPTS[c];[0:v]sendcmd=f='{cmd}'[b];[b][c]overlay@ov=x=0:y=0:eof_action=repeat{fade},trim=duration={dur:.3f},format=yuv422p10le[o]",
+        '-map', '[o]', '-c:v', 'prores_ks', '-profile:v', '2', '-r', '30000/1001', str(out)])
 
 
 def e_davinci():
@@ -520,7 +669,7 @@ def e_davinci():
         # painel com partes marcadas (<Pt> no panels.tsx): um arquivo por título, item, linha e risco (17/10/2026)
         partes = PARTES.get(p['type'], lambda p: [])(p)
         for k, nm in partes or [(None, f"{p['type']} {p.get('title', '')} {p.get('accent', '')}")]:
-            a2 = a if k in (None, 'titulo', 'linha') else q(_at_parte(p, k) - 0.2)
+            a2 = a if k in (None, 'titulo', 'linha') or (k == 'centro' and p['type'] != 'roles') else q(_at_parte(p, k) - 0.2)
             nome = f'painel_{i}' + (f'_{k}' if k else '')
             jobs.append((nome, 'painel', str(i), a2, b, alfa, k)); man.append(dict(arq=f'el/{nome}.mov', a=a2, grupo='painel', nome=nm))
         if p.get('step'):
@@ -548,6 +697,12 @@ def e_davinci():
         ec = pr['endCard']; a = q(ec['s'] - 0.1)
         jobs.append(('titulo_end', 'titulo', 'end', a, N - 1, alfa)); man.append(dict(arq='el/titulo_end.mov', a=a, grupo='titulo', nome=f"cartão final {ec.get('l1', '')}"))
     json.dump(man, open(cam / 'elementos.json', 'w'), ensure_ascii=False, indent=1)
+    # câmera da referência pelo ffmpeg (deslocamento da tela dividida por quadro + escurecimento final): no Remotion levava
+    # ~5,5 min por reel de 85 s abrindo o ProRes quadro a quadro; aqui ~1 min (Andreia, 19/10/2026). Sem o motion blur da troca.
+    if C.get('camera_davinci'):                                 # câmera montada pelo DaVinci a partir do bruto: não renderiza
+        jobs = [j for j in jobs if j[0] != 'camera']
+    elif C.get('camera_ffmpeg', True) and not (cam / 'camera.mov').exists():
+        camera_ffmpeg(pr, cam / 'camera.mov'); jobs = [j for j in jobs if j[0] != 'camera']
     for nome, lay, el, a, b, codec, *pt in jobs:
         f = cam / (f'el/{nome}.mov' if el is not None else f'{nome}.mov')
         if f.exists() and (not ARGS or not any(x in nome for x in ARGS)) and (ARGS or f.stat().st_mtime > (PUB / R / 'props.json').stat().st_mtime):
@@ -555,7 +710,8 @@ def e_davinci():
         pf = PUB / R / f'props_{nome}.json'; json.dump({**pr, 'layer': lay, **({'el': el} if el is not None else {}), **({'part': pt[0]} if pt and pt[0] else {})}, open(pf, 'w'), ensure_ascii=False)
         t0 = time.time(); remotion(f, [f'--frames={a}-{b}'] if a is not None else [], pf, codec)
         print(f'{nome}: {time.time() - t0:.0f}s', flush=True)
-    sh([AUDIOPY, str(ENG / 'scripts/davinci.py'), str(P), R, str(out)])
+    if '--so-el' not in ARGS:                                   # --so-el: só os elementos; não remonta o pacote (áudio já mexido no Resolve)
+        sh([AUDIOPY, str(ENG / 'scripts/davinci.py'), str(P), R, str(out)])
 
 
 def e_final():
@@ -582,7 +738,7 @@ def e_audio():
         '-shortest', '-movflags', '+faststart', str(tmp)])
     os.replace(tmp, ENTREGA)
     v = P / '05_qa' / f'{R}_verify.json'
-    subprocess.run([sys.executable, str(SK / 'video-delivery-safety-check/scripts/verify_video.py'), '--video', str(ENTREGA), '--cover', str(CAPA), '--width', '1080', '--height', '1920',
+    subprocess.run([sys.executable, str(SK / 'video-delivery-safety-check/scripts/verify_video.py'), '--video', str(ENTREGA), '--cover', str(CAPA), '--width', str(VW), '--height', str(VH),
                     '--fps', str(FPS), '--output-json', str(v), '--min-shot', '0'], capture_output=True)
     d = json.load(open(v)); print('checagem técnica:', d['automated_status'], d['errors'])
 
@@ -608,4 +764,4 @@ if ETAPA in PESADAS:   # trava: a mesma etapa nunca roda duas vezes no mesmo ree
     LK.write_text(str(os.getpid()))
     import atexit; atexit.register(lambda: LK.unlink(missing_ok=True))
 {'fix': lambda: edit_fix(json.load(open(W / 'edit_mfa.json'))['segments'][0]['words']), 'fonte': e_fonte, 'takes': e_takes, 'voz': e_voz, 'legenda': e_legenda, 'camera': e_camera, 'props': e_props, 'mix': e_mix,
- 'previa': e_previa, 'final': e_final, 'capa': e_capa, 'revisa': e_revisa, 'davinci': e_davinci, 'entrega': lambda: entrega(W / 'video2.mp4'), 'audio': e_audio, 'trecho': lambda: e_trecho(*ARGS[:2])}[ETAPA]()
+ 'previa': e_previa, 'final': e_final, 'capa': e_capa, 'so_capa': lambda: faz_capa(C['capa']), 'pub': lambda: print(pub_enxuta()), 'camff': lambda: camera_ffmpeg(json.load(open(PUB / R / 'props.json')), Path(ARGS[0])), 'revisa': e_revisa, 'davinci': e_davinci, 'entrega': lambda: entrega(W / 'video2.mp4'), 'audio': e_audio, 'trecho': lambda: e_trecho(*ARGS[:2])}[ETAPA]()
