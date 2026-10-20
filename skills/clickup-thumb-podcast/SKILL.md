@@ -1,6 +1,6 @@
 ---
 name: clickup-thumb-podcast
-description: Crie a demanda de thumb de um episódio de podcast (Pod Acontecer, Bombordo e Boreste, Dr. Energia etc.) direto no ClickUp, na lista ContentHub > Max > Edição, com o nome, a descrição, os responsáveis e o prazo no padrão da equipe. Use quando o usuário pedir para "subir", "criar" ou "mandar" a demanda da thumb para o ClickUp.
+description: Crie a demanda de thumb de um episódio de podcast (Pod Acontecer, Bombordo e Boreste, Dr. Energia etc.) direto no ClickUp, na lista ContentHub > Max > Edição, com o nome, a descrição, os responsáveis e o prazo no padrão da equipe. Use sempre logo depois de terminar o SEO de um episódio (sem esperar pedido) e quando o usuário pedir para "subir", "criar" ou "mandar" a demanda da thumb para o ClickUp.
 ---
 
 # Demanda de thumb no ClickUp

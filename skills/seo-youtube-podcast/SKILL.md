@@ -20,6 +20,9 @@ com a thumb**. Nunca invente um formato novo.
 3. **Gancho = título da thumb.** Se a thumb já existe, o título do vídeo começa pelo texto dela e
    depois amplia com os nomes pesquisáveis. Se não existe, proponha os dois juntos (e a
    demanda do designer sai pela skill `clickup-thumb-podcast` com o mesmo título).
+   **Terminou o SEO, a demanda da thumb no ClickUp sai no mesmo fluxo, sem o editor pedir**
+   (skill `clickup-thumb-podcast`; regra do Bruno, 20/10/2026: "terminou SEO já cria demanda no ClickUp").
+   SEO de episódio sem demanda criada é entrega incompleta.
 4. **Confira nomes e grafias** (convidado, cargo, partido, empresa, cidade) na fala e na web.
    Quando o episódio traz duas grafias, use a oficial e ponha as variantes nas tags. Confira o
    número do episódio: no Bombordo, desde 30/09/2026, a pasta `epN` é o EP N do YouTube (arquivos antigos usam epN = EP N-1); no Pod Acontecer,

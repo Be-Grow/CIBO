@@ -19,6 +19,13 @@ silence-snapped trimming, caption rendering, audio sweetening and the cover.
 
 ## Regras do cliente (correções do usuário e do Daniel)
 
+- **Tudo no DaVinci, nunca ffmpeg na entrega (20/10/2026, EP 07: "que diacho de ffmpeg, na demanda da Andreia eu fiz
+  tudo lá no DaVinci").** Episódio completo, cortes e versões longas são montados e renderizados no Resolve com o fluxo
+  do `reel-motion` (pacote `davinci`, `resolve_render.py`, `resolve_fx.py` para punch-in/zoom no Fusion, `resolve_cores.py`,
+  `resolve_mix.py`, `qa_resolve.py`/`qa_render.py`), em projeto novo e organizado (regras-transversais → "Projeto
+  organizado"). O `make_reels.py`/`render.py` daqui queimam tudo no ffmpeg: use-os só para gerar camadas (legenda com
+  alfa, capa) e prévias de conferência, nunca para o MP4 final. ffmpeg fica para análise, extração de áudio e prévia.
+
 - **Punchline no início.** O Daniel (host) pediu: "seria legal já colocar a punch line no
   início do corte". O corte abre com a frase mais forte (gancho nos 3 primeiros segundos),
   mesmo que ela venha do meio do trecho. Pode ser um *cold open* de 1 frase antes do

@@ -126,6 +126,10 @@ só o clipe. Aplicar com `reel-motion/scripts/resolve_cores.py` (o `resolve_fx.p
 | Trilha | Olive | TRILHA |
 | SFX | Chocolate | SFX |
 
+**Nada de ffmpeg na entrega (20/10/2026, Bombordo EP 07, segunda vez que o editor cobra):** nem o episódio completo
+"só com corte e fade" sai pelo ffmpeg. Todo cliente usa o fluxo DaVinci do `reel-motion` (pacote por camadas, projeto novo
+organizado, Fusion nos movimentos, QA na timeline e no render). ffmpeg é só para análise, extração e prévia leve.
+
 **Padrão do CIBO para todo cliente (18/10/2026): o render final é do editor, no DaVinci.** Entregue prévias de
 conferência (baixa, rápidas) + pacote com cada camada isolada (câmera, mídia/B-roll, painéis, legenda com alfa,
 títulos, cartão final, voz/trilha/SFX em WAV separados) + XML. **Não rode o render final queimado** (CRF baixo,
