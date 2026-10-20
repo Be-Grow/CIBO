@@ -67,6 +67,7 @@ def importa(mp, arquivos, caminho_bin):
 def tipo_bin(clip):
     fp = (clip.GetClipProperty('File Path') or '').lower(); n = os.path.basename(fp)
     if clip.GetClipProperty('Type') == 'Timeline': return '00 TIMELINES'
+    if n.endswith(AUD) and 'voz' in n: return '02 VOZ'                  # voz_bruto.wav é voz, não bruto
     if '/01_sources/' in fp or 'bruto' in n: return '01 BRUTO'
     if n.endswith(AUD):
         return '02 VOZ' if 'voz' in n else '03 TRILHA' if ('trilha' in n or '/music' in fp or '/musica' in fp) else '04 SFX'
@@ -74,7 +75,7 @@ def tipo_bin(clip):
     if 'burn' in n: return '07 BURNS'
     if 'capa' in n or 'cover' in n: return '08 CAPAS'
     if '/05_qa/' in fp or 'previa' in n or 'prévia' in n or 'ref' in n: return '09 REFERÊNCIA'
-    if n.endswith(IMG) or 'painel' in fp or 'titulo' in n or 'lower' in n: return '06 GRAFISMOS'
+    if n.endswith(IMG) or 'fade' in n or 'painel' in fp or 'titulo' in n or 'lower' in n: return '06 GRAFISMOS'
     return '01 BRUTO' if n.endswith(VID) else '06 GRAFISMOS'
 
 

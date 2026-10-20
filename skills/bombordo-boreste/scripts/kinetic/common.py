@@ -20,6 +20,10 @@ def load_config(clip=None, project_cfg=None):
         cfg = deep_merge(cfg, yaml.safe_load(open(project_cfg, encoding='utf-8')) or {})
     if clip:
         cfg = deep_merge(cfg, (cfg.get('videos') or {}).get(clip, {}))
+    pf = cfg['motion'].get('perfil')            # perfil de movimento: perfis.<nome> por baixo do que o projeto fixou em motion
+    if pf:
+        proj = (yaml.safe_load(open(project_cfg, encoding='utf-8')) or {}) if project_cfg and os.path.exists(project_cfg) else {}
+        cfg['motion'] = {**cfg['motion'], **cfg['perfis'][pf], **(proj.get('motion') or {})}
     f = cfg['font']
     if not os.path.isabs(f):
         cfg['font'] = os.path.join(SKILL, 'assets', f)

@@ -203,7 +203,7 @@ def render(blocks_json, cfg, total, out_prefix, t0=0.0, t1=None):
                 # edge of "7 de setembro"); normal blocks reveal word by word with the speech
                 u = t - ((b['words'][0]['s'] if b['kind'] == 'highlight' else w['s']) - Tm['lead'])
                 if u < 0: continue
-                en = anim.PRESETS[b['preset']](u, cfg)
+                en = anim.preset(b, cfg)(u, cfg)
                 cf = Tm['color_fade']
                 on = anim.ease_out_cubic((t - (w['s'] - cf / 2)) / cf) * (1 - anim.ease_out_cubic((t - w['e']) / cf))
                 hl = w.get('hl')

@@ -165,6 +165,10 @@ A API funciona
   - Arquivo de mesmo nome em pacotes diferentes (`voz.wav`, `trilha.wav`, `sfx/*.wav`) vira um item só no Media Pool: o
     vídeo 03 tocou a voz do 01. Nome único por pacote ou religar com `pacote_certo()`.
   - Clipe recolocado pela API entra com Scaling 0 e sem RotationAngle: copie as propriedades dos irmãos.
+  - Importação de XML (EP 07, 20/10/2026): um still PNG no xmeml faz `ImportTimelineFromFile` devolver None para a timeline
+    inteira. Capa fora do XML e pela API: `ImportMedia` + `AppendToTimeline` com `startFrame 0, endFrame 1` (endFrame 0 é
+    recusado). PNG com número no fim do nome vira sequência de imagens; `pathurl` em NFC não casa com o disco do Mac (use NFD);
+    nome igual entre cortes vira um item só. Voz medida em mono: ganho = −16 − I (LUFS).
   - **Antes de dizer "corrigido": `reel-motion/scripts/qa_resolve.py`** (offline, outro pacote, transform diferente entre
     os trechos, GlobalIn) com o render parado, e depois do render `qa_render.py PROJ` (sincronia por trecho, offline, preto),
     nos dois formatos. Conferir só o trecho mexido deixou passar o mesmo defeito na outra versão.

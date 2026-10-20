@@ -43,6 +43,19 @@ motion:
   idle_drift_px: 3
   spring: {stiffness: 260, damping: 18}   # destaque pop, slight overshoot
 
+perfis:                            # motion.perfil: <nome> (20/10/2026, EP 07: "movimentos mais suaves, como o Remotion já faz")
+  editorial:                       # = perfil editorial do reel-motion (Andrea): desacelera sem quique, entrada mais lenta, deslize curto
+    curve: [0.3, 0, 0.15, 1]       # cubic-bezier da entrada (sem perfil: ease-out-expo, que dá tranco)
+    dur_k: 1.15                    # entrada 15% mais longa
+    overshoot: 0                   # destaque sem mola e sem passar do ponto
+    slide_px: 18
+    blur_px: 7
+    enter_scale_from: 0.97
+    pop_from: 0.88                 # destaque cresce de 88% (antes 55%)
+    zoom_from: 1.10                # zoom do destaque vem de 110% (antes 145%)
+    exit_push_px: 12
+    idle_drift_px: 1.5
+
 presets:
   normal: [slide_blur, drop_blur, mask_reveal]   # rotated with criterion, slide_blur is the anchor
   highlight: [pop_spring, zoom_blur]            # never the same one twice in a row
