@@ -27,7 +27,11 @@ def resolve():
 def abre(pasta, nome, fps='30'):
     """Abre (ou cria) `nome` dentro de `pasta` ("BeGrow/Cliente"). Salva o projeto atual antes. Devolve o projeto."""
     r, pm = resolve()
-    pm.SaveProject(); pm.GotoRootFolder()
+    cur = pm.GetCurrentProject()
+    # Projeto sem nome ("Untitled Project"): SaveProject abre o diálogo "Save Current Project" e trava o Resolve
+    # do editor (EP 07, 20/10/2026). Só salva projeto com nome.
+    if cur and not cur.GetName().startswith('Untitled Project'): pm.SaveProject()
+    pm.GotoRootFolder()
     for f in [x for x in pasta.split('/') if x]:
         if f not in (pm.GetFolderListInCurrentFolder() or []): pm.CreateFolder(f)
         assert pm.OpenFolder(f), f'não abriu a pasta {f}'

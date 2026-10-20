@@ -95,7 +95,7 @@ memórias por pasta, que não carregam fora da pasta onde nasceram. Cada regra t
 
 **Projeto organizado (regra do CIBO, 20/10/2026: "os projetos que são feitos no DaVinci precisam estar sim organizados"):**
 todo projeto entregue no Resolve sai arrumado, não só a timeline.
-- Project Manager: pasta `CIBO/<Cliente>/` e projeto com o nome do job (`EP 07 - Izaac Nava`), nunca solto na raiz nem "Untitled".
+- Project Manager: pasta do cliente na árvore que o editor já usa (`BeGrow/<Cliente>/`) e projeto com o nome do job (`EP 07 - Izaac Nava`), nunca solto na raiz nem "Untitled".
 - Media Pool em bins por tipo, na ordem: `01 BRUTO`, `02 VOZ`, `03 TRILHA`, `04 SFX`, `05 LEGENDA`, `06 GRAFISMOS` (painéis, títulos,
   lower, cartões), `07 BURNS`, `08 CAPAS`, `09 REFERÊNCIA` (prévias/renders de conferência) e `00 TIMELINES` com uma sub-bin por
   formato (`Episódio`, `Cortes 9x16`, `Versão 15 min`...). Nada solto na Master.
