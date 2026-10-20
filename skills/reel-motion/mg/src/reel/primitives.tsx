@@ -3,7 +3,7 @@ import {
   Img, AbsoluteFill, Easing, OffthreadVideo, Sequence, continueRender, delayRender, interpolate,
   staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion';
-import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, cl, ramp, useT, sh} from './theme';
+import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, pop, M, cl, ramp, useT, sh} from './theme';
 
 // Peças reutilizáveis dos painéis. Painel novo = composição destas peças; só crie peça nova quando nenhuma serve.
 
@@ -72,10 +72,50 @@ export const MediaFrame: React.FC<{src: string; t: number; s: number; e: number;
   );
 };
 
-export const Title: React.FC<{text: React.ReactNode; p: number; size?: number; top: number; color?: string; align?: 'center' | 'left'}> = ({text, p, size = 92, top, color = C.ink, align = 'center'}) => (
-  <div style={{position: 'absolute', top, left: 70, right: 70, textAlign: align, ...fTitle(), fontSize: size,
-    lineHeight: 1.02, color, opacity: p, transform: `translateY(${(1 - p) * 30}px)`, filter: `blur(${(1 - p) * 10}px)`}}>{text}</div>
-);
+// quebra o texto (com <I>, <span>, <br/>) em palavras, mantendo o estilo de cada uma
+const palavras = (n: React.ReactNode, wrap: (x: React.ReactNode, k: string) => React.ReactNode = (x) => x, out: React.ReactNode[] = []): React.ReactNode[] => {
+  React.Children.forEach(n, (c, ci) => {
+    if (typeof c === 'string' || typeof c === 'number') String(c).split(/(\s+)/).forEach((w, wi) => {
+      if (!w) return; out.push(/^\s+$/.test(w) ? ' ' : wrap(w, `${out.length}-${ci}-${wi}`));
+    });
+    else if (React.isValidElement(c)) {
+      const el = c as React.ReactElement<any>;
+      if (el.type === 'br') out.push(React.cloneElement(el, {key: `br${out.length}`}));
+      else palavras(el.props.children, (x, k) => wrap(React.cloneElement(el, {key: k}, x), k), out);
+    }
+  });
+  return out;
+};
+// título: perfil "atual" entra inteiro (fade + sobe + desfoque); "palavra" sobe cada palavra de trás de uma máscara, uma depois
+// da outra (M.stagger s entre elas), que é a entrada de tipografia mais limpa e mais cara de se ver
+export const Title: React.FC<{text: React.ReactNode; p: number; size?: number; top: number; color?: string; align?: 'center' | 'left'}> = ({text, p, size = 92, top, color = C.ink, align = 'center'}) => {
+  const base: React.CSSProperties = {position: 'absolute', top, left: 70, right: 70, textAlign: align, ...fTitle(), fontSize: size, lineHeight: 1.02, color};
+  if (M.reveal !== 'palavra') return <div style={{...base, opacity: p, transform: `translateY(${(1 - p) * 30}px)`, filter: `blur(${(1 - p) * 10}px)`}}>{text}</div>;
+  const ws = palavras(text), n = ws.filter((w) => w !== ' ' && !(React.isValidElement(w) && w.type === 'br')).length;
+  const g = Math.min(M.stagger / 0.5, 0.6 / Math.max(n - 1, 1));   // fração do título entre uma palavra e a outra (o grupo inteiro cabe em ~0,8 s)
+  let i = 0;
+  return (
+    <div style={base}>{ws.map((w, k) => {
+      if (w === ' ' || (React.isValidElement(w) && w.type === 'br')) return w;
+      const q = Math.min(1, Math.max(0, (p * (1 + (n - 1) * g) - i++ * g)));
+      return (
+        <span key={k} style={{display: 'inline-block', overflow: 'hidden', verticalAlign: 'top', padding: '0 0.08em 0.16em', margin: '0 -0.08em -0.16em'}}>
+          <span style={{display: 'inline-block', transform: `translateY(${(1 - q) * 105}%)`, opacity: Math.min(1, q * 3)}}>{w}</span>
+        </span>
+      );
+    })}</div>
+  );
+};
+// fundo vivo do painel: duas manchas de luz que derivam devagar (ciclo de ~16 s), quase imperceptíveis; tira a cara de
+// "tela parada" sem disputar com o conteúdo. Liga com motion.ambient > 0 no tema.
+export const Ambient: React.FC<{t: number; w: number; h: number}> = ({t, w, h}) => {
+  if (!M.ambient) return null;
+  const a = 0.5 + 0.5 * Math.sin(t * 2 * Math.PI / 16), b = 0.5 + 0.5 * Math.cos(t * 2 * Math.PI / 21);
+  const x1 = 20 + 50 * a, y1 = 15 + 40 * b, x2 = 85 - 45 * b, y2 = 80 - 35 * a, k = M.ambient;
+  const m = (x: number, y: number, c: string, o: number) => <div style={{position: 'absolute', inset: 0, opacity: o * k,
+    background: `radial-gradient(60% 50% at ${x}% ${y}%, ${c}, transparent 70%)`}} />;   // opacidade à parte: a cor do tema pode vir em rgba
+  return <div style={{position: 'absolute', inset: 0, pointerEvents: 'none'}}>{m(x1, y1, C.white, 0.6)}{m(x2, y2, C.paper2, 0.8)}</div>;
+};
 export const I: React.FC<{children: React.ReactNode; color?: string}> = ({children, color = C.terra}) => (
   <span style={{...fAcc(), color}}>{children}</span>
 );
@@ -102,7 +142,7 @@ export const Counter: React.FC<{t: number; at: number; from: number; to: number;
 // card que cai e assenta (pilha): `at` = quando entra; `hot` = destaque (cor de acento)
 export const DropCard: React.FC<{t: number; at: number; text: string; hot?: boolean; y: number; w?: number; size?: number; tilt?: number; press?: number}> =
   ({t, at, text, hot, y, w = 760, size = 64, tilt = 0, press = 0}) => {
-  const q = ramp(t, at, 0.42, Easing.bezier(0.3, 1.25, 0.5, 1));
+  const q = ramp(t, at, 0.42, pop(1.25));
   const land = Math.sin(Math.PI * ramp(t, at + 0.3, 0.25));
   return (
     <div style={{position: 'absolute', left: (1080 - w) / 2, width: w, top: y + press, height: size * 1.9, borderRadius: 22,

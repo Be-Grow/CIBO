@@ -5,7 +5,7 @@ import {
   staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion';
 import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, cl, ramp, useT} from './theme';
-import {Fonts, VBlur, Grain, Pill, I} from './primitives';
+import {Fonts, VBlur, Grain, Pill, I, Ambient} from './primitives';
 import {PANELS} from './panels';
 export {C, T, applyTheme, sh, scr} from './theme';
 export type {Theme} from './theme';
@@ -287,6 +287,7 @@ export const Reel: React.FC<ReelProps> = (props) => {
           transform: HZ ? `translateX(${-PW * (1 - sp)}px)` : `translateY(${panelY}px)`, overflow: 'hidden',
           background: tudoP || L === 'painel_fundo' ? C.paper : 'transparent',
           boxShadow: tudoP || L === 'painel_fundo' ? (HZ ? '18px 0 40px rgba(0,0,0,0.25)' : inv ? '0 -18px 40px rgba(0,0,0,0.25)' : '0 18px 40px rgba(0,0,0,0.25)') : 'none', filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
+          {(tudoP || L === 'painel_fundo') && <Ambient t={t} w={HZ ? PW : 1080} h={HZ ? VH : H + PAD} />}
           {(tudoP || L === 'painel_fundo') && <Grain opacity={T.grain} />}
           {/* horizontal: o desenho 1080×940 do painel cabe inteiro na coluna da esquerda, centrado na altura */}
           <div style={HZ ? {position: 'absolute', left: (PW - 1080 * KH) / 2, top: (VH - SPLIT * KH) / 2, width: 1080, height: SPLIT, transform: `scale(${KH})`, transformOrigin: 'top left'}

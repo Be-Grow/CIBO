@@ -89,6 +89,26 @@ Vídeo de inserção (`inserts`, area `bottom`/`full`): só com aprovação do e
   medida, sem colidir; linhas de pílulas abaixo de y 870 do desenho saem da borda — use 790/855.
 - Prefira dar a informação dentro do próprio painel (destaque no título, pulso do item, subtítulo do card) a uma pílula solta.
 
+## Jeito de mexer por cliente (perfis de movimento, 20/10/2026)
+
+O editor pediu mais qualidade no motion; aprovado no antes/depois do 02 da Andrea ("ficou mais suave", 05_qa/motion_antes_depois).
+Tudo no Remotion, só princípios de animação (o editor não usa After Effects). `theme.motion` no tema do cliente:
+
+| Perfil | Curva de entrada | Duração | Quique | Título | Fundo vivo | Para |
+|---|---|---|---|---|---|---|
+| `atual` (padrão sem bloco) | bezier(.22,.61,.36,1) | 1× | sim | inteiro | não | sai idêntico ao motor antigo |
+| `editorial` | bezier(.3,0,.15,1) | 1,15× | não | palavra por palavra, 70 ms | sim | bem-estar, espiritualidade, editorial (Andrea) |
+| `premium` | bezier(.4,0,.2,1) | 1,2× | não | palavra, 80 ms | leve | luxo, marca premium |
+| `energetico` | bezier(.16,1,.3,1) | 0,8× | 1,3× | palavra, 45 ms | não | hype, negócios rápidos |
+
+- Campos soltos sobrescrevem o perfil: `{"perfil": "editorial", "dur": 1.05, "ambient": 0.5}`.
+- Peças: `Title` (máscara por palavra), `Ambient` (manchas de luz que derivam ~16 s), `pop(y1)` no lugar de curva com
+  quique fixa (o perfil escala ou zera o quique), `M.settle` = detalhe que assenta depois do elemento (subtítulo do card em `sides`).
+- Princípios que valem para painel novo: entrada desacelera até parar, saída acelera; um destaque por quadro;
+  grupo entra escalonado (40–80 ms por item, grupo inteiro ≤ 0,8 s); elemento maior ou que anda mais leva mais tempo;
+  conteúdo sério/bem-estar sem quique; pelo menos 0,3 s parado depois de cada movimento.
+- Escolha o perfil no briefing pelo tom do cliente; mostre antes/depois de 10 s quando mudar.
+
 ## Cor: identidade sem perder leitura (regra do editor, 13/10/2026)
 
 - As cores dos painéis vêm da identidade do cliente (medidas de material real dele: thumbs, banner,

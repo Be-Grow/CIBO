@@ -3,7 +3,7 @@ import {
   Img, AbsoluteFill, Easing, OffthreadVideo, Sequence, continueRender, delayRender, interpolate,
   staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion';
-import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, cl, ramp, useT, sh, scr, Pt} from './theme';
+import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, pop, M, cl, ramp, useT, sh, scr, Pt} from './theme';
 import {Pill, MediaFrame, Title, I, Counter, DropCard, StrikeChip, PhotoFrame} from './primitives';
 
 const PanelStat: React.FC<{p: Panel; t: number}> = ({p, t}) => {
@@ -211,13 +211,15 @@ const PanelSides: React.FC<{p: Panel; t: number}> = ({p, t}) => {
   const side = (q: number, _txt: string, dark: boolean, dx: number): React.CSSProperties => ({position: 'absolute', top: p.cardTop ?? 470, width: p.cardW ?? 380, padding: '30px 0', borderRadius: 26,
     textAlign: 'center', background: dark ? C.ink : C.white, color: dark ? C.onAccent : C.ink, boxShadow: `0 16px 40px ${sh(0.14)}`, ...fTitle(p.cardSize ?? 64),
     whiteSpace: 'nowrap', opacity: q, transform: `translateX(${(1 - q) * dx}px)`, filter: `blur(${(1 - q) * 8}px)`});
-  const subS: React.CSSProperties = {...fLab(), fontSize: 30, letterSpacing: 2, textTransform: 'uppercase', marginTop: 12, opacity: 0.85};
+  // detalhe que assenta depois do card (M.settle; 0 no perfil atual = entra junto)
+  const subS = (at: number): React.CSSProperties => { const u = M.settle ? ramp(t, at + M.settle, 0.4, OUT) : 1;
+    return {...fLab(), fontSize: 30, letterSpacing: 2, textTransform: 'uppercase', marginTop: 12, opacity: 0.85 * u, transform: `translateY(${(1 - u) * 10}px)`}; };
   return (
     <>
       <Pt k="titulo"><Title top={150} size={92} p={ti} text={<>{p.title}<br /><I>{p.accent}</I></>} /></Pt>
       <Pt k="linha"><div style={{position: 'absolute', left: 538, top: 440, width: 4, height: 260 * ln, background: C.terra, borderRadius: 2}} /></Pt>
-      <Pt k="item0"><div style={{...side(l, p.left, true, -60), left: p.cardW ? 540 - 30 - p.cardW : 110}}>{p.left}{p.leftSub && <div style={subS}>{p.leftSub}</div>}</div></Pt>
-      <Pt k="item1"><div style={{...side(r, p.right, false, 60), left: p.cardW ? 570 : 590}}>{p.right}{p.rightSub && <div style={subS}>{p.rightSub}</div>}</div></Pt>
+      <Pt k="item0"><div style={{...side(l, p.left, true, -60), left: p.cardW ? 540 - 30 - p.cardW : 110}}>{p.left}{p.leftSub && <div style={subS(p.leftAt)}>{p.leftSub}</div>}</div></Pt>
+      <Pt k="item1"><div style={{...side(r, p.right, false, 60), left: p.cardW ? 570 : 590}}>{p.right}{p.rightSub && <div style={subS(p.rightAt)}>{p.rightSub}</div>}</div></Pt>
     </>
   );
 };
@@ -514,7 +516,7 @@ const PanelLadder: React.FC<PanelProps> = ({p, t}) => {
       {p.title && <Pt k="titulo"><div style={{position: 'absolute', top: 70, left: 60, right: 60, textAlign: 'center', ...fTitle(96), color: C.ink, lineHeight: 1.05,
         opacity: ramp(t, p.titleAt ?? p.s + 0.1, 0.45, OUT)}}>{p.title}</div></Pt>}
       {steps.map((st, i) => {
-        const q = ramp(t, st.at, 0.45, Easing.bezier(0.3, 1.3, 0.5, 1)), h = SH * (i + 1);
+        const q = ramp(t, st.at, 0.45, pop(1.3)), h = SH * (i + 1);
         return (<Pt key={i} k={`item${i}`}>
           <div style={{position: 'absolute', left: X0 + i * SW + 8, width: SW - 16, top: Y0 - h * q, height: h * q, borderRadius: '18px 18px 0 0',
             background: st.hot ? C.terra : C.white, boxShadow: st.hot ? `0 0 34px ${C.terra}77` : 'none', overflow: 'visible'}}>
@@ -666,7 +668,7 @@ const PanelWaves: React.FC<PanelProps> = ({p, t}) => {
 // (Andreia 02 "a culpa que paralisa e a responsabilidade que movimenta", 19/10/2026). p.left/leftSub/leftAt, p.right/rightSub/rightAt, p.tiltAt
 const PanelBalance: React.FC<PanelProps> = ({p, t}) => {
   const ti = ramp(t, p.titleAt ?? p.s + 0.1, 0.5, OUT), l = ramp(t, p.leftAt, 0.45, OUT), r = ramp(t, p.rightAt, 0.45, OUT);
-  const sw = Easing.bezier(0.3, 1.35, 0.5, 1);
+  const sw = pop(1.35);
   const ang = 9 * ramp(t, p.leftAt + 0.2, 0.7, sw) - 18 * ramp(t, p.tiltAt ?? 1e9, 0.9, sw);   // + = esquerda desce
   const PX = 540, PY = p.y ?? 400, L = p.arm ?? 360, rad = ang * Math.PI / 180;
   // ponta do braço (k = -1 esquerda, +1 direita): rotate(-ang) no CSS = anti-horário, a esquerda desce quando ang > 0
@@ -779,7 +781,7 @@ const PanelCurve: React.FC<PanelProps> = ({p, t}) => {
 // (Andreia 04 "os quatro pilares: o físico, o mental, o emocional e o espiritual… no eixo", 19/10/2026). p.items [{text, at}], p.roof/roofAt, p.base/baseAt
 const PanelPillars: React.FC<PanelProps> = ({p, t}) => {
   const it: {text: string; at: number}[] = p.items, n = it.length, GAP = 860 / n, X0 = 110, BY = p.by ?? 700, H = p.ph ?? 300;
-  const rf = ramp(t, p.roofAt ?? 1e9, 0.6, Easing.bezier(0.3, 1.25, 0.5, 1)), bs = ramp(t, p.baseAt ?? p.s + 0.2, 0.5, OUT);
+  const rf = ramp(t, p.roofAt ?? 1e9, 0.6, pop(1.25)), bs = ramp(t, p.baseAt ?? p.s + 0.2, 0.5, OUT);
   const ti = ramp(t, p.titleAt ?? p.s + 0.1, 0.5, OUT);
   return (
     <>
@@ -788,7 +790,7 @@ const PanelPillars: React.FC<PanelProps> = ({p, t}) => {
         {p.base && <div style={{position: 'absolute', left: 0, right: 0, top: BY + 34, textAlign: 'center', ...fLab(), fontSize: 26, letterSpacing: 4, textTransform: 'uppercase', color: C.ink2, opacity: bs}}>{p.base}</div>}
       </Pt>
       {it.map((c, i) => {
-        const q = ramp(t, c.at, 0.5, Easing.bezier(0.3, 1.2, 0.5, 1)), x = X0 + GAP * i + GAP / 2;
+        const q = ramp(t, c.at, 0.5, pop(1.2)), x = X0 + GAP * i + GAP / 2;
         return (
           <Pt key={i} k={`item${i}`}>
             <div style={{position: 'absolute', left: x - 34, width: 68, top: BY - H * q, height: H * q, borderRadius: '10px 10px 0 0', background: C.white,

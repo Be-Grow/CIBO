@@ -1,114 +1,117 @@
 {
- "cliente": "Andrea Francomano — espiritualidade aplicada (radiestesia, radiônica, apometria), lançamento Black das Blacks",
- "origem": "paleta escolhida pelo editor no briefing (19/10/2026): creme + violeta-escuro + dourado/âmbar; títulos em serifa (Cormorant Garamond, destaque itálico dourado), legenda Montserrat (padrão do cliente); 19/10/2026 editor: identidade é roxo + dourado → painel roxo profundo, texto creme, destaque dourado",
- "theme": {
-  "colors": {
-   "paper": "#2A1642",
-   "paper2": "#36205A",
-   "ink": "#F7F0E6",
-   "ink2": "#CDBBE4",
-   "terra": "#E2B55A",
-   "terraDark": "#6A3EA6",
-   "peach": "#F1C76E",
-   "white": "#43286B",
-   "video": "#FFFDF8",
-   "onAccent": "#2A1642",
-   "pill": "#4E3180",
-   "bg": "#140A22",
-   "gold": "#E2B55A",
-   "shadow": "8,3,18",
-   "scrim": "20,10,34"
+  "cliente": "Andrea Francomano — espiritualidade aplicada (radiestesia, radiônica, apometria), lançamento Black das Blacks",
+  "origem": "paleta escolhida pelo editor no briefing (19/10/2026): creme + violeta-escuro + dourado/âmbar; títulos em serifa (Cormorant Garamond, destaque itálico dourado), legenda Montserrat (padrão do cliente); 19/10/2026 editor: identidade é roxo + dourado → painel roxo profundo, texto creme, destaque dourado",
+  "theme": {
+    "colors": {
+      "paper": "#2A1642",
+      "paper2": "#36205A",
+      "ink": "#F7F0E6",
+      "ink2": "#CDBBE4",
+      "terra": "#E2B55A",
+      "terraDark": "#6A3EA6",
+      "peach": "#F1C76E",
+      "white": "#43286B",
+      "video": "#FFFDF8",
+      "onAccent": "#2A1642",
+      "pill": "#4E3180",
+      "bg": "#140A22",
+      "gold": "#E2B55A",
+      "shadow": "8,3,18",
+      "scrim": "20,10,34"
+    },
+    "fonts": [
+      {
+        "family": "CormA",
+        "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/CormorantGaramond-VF.ttf",
+        "weight": "300 700",
+        "style": "normal"
+      },
+      {
+        "family": "CormA",
+        "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/CormorantGaramond-Italic-VF.ttf",
+        "weight": "300 700",
+        "style": "italic"
+      },
+      {
+        "family": "MontA",
+        "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/Montserrat-VF.ttf",
+        "weight": "100 900"
+      }
+    ],
+    "title": {
+      "family": "CormA",
+      "weight": 600,
+      "upper": false,
+      "ls": 0,
+      "scale": 1.08
+    },
+    "caption": {
+      "family": "MontA",
+      "weight": 600,
+      "upper": false,
+      "ls": 0,
+      "scale": 0.8,
+      "hlAccent": false
+    },
+    "label": {
+      "family": "MontA",
+      "weight": 600
+    },
+    "accent": {
+      "italic": true,
+      "weight": 600
+    },
+    "mediaFilter": "saturate(0.9) contrast(1.03) brightness(0.98)",
+    "burnFilter": "sepia(0.6) saturate(1.8) hue-rotate(-10deg) brightness(1.05)",
+    "burnOpacity": 0.82,
+    "grain": 0.05,
+    "layout": {
+      "splitH": 940,
+      "camShift": 560,
+      "capSplitY": 0,
+      "capFullY": 1380,
+      "capMaxW": 900
+    },
+    "layoutH": {
+      "panelW": 1280,
+      "capSplitY": 992,
+      "capFullY": 960,
+      "capSize": 54,
+      "hookScale": 0.82
+    },
+    "motion": {
+      "perfil": "editorial"
+    }
   },
-  "fonts": [
-   {
-    "family": "CormA",
-    "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/CormorantGaramond-VF.ttf",
-    "weight": "300 700",
-    "style": "normal"
-   },
-   {
-    "family": "CormA",
-    "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/CormorantGaramond-Italic-VF.ttf",
-    "weight": "300 700",
-    "style": "italic"
-   },
-   {
-    "family": "MontA",
-    "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/Montserrat-VF.ttf",
-    "weight": "100 900"
-   }
+  "pares_extra": [
+    [
+      "gold",
+      "bg",
+      4.5,
+      "dourado sobre o fundo escuro"
+    ],
+    [
+      "terra",
+      "white",
+      3.0,
+      "dourado sobre card roxo"
+    ],
+    [
+      "ink",
+      "pill",
+      4.5,
+      "texto na pílula"
+    ]
   ],
-  "title": {
-   "family": "CormA",
-   "weight": 600,
-   "upper": false,
-   "ls": 0,
-   "scale": 1.08
+  "capa": {
+    "layout": "serif",
+    "footer": "ANDREIA FRANCOMANO"
   },
-  "caption": {
-   "family": "MontA",
-   "weight": 600,
-   "upper": false,
-   "ls": 0,
-   "scale": 0.8,
-   "hlAccent": false
-  },
-  "label": {
-   "family": "MontA",
-   "weight": 600
-  },
-  "accent": {
-   "italic": true,
-   "weight": 600
-  },
-  "mediaFilter": "saturate(0.9) contrast(1.03) brightness(0.98)",
-  "burnFilter": "sepia(0.6) saturate(1.8) hue-rotate(-10deg) brightness(1.05)",
-  "burnOpacity": 0.82,
-  "grain": 0.05,
-  "layout": {
-   "splitH": 940,
-   "camShift": 560,
-   "capSplitY": 0,
-   "capFullY": 1380,
-   "capMaxW": 900
-  },
-  "layoutH": {
-   "panelW": 1280,
-   "capSplitY": 992,
-   "capFullY": 960,
-   "capSize": 54,
-   "hookScale": 0.82
-  }
- },
- "pares_extra": [
-  [
-   "gold",
-   "bg",
-   4.5,
-   "dourado sobre o fundo escuro"
-  ],
-  [
-   "terra",
-   "white",
-   3.0,
-   "dourado sobre card roxo"
-  ],
-  [
-   "ink",
-   "pill",
-   4.5,
-   "texto na pílula"
+  "regras": [
+    "toda versão existe em 9:16 (reel) e 16:9 (ReelH, lado a lado: painel à esquerda, ela à direita)",
+    "fonte gravada deitada: rotate cclock; HEVC do iPhone em full range (full_range: true)",
+    "CTA final: Black das Blacks, lista VIP (grafia aprovada pelo editor)",
+    "referências em tela: banco livre (Pexels/Pixabay) validado pelo sentido da fala",
+    "16:9 em terços: painel nos 2/3 da esquerda (panelW 1280), ela centralizada no terço da direita pelo CORPO (editor, 19/10/2026); legenda da tela dividida no rodapé do painel"
   ]
- ],
- "capa": {
-  "layout": "serif",
-  "footer": "ANDREIA FRANCOMANO"
- },
- "regras": [
-  "toda versão existe em 9:16 (reel) e 16:9 (ReelH, lado a lado: painel à esquerda, ela à direita)",
-  "fonte gravada deitada: rotate cclock; HEVC do iPhone em full range (full_range: true)",
-  "CTA final: Black das Blacks, lista VIP (grafia aprovada pelo editor)",
-  "referências em tela: banco livre (Pexels/Pixabay) validado pelo sentido da fala",
-  "16:9 em terços: painel nos 2/3 da esquerda (panelW 1280), ela centralizada no terço da direita pelo CORPO (editor, 19/10/2026); legenda da tela dividida no rodapé do painel"
- ]
 }
