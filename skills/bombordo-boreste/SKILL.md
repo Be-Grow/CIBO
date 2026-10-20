@@ -238,6 +238,7 @@ O que o Resolve 20 faz com XML do FCP7 (medido importando e renderizando pela AP
 - Teste sempre: projeto "TESTE XML CIBO", `ImportTimelineFromFile` + render 540x960 e folha de quadros.
   Arquivo trocado no mesmo caminho fica em cache no Media Pool (use nome novo para medir de novo).
 - A API não cria Adjustment Clip: entregue o LUT (.cube) e o editor aplica.
+- **`ImportTimelineFromFile` sempre com `importSourceClips: True` (EP 07, 20/10/2026).** Com `False`, a timeline importa sem ligação com o clipe que já está no Media Pool, e o render sai com **Media Offline**. Depois de importar, confira se cada item tem `GetMediaPoolItem()` com "Online Status" igual a "Online", ignorando as transições.
 - **Capa pela API (`AppendToTimeline`) não pode ser PNG nem `.mov` de 1 quadro (EP 07, 20/10/2026).** O Resolve trata os dois como still de 5 s e ignora o `endFrame`: a capa entrou com 150 quadros e cobriu o início dos 5 cortes. Use um ProRes de 5 quadros (`ffmpeg -loop 1 -i capa.png -frames:v 5 -r 30 -c:v prores_ks -profile:v 3 "capa ... 5q.mov"`) com `startFrame 0`, `endFrame 1` (`endFrame 0` é recusado), na faixa de cima "CAPA". Depois confira se `GetDuration() == 1`. No XML a capa PNG de 1 quadro funciona, porque lá o in e out é respeitado.
 
 Som do Histórias do Porto: trilha a **−23 dB** (o editor achou −27 baixa), ducking ratio 3; whoosh nas
