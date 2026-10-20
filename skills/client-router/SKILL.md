@@ -15,6 +15,7 @@ O disco interno tem pouco espaço livre. Quando ele enche, o Resolve cai e o ren
 - Prévias, folhas de contato, testes, WAV, MP4 e MOV ficam em `<projeto>/04_work/` ou `05_qa/`. Nunca use o scratchpad (`/private/tmp/claude-*`) nem `/tmp`, nem para um arquivo "rápido".
 - No Resolve, render, cache e proxies apontam para a pasta do projeto no SSD.
 - Antes de um render longo, rode `df -h /`. Com menos de 5 GB livres, avise o usuário antes de começar.
+- **RAM (Mac de 8 GB):** nunca rode whisper/MLX (large-v3, turbo) com o Resolve aberto. Em 20/10/2026 (EP 07), uma transcrição de 15 min com o Resolve aberto mandou o Resolve inteiro para o swap: ele travou, e o swap no disco interno comeu 2 GB. A ordem é fechar o Resolve (depois de `SaveProject`), transcrever e reabrir só para montar e renderizar. Uma etapa pesada por vez, nunca duas em paralelo.
 
 ## Mapa de skills por etapa (use sem o usuário pedir)
 
