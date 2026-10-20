@@ -30,8 +30,10 @@ silence-snapped trimming, caption rendering, audio sweetening and the cover.
   início do corte". O corte abre com a frase mais forte (gancho nos 3 primeiros segundos),
   mesmo que ela venha do meio do trecho. Pode ser um *cold open* de 1 frase antes do
   contexto, desde que a frase volte inteira e sem corte seco no meio de palavra.
-- **5 cortes por episódio, sem repetir fala.** Todo episódio fecha com 5 cortes no total:
-  conte o que já existe e complete. Nenhuma fala pode aparecer em dois cortes. Antes de
+- **7 cortes por episódio (5 do convidado + 2 do host Daniel), sem repetir fala.** Desde 20/10/2026 (EP 07: "o host
+  daniel n recebeu nenhum, seriam 2 deles tbm"). Os do Daniel usam a experiência e o olhar dele sobre o tema (ex.: agente
+  marítimo na pandemia). Para achar a fala dele, use a câmera: cortina escura atrás dele, parede cinza clara atrás do convidado
+  (o áudio é mono duplicado, sem canal por microfone). Capa do Daniel: quadro em que ele sorri. Conte o que já existe e complete. Nenhuma fala pode aparecer em dois cortes. Antes de
   escolher, levante as janelas já usadas (`master_in` + cada `keeps` de cada `job.json`,
   mais os cortes que vieram prontos do Drive) e descarte candidatos que se sobreponham.
 - **Pastas dos episódios (desde 09/10/2026).** Uma pasta por episódio com o nome do Drive e a numeração
