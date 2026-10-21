@@ -2,6 +2,8 @@
 """Fila de etapas em vários reels, uma de cada vez (substitui laços de espera à mão — um `while pgrep -f` esperou a si mesmo
 por 4 h, 14/10/2026). Segue para a próxima mesmo se uma falhar e resume no fim.
 uso: lote.py PROJ "r06 trecho 43 47.2" "r08 trecho 20.3 24.9" "r10 final" …"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import os, subprocess, sys, time
 P = sys.argv[1]; R = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reel.py')
 os.environ.setdefault('TMPDIR', '/Volumes/SSD/CIBO/tmp')

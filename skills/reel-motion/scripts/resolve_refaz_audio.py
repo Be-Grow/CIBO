@@ -9,6 +9,8 @@ cliente: trilha "muito animada" e alta, SFX demais e variados; e "Media Offline"
 O .drt NÃO troca mídia (o Resolve religa pelo MediaRef e ignora MediaFilePath): o som novo é gravado no lugar do arquivo do
 pacote (antigo vai para lixo/audio_antigo/) e o item do media pool é recarregado; pelo .drt só volume e remoção de clipes.
 uso: resolve_refaz_audio.py --musica ARQ --sfx ARQ [--gap 22] [--inicio 01=0,02=30] PACOTE […]"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import re, shutil, struct, subprocess, sys, tempfile, unicodedata, zipfile
 from pathlib import Path
 sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")

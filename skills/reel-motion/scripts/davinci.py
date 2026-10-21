@@ -11,6 +11,8 @@ capa no quadro 0. Áudio: voz por take (mesmos cortes), trilha com ducking, cada
 final do mix, limitador -1 dBTP no master do DaVinci. Também: legenda.srt.
 O ajuste fino da transformação do bruto é do editor no DaVinci (não validado aqui por pedido dele).
 uso: davinci.py PROJ rNN PASTA_SAIDA"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import json, os, re, shutil, subprocess, sys
 from fractions import Fraction
 from pathlib import Path

@@ -3,6 +3,8 @@
 quadro; atraso em ms e correlação: bom = |atraso| < 40 ms e corr > 0,9; 0,26 foi a voz de outro vídeo), tela vermelha de
 Media Offline e quadros pretos. Trechos e arquivo do bruto lidos do timeline.fcpxml do pacote.
 uso: ~/.claude/skills/content-hub/.venv/bin/python3 qa_render.py PROJETO"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import subprocess,numpy as np,re,glob,os,unicodedata,urllib.parse
 import sys; P=sys.argv[1].rstrip('/')+'/'; nfc=lambda x: unicodedata.normalize('NFC',x)
 def au(f,ss=0,d=None):

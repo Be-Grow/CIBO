@@ -3,6 +3,8 @@
 cada clipe ganha a cor do seu tipo e cada faixa o nome do tipo que domina nela. A API não muda cor de FAIXA, só de clipe.
 O tipo vem do nome do clipe e da pasta do arquivo no pacote (07_davinci/<nome>/…).
 uso: resolve_cores.py "NOME DA TIMELINE" […]   (projeto aberto no Resolve; sem nome = todas as timelines do projeto)"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import re, sys
 sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")
 import DaVinciResolveScript as dvr

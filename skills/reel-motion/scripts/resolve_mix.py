@@ -4,6 +4,8 @@ ducker na faixa). A API do Resolve não lê nem grava volume de clipe nem efeito
 (EffectFiltersBA do Sm2TiAudioClip, parâmetro 124 = volume em dB, double little-endian) e a timeline volta com o mesmo
 nome. O ducker (efeito de faixa) NÃO vai no .drt: salve um preset do Fairlight na timeline do editor e aplique com --preset.
 uso: resolve_mix.py --sfx -3 --trilha 10 [--preset NOME] "TIMELINE" […]   (projeto aberto no Resolve)"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import re, shutil, struct, sys, tempfile, zipfile
 from pathlib import Path
 sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")

@@ -26,6 +26,8 @@ reel.json: {"name": "03 - …", "src": "C0008-004.MP4", "tema": "priscilla", "mu
             "capa": {"frame_t": 12.3, "l1": "…", "l2": "…", "accent": "…", "y": 290}}
 Temporários sempre no SSD (TMPDIR) e mantidos (o editor pediu para guardar).
 """
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import json, os, re, shutil, subprocess, sys, time
 from pathlib import Path
 

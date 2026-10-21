@@ -7,6 +7,8 @@ Sem render final: ele é do editor no Resolve (regra do CIBO). Depois que ele re
 Para antes de um reel se o SSD tiver < 8 GB livres (o SSD lotou na Andreia) e apaga as camadas inteiras que o pacote já
 fatiou (legenda, fundo do painel: GB que o Resolve não usa).
 uso: fila_davinci.py PROJ "Nome do projeto no Resolve" "BeGrow/<Cliente>" r01 r01h r02 …"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import json, os, shutil, subprocess, sys, time
 from pathlib import Path
 

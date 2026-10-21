@@ -5,6 +5,8 @@ Render em MOV H.264 + LPCM (o AAC da API sai a 64 kb/s) e remonta o MP4 com AAC 
 Salva e fecha o projeto de trabalho e devolve o projeto que estava aberto (pela pasta dele).
 SEM_RENDER=1: só importa e deixa o projeto novo aberto (editor finaliza; Andreia 19/10/2026).
 uso: resolve_render.py "Nome do projeto" "Pasta/Sub" SAIDA_DIR pacote1 [pacote2 …]"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import os, subprocess, sys, time, json
 from pathlib import Path
 sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")

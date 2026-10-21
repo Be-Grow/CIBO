@@ -5,3 +5,6 @@ __pycache__/
 .DS_Store
 *.mp4.tmp
 .env
+
+# symlink para o SSD (reel-motion/mg/node_modules)
+node_modules

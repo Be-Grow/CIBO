@@ -15,6 +15,8 @@ arquivo entregue (capa de 1 quadro incluída). Checa:
   - última palavra engolida: voz ainda ativa nos últimos 120 ms do vídeo.
 Uma linha por corte; só os problemas são detalhados (até 5 por tipo).
 """
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import json, os, subprocess, sys
 import numpy as np
 

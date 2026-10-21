@@ -8,6 +8,8 @@ Para cada `NN - *.mp4` da pasta: verify_video (video-delivery-safety-check) com 
 uma linha por corte e monta UMA folha de contato (um corte por linha, quadros nos tempos
 pedidos; negativos contam do fim, fração < 1 é proporção da duração). Leia só a folha.
 """
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import argparse, glob, json, os, re, subprocess, sys, tempfile
 
 VERIFY = os.path.expanduser('~/.claude/skills/video-delivery-safety-check/scripts/verify_video.py')

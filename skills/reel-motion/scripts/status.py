@@ -3,6 +3,8 @@
 da Priscilla). Mostra, por reel: última etapa concluída (pelos arquivos), o que está rodando, a entrega e a prévia;
 e avisa órfão do motor (esbuild/Chrome com pai 1) e SSD fora.
 uso: status.py PROJ"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import os, subprocess, sys, time
 from pathlib import Path
 

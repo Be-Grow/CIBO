@@ -6,6 +6,8 @@ Então: nunca encadeie ciclos de .drt na mesma timeline; parta do backup, apliqu
 Aplica o edita() do resolve_refaz_audio (SFX só nas trocas, volumes, MediaRef do trecho offline), troca o bruto .mp4 pela
 cópia em 29,97 (_2997/*.mov) e recoloca o que ficar offline com a mídia certa (copiando Pan/Zoom/Rotation do vizinho).
 uso: resolve_refaz_de_backup.py BACKUP.drt "NOME DA TIMELINE" […pares]   (projeto aberto no Resolve)"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import re, shutil, sys, tempfile, unicodedata, zipfile
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))

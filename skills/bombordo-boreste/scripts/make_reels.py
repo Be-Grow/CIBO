@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Entry point. Usage:  JOB=job.json python3 make_reels.py [clip ...]"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import os,sys,json,subprocess
 HERE=os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0,HERE)
 JOBF=os.environ['JOB']; JOB=json.load(open(JOBF))

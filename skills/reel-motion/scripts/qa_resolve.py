@@ -5,6 +5,8 @@ Por timeline: clipe sem mídia, arquivo de 07_davinci/ vindo de OUTRO pacote (o 
 clipe do bruto com Scaling/RotationAngle diferente dos irmãos, GlobalIn do MediaIn1 ≠ 0 nas camadas de ajuste (o render
 falha no Fusion). Rode com o render parado (durante o render a API devolve propriedades vazias).
 uso: qa_resolve.py [trecho do nome da timeline …]   (sem argumento: todas, menos a do editor)   sai 1 se achar problema"""
+if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
+    import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import sys, unicodedata
 sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")
 import DaVinciResolveScript as dvr

@@ -32,3 +32,32 @@ Carga por pedido (o que o router manda ler + skills do mapa):
 | 5 correção pontual (reel-motion) | reel-motion | 27.7k |
 
 Coluna "depois" e relatório final: fase 4.
+
+## Depois (fases 1–3, 21/10/2026; medido com `scripts/carga.py`, bytes/3,6)
+
+| Carga | Antes | Depois | Meta |
+|---|---|---|---|
+| Carga comum (CLAUDE.md, memória, descrições, router, registro) | 18,5k | 9,4k | — |
+| Descrições das skills | 4,1k | 1,9k | ≤2,5k ✓ |
+| 1 cliente novo (reel-motion) | 37,5k | 21,7k | ≤15k de carga fixa: não atingida (falta enxugar briefing/acervo/fala-limpa) |
+| 2 Bombordo | 33,3k | 18,7k | ≤22k ✓ |
+| 3 Katia (inativa) | 32,4k | 20,1k | — |
+| 4 só legenda | 21,2k | 12,0k | — |
+| 5 correção pontual (reel-motion) | 27,7k | 12,2k | — |
+
+O que moveu (nada apagado):
+- **Fase 1:** seções dos SKILL.md foram para `references/` com índice e gatilho, o histórico datado para `historico.md` e as regras transversais viraram `regras/` + `_checklist.md`.
+- **Fase 2:**
+  - o DaVinci é o padrão, com exceções temporárias (Content Hub e podcast-reels genérico em MP4 até existir o adaptador; piloto Content Hub no `todo.md`);
+  - as lições gerais do Resolve ficaram só em `regras/davinci.md`;
+  - a receita de 10 etapas ficou só no reel-motion.
+- **Fase 3:**
+  - `saida_curta.py` em 19 scripts: até 15 linhas no terminal, log completo em `05_qa/logs/`; em erro, o caminho do log e 20 linhas;
+  - seção "Sessão" no CLAUDE.md;
+  - o symlink `mg/node_modules` saiu do git.
+
+O que não mexi:
+- Bombordo × motor-comum: as seções diferem (regras próprias do cliente) e ficam como estão até o editor decidir.
+- Katia e Autismo Cast: inativos, a pedido do editor.
+- malu-cortes (3,4k) e content-hub (2,7k): o resto do texto é o fluxo que todo job desses clientes lê; mover só trocaria uma leitura por outra.
+- 3.2 `resolve_resumo.py`, 3.3 teto de imagens, 3.4 subagentes: ficam para depois, porque o `fila_davinci`/`qa_resolve` já terminam em linha curta e subagente não mostrou ganho medido.
