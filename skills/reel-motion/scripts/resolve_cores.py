@@ -7,7 +7,7 @@ import re, sys
 sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")
 import DaVinciResolveScript as dvr
 
-# tipo → (cor do clipe no Resolve, nome da faixa). Mesma tabela em client-router/references/regras-transversais.md
+# tipo → (cor do clipe no Resolve, nome da faixa). Mesma tabela em client-router/references/regras/davinci.md
 CORES = {
     'camera':     ('Blue',      'CÂMERA bruto'),
     'fundo_cam':  ('Navy',      'CÂMERA fundo desfocado'),

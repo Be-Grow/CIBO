@@ -8,5 +8,5 @@ troque `STORIES` (nome, manchete, capa, painéis, janelas sem música, SFX, bipe
     python3 xml_resolve.py <historia>                         # PROJETO - <nome>.xml
 
 Antes: edit.json (keeps/seams/total), kinetic/words_<historia>.json e kinetic.yaml (destaques), como no EP 06.
-Depois: importe num projeto de teste e renderize em baixa antes de entregar (regras em client-router/references/regras-transversais.md,
+Depois: importe num projeto de teste e renderize em baixa antes de entregar (regras em client-router/references/regras/davinci.md,
 seção "DaVinci Resolve pela API").

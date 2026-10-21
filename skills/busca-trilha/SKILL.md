@@ -1,6 +1,6 @@
 ---
 name: busca-trilha
-description: Busca trilha de fundo para vídeos de fala — acervo primeiro, depois Openverse (só CC0 e CC BY) e Freesound (CC0, opcional) — a partir de um briefing (mood, energia, BPM, sem vocal), mede cada candidata (loudness, BPM, energia em 1–4 kHz, onde ela briga com a voz), descarta o que o cliente já usou, gera prévia de 10 s sob a voz real, sugere trecho/offset e cataloga a escolhida no acervo com o crédito. Use quando a talking-head-music precisar de trilha nova ou o acervo não tiver uma que sirva.
+description: Busca trilha de fundo para fala — acervo, Openverse (CC0/CC BY), Freesound — mede loudness/BPM/briga com a voz, faz prévia sob a voz e cataloga. Use quando o acervo não tiver trilha que sirva.
 ---
 
 # busca-trilha

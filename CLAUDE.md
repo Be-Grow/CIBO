@@ -13,6 +13,7 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
    renders vão para a pasta do projeto no SSD, nunca para `/tmp` ou para o scratchpad.
 5. Gaste pouco: filtre a saída dos comandos (`grep`/`tail`), uma folha de contato por decisão,
    nunca leia a transcrição inteira (busque o trecho), QA de lote com `podcast-reels/scripts/qa_lote.py`.
+   `feedback.jsonl` nunca é lido inteiro: só `client-router/scripts/feedback.py add` e `feedback.py resumo`.
 
 ## Como conversar
 

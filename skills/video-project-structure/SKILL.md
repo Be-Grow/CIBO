@@ -1,6 +1,6 @@
 ---
 name: video-project-structure
-description: Crie e audite uma estrutura fixa para projetos de edição de vídeo, separando fontes, transcrições, assets, trabalho, QA, entregas e manifestos; detecta arquivos soltos, duplicados, nomes inconsistentes e mídia proibida em pacotes de Drive. Use no início e antes do encerramento de todo projeto de vídeo.
+description: Cria e audita a estrutura fixa de pastas do projeto de vídeo; detecta soltos, duplicados, nomes inconsistentes e mídia proibida no Drive. Use no início e antes do encerramento de todo projeto.
 ---
 
 # Estrutura fixa de projeto de vídeo

@@ -41,16 +41,6 @@ Organize as entregas em uma pasta por nome do convidado. Se uma gravação tiver
 
 Use 35–60 s como faixa normal e adapte ao pensamento completo. Um bom corte da Content Hub ensina, demonstra, provoca, mostra bastidor ou comprova resultado com clareza e autoridade.
 
-## Áudio: escolha uma das três camadas
-
-Masters OBS podem conter `both`, `main` e `holly`. Não misture as três. Analise as faixas, selecione **uma só** por gravação e registre a escolha. Favoreça voz do convidado inteligível, baixa reverberação/ruído, ausência de clipping e nível estável; `both` não é automaticamente a melhor.
-
-Trate a faixa escolhida com `scripts/audio_select_enhance.py`, usando Pedalboard para filtro passa-altas, compressão, ganho e limiter. A redução de ruído deve ser moderada para não metalizar a voz. Compare o antes/depois por escuta e valide picos antes do render.
-
-SNR, ruído e clipping apenas classificam qualidade; não provam que a faixa pertence ao convidado em imagem. Antes de aprovar, transcreva uma amostra de cada candidata no mesmo timecode e compare com o SRT/contexto e com o movimento labial. Rejeite qualquer faixa semanticamente divergente, mesmo que tenha a melhor pontuação técnica. Registre `semantic_match`, trecho comparado e decisão no relatório. Se a automação não puder confirmar correspondência, a escolha fica `REVIEW_REQUIRED`, nunca aprovada automaticamente.
-
-Faça QA rigoroso em quatro etapas: (1) compare métricas das três faixas; (2) escute amostras A/B em fala baixa, fala forte e pausas; (3) verifique voz natural, ruído, reverberação, clipping, sibilância e sincronismo; (4) repita a escuta no MP4 final depois de música, SFX e codificação. Se a redução de ruído criar voz metálica, bombeamento ou cortes de final de palavra, alivie o gate/processamento. Qualidade e naturalidade da voz têm prioridade sobre silêncio absoluto.
-
 ## Pipeline
 
 O job é controlado por `job.json`; veja `assets/job.example.json`.
@@ -70,27 +60,6 @@ JOB=job.json ~/.claude/skills/content-hub/.venv/bin/python3 \
   ~/.claude/skills/content-hub/scripts/make_reels.py
 ```
 
-## Regras visuais e técnicas
-
-Antes do primeiro render em uma máquina ou perfil novo, use a skill `video-render-optimizer`: detecte GPU e encoders FFmpeg, faça benchmark CPU × hardware em 8–15 s do material real e escolha por velocidade, SSIM, compatibilidade e bitrate. Para 1080×1920/30, comece em 6–8 Mb/s com teto de 10 Mb/s; confirme o bitrate real no MP4 final. Não use GPU automaticamente se ela inflar o arquivo ou perder qualidade.
-
-- Toda entrega tem capa. Use `assets/logo_content_hub_transparent.png`, headline coerente com o trecho e Montserrat em CAIXA ALTA. Centralize visualmente a pessoa, preserve olhos/queixo e mova a logo para o lado oposto ao rosto quando necessário.
-- A assinatura da capa é exclusiva da Content Hub. Use thumbnails apenas como repertório de composição e compare a direção com o registro de capas dos demais clientes; não reutilize estrutura visual.
-- A identidade é azul profundo com acento laranja. Palavras enfatizadas e a barra da capa usam o laranja da marca.
-- Legendas têm no máximo 18 caracteres por bloco, até duas linhas, baseline compartilhada e correção manual do português.
-- Lettering não é legenda ampliada. Use Montserrat ExtraBold/Black, card azul profundo, acento laranja e popup eased curto no canto inferior esquerdo ou em outra área negativa segura. Mostre de uma a duas peças por corte, sincronizadas a números, contrastes ou teses, sem cobrir rosto ou legenda. O card deve medir o texto, ampliar largura/altura e quebrar linhas automaticamente; nunca trate `width` como caixa de corte. Bloqueie o render se qualquer glyph sair da safe box ou se a posição renderizada divergir de `side`/`y` do job.
-- O enquadramento é vertical 1080×1920, consciente das trocas de câmera e centrado no convidado.
-- Clicks e movimentos marcam poucos pontos semânticos. Não aplique click na palavra de abertura.
-- Música precisa ser licenciada/aprovada, ficar abaixo da fala e usar ducking. Faça um brief e uma escolha independentes para cada corte, incluindo assunto, subtexto, arco emocional, energia, velocidade da fala, duração e objetivo. Compare 3–5 candidatas no trecho real, selecione também um `music_offset` que comece em uma seção útil e registre a decisão; nunca escolha apenas pelo gênero ou por audição isolada.
-- B-roll precisa passar por validação semântica: leia a oração completa e pelo menos uma frase antes/depois, classifique usos literais e figurativos, descreva em uma frase o que a imagem prova e rejeite correspondência baseada apenas em palavra-chave. Se a imagem estreitar, contradizer ou banalizar a tese, use talking head ou lettering.
-- No split-screen, não use headline entre os painéis. O B-roll ocupa o topo; o talking head fica abaixo na escala original. A emenda tem blur real estreito e somente uma borda inferior azul semitransparente. Entrada e saída usam film burn, nunca fade.
-- Preserve `setsar=1`, blend em RGB, limiter com `level=false` e o fluxo de cor + matte H.264 para transparência das legendas.
-- Preserve e sinalize Rec.709 (`color_range=tv`, `colorspace`, `color_primaries` e `color_trc` em `bt709`). Use grade por plano: recupere detalhe nas sombras sem lavar pele nem transformar roupa preta em cinza; controle saturação de fundos laranja/azul e revise a luminância do rosto.
-- No talking head, o rosto é a âncora. Introduza mudança visual útil a cada novo bloco de raciocínio, normalmente a cada 3–6 s: palavra enfatizada, zoom eased, card numérico, recorte, documento ou B-roll licenciado. Não cubra o rosto por longos períodos e não force B-roll quando a fala já é visualmente suficiente.
-- Use no máximo 2–3 acentos sonoros principais por minuto. Clicks marcam palavras ou números; whooshes acompanham movimentos longos; pops graves ficam reservados a dados ou conclusões. Evite clusters e nunca aplique SFX na palavra de abertura.
-- As referências editoriais (Cleo Abram, Codie Sanchez, Hayden Hillier-Smith, Jordan Orme, Johnny Harris, Rafael Gratta, Anderson Gaveta, Pedro Loos, Fill Rocha e Olga Lehnerg) orientam clareza, ritmo e hierarquia, não cópia de identidade ou reutilização de trechos.
-- Não adicione patrocinador, linguagem clínica, elementos náuticos ou assinatura herdada dos outros clientes sem material explícito do job.
-
 ## Assets e licenças
 
 Mantenha em `Content Hub/02 - Assets` apenas transições, overlays, SFX, fontes, logo, música aprovada e manifestos de origem/licença. B-roll de estoque fica separado por projeto e nunca é confundido com overlay reutilizável. Para SFX externos, aceite automaticamente somente CC0; CC BY exige créditos anexos; rejeite CC BY-NC. Itens cuja licença não permita redistribuição ficam apenas referenciados no manifesto e são baixados da fonte oficial para o job, sem re-hospedagem no Drive compartilhado.
@@ -102,3 +71,15 @@ Cada corte entrega o MP4 com a mesma capa como primeiro frame, `CAPA - <nome>.pn
 Depois de todo render final, rode `caption-quality-gate` com cobertura de 100% dos blocos e `video-delivery-safety-check`. Valide também 100% dos popups no início/meio/fim e confronte o texto com o job. Um vídeo com erro, baixa qualidade ou divergência do job é bloqueado mesmo que o FFmpeg tenha terminado. Ao encerrar a demanda, rode novamente `video-project-structure`, atualize bíblias/catálogos/manifests e suba ao Drive as skills e assets reutilizáveis necessários. Nunca envie bruto/master/proxy ou vídeo stock ao Drive de skills/assets; música/SFX/VFX/overlays só sobem quando a licença permitir, caso contrário sobe apenas a referência legal.
 
 Quando o usuário pedir organização no Google Drive, mantenha a estrutura descrita no perfil da marca. Uploads e alterações no Drive exigem autorização da tarefa atual; a skill não presume permissão permanente.
+
+## Referências (abra só quando o gatilho bater)
+
+| Arquivo | Abra se |
+|---|---|
+| `references/audio.md` | decidir a camada de áudio (tratamento, trilha, mixagem) |
+| `references/regras-visuais.md` | enquadramento, legenda, transições, letterings, B-roll, encode |
+| `references/brand-profile.md` | cores, fontes e logo |
+| `references/media-policy.md` | usar mídia de terceiros ou B-roll |
+| `references/client-content-bible.md` | tom e seleção editorial |
+| `references/asset-source-catalog.md` | de onde vem cada asset |
+| `references/historico-falhas.md` | algo falhou: falhas conhecidas |

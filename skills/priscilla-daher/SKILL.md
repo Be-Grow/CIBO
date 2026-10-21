@@ -1,6 +1,6 @@
 ---
 name: priscilla-daher
-description: Reels verticais da Priscilla Daher (especialista em categoria e varejo, Mercado Livre e TikTok Shop) — talking head solo com motion em Remotion e tela dividida (painel off-white em cima, ela embaixo), legenda serifada editorial, burn em toda troca de painel. Use para qualquer corte, reel, ajuste ou novo lote dela.
+description: Reels verticais da Priscilla Daher — talking head com motion em Remotion, tela dividida (painel off-white em cima), legenda serifada, burn nas trocas. Use para qualquer corte, ajuste ou lote dela.
 ---
 
 # Priscilla Daher — reels com motion

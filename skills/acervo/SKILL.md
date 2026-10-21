@@ -1,6 +1,6 @@
 ---
 name: acervo
-description: Biblioteca de assets de edição do CIBO com lugar fixo e catálogo único — film burns, cliques e SFX, trilhas, fontes, logos, overlays, cartões, avatares, LUTs e modelos. Acha qualquer asset pelo nome, tipo, cliente ou tag sem perguntar ao editor onde está, copia para o projeto registrando o uso, guarda o que o editor apontar para nunca mais perguntar, religa pelo hash o que mudou de pasta e acha duplicados. Use sempre que um job precisar de um asset (efeito, som, música, fonte, logo, cartão, foto) e sempre que o editor apontar ou mandar um arquivo de asset.
+description: Biblioteca de assets do CIBO (burns, cliques, SFX, trilhas, fontes, logos, cartões, LUTs) — acha, copia e registra uso, guarda o que o editor apontar. Use sempre que o job precisar de um asset ou o editor mandar um.
 ---
 
 # Acervo

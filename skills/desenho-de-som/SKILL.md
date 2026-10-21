@@ -1,6 +1,6 @@
 ---
 name: desenho-de-som
-description: Desenhe o som de vídeos editados sobre música — mede a trilha (BPM, pausas, impactos, acentos), escolhe o trecho e o offset para o impacto cair no momento-chave, casa os cortes com a batida, escolhe SFX no acervo para cada transição e alinha cada um pelo pico (whoosh passa no corte, reverse/riser termina no corte, boom ataca no corte), mixa com a subida abaixo do impacto e normaliza. Use em vinhetas, intros, aberturas, teasers, reels de motion e qualquer edição em que trilha e SFX conduzem o ritmo; não use para trilha de fundo sob fala (isso é talking-head-music).
+description: Som conduzido por música — mede a trilha, casa cortes com a batida, alinha SFX pelo pico e mixa. Use em vinhetas, intros, teasers e reels de motion; para trilha sob fala use talking-head-music.
 ---
 
 # Desenho de som

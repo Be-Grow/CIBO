@@ -1,6 +1,6 @@
 ---
 name: client-router
-description: Ponto de entrada de todo trabalho de edição de vídeo do CIBO (cortes, reels, shorts, podcast, palestra, depoimento, produto, legenda, capa, trilha, motion, render), com ou sem cliente citado: identifica o cliente e a skill de corte, e traz o mapa de qual skill usar em cada etapa (briefing, estrutura, fala, trilha, motion, legenda, render, QA). Trata cada cliente como fluxo, estilo e assets isolados — nunca mistura fonte, logo, trilha, SFX ou capa entre clientes (Bombordo e Boreste, Content Hub, Katia, Autismo Cast, Dr. Energia, Fernanda, Malu, João Campos). Use antes de qualquer outra skill de edição.
+description: Ponto de entrada de toda edição de vídeo do CIBO — identifica o cliente, isola identidade e assets e traz o mapa de qual skill usar em cada etapa. Use antes de qualquer outra skill de edição, com ou sem cliente citado.
 ---
 
 # Client Router
@@ -44,7 +44,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 ## Workflow
 
 1. **Identifique o cliente antes de tocar em qualquer material.** Use o que o usuário disse, o nome do podcast/marca citado no SRT, ou o nome da pasta do projeto. Se não houver sinal claro, **pergunte ao usuário** — nunca infira o cliente pela localização física de um arquivo compartilhado (ex.: a trilha da Katia vem do mesmo pool de música da Content Hub/SEBRAE, mas isso não faz o job ser da Content Hub — ver `references/client-registry.md`).
-2. **Consulte `references/client-registry.md`** para mapear o cliente à skill certa e às suas marcas de identidade (fonte, logo, SFX, engine de origem, fonte de verdade). Rode `scripts/detect_client.py "<texto>"` como apoio quando quiser testar um nome de pasta, marca ou trecho de SRT contra os clientes conhecidos.
+2. **Rode `scripts/detect_client.py "<pasta, marca ou trecho de SRT>"`**: imprime só a linha do cliente (skill, fonte, identidade, SFX, engine, fonte de verdade). Nunca leia o `references/client-registry.md` inteiro; abra-o só para editar a linha de um cliente.
 3. **Leia as lições e a rubrica do cliente antes de editar**: `python3 scripts/licao.py ler <cliente>` (lições do editor,
    mais novas primeiro, e o caminho da `rubrica.md`). Lição vale mais que o padrão do motor; se uma contradiz o brief, pergunte.
 4. **Rode o `briefing-criativo` antes de editar**: pergunte ao editor só as decisões artísticas e de estilo que o perfil do cliente não responde, grave `07_manifests/brief.md` e siga os pontos de aprovação (mapa de cortes, piloto).
@@ -54,7 +54,8 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 8. **Correção do editor só está feita depois do commit e push no `~/CIBO`** (20/10/2026: "eu pedi pra gravar lá, como não
    gravou"). Editar só `~/.claude/skills` não basta: copie para `~/CIBO/skills`, confira o diff, commit e push no mesmo turno,
    sem levar arquivos em teste de outra sessão.
-9. **Regras transversais (valem para todo cliente): leia `references/regras-transversais.md`.** Em resumo: procure a skill e o asset antes de fazer; `fala-limpa` em todo corte de fala; legenda fiel à fala e abaixo do queixo; um crop por plano de câmera; todo corte com trilha; nomes `NN - HEADLINE` e `CAPA - …`; uma versão por vídeo; transcrição sempre com tempo; não dizer que está bom sem olhar; abrir a pasta no fim; correção do usuário vira atualização da skill (e do CIBO) no mesmo turno.
+9. **Regras transversais (valem para todo cliente): leia só `references/regras/_checklist.md`** e abra o arquivo da fase
+   atual (`regras/antes|durante|davinci|editoriais|entrega|pos-correcao.md`) quando chegar nela. Em resumo: procure a skill e o asset antes de fazer; `fala-limpa` em todo corte de fala; legenda fiel à fala e abaixo do queixo; um crop por plano de câmera; todo corte com trilha; nomes `NN - HEADLINE` e `CAPA - …`; uma versão por vídeo; transcrição sempre com tempo; não dizer que está bom sem olhar; abrir a pasta no fim; correção do usuário vira atualização da skill (e do CIBO) no mesmo turno.
 10. **Antes de entregar**, confirme que nome de pasta, capa, fonte, música e legendas não vazaram identidade de outro cliente — isso vale mesmo dentro de um único job com múltiplos convidados ou formatos.
 11. **Depois de cada entrega, faça UMA pergunta: "O que você mudaria?"** Só essa, sem lista de opções, uma vez por entrega.
     Grave a resposta com `python3 scripts/licao.py add <cliente> "<resposta>" --projeto <pasta> [--reel rNN]` e leve ao

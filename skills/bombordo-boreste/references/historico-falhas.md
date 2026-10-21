@@ -1,6 +1,6 @@
 # bombordo-boreste — histórico de falhas
 
-Texto completo das lições resumidas no índice do `SKILL.md`.
+Texto completo das lições resumidas no índice no fim deste arquivo.
 
 ## Known failure modes — check these first
 
@@ -135,3 +135,25 @@ It is especially useful for review iterations; start around `VT_BITRATE=16M` for
 `libx264 slow` to 2.37 s with VideoToolbox. Hardware encoding needs more bitrate
 for comparable quality, so keep `libx264` as the default for compact final masters.
 - **Encode travado com 0% de CPU (12/10/2026)**: a trilha entrava em loop infinito (`-stream_loop -1` sem `-t`) e o áudio do passA saía do mesmo demuxer que o vídeo. Corrigido como na `podcast-reels` (item 23); o teste `~/CIBO/tests/regressao.py` pegou o travamento no Bombordo.
+
+## Falhas conhecidas (índice)
+
+Texto completo em `references/historico-falhas.md`: abra o item quando o sintoma aparecer.
+
+- 1. Captions look crooked
+- 2. Whole frame goes magenta
+- 3. Caption band renders as an opaque black bar
+- 4. Cuts sound abrupt
+- 5. File too big to deliver
+- 6. A clip comes out too short
+- 7. Encoding the same frames twice
+- 8. Motion feels twitchy
+- 9. Clicks are absent or become repetitive
+- 10. Background jobs die
+- 11. Ken-burns zoom looks shaky/vibrating
+- 12. A click SFX steps on the opening word
+- 13. Face tracking causes shake or a glitch at camera changes
+- 14. Film burn fails to concatenate or stretches the frame
+- 15. Limiter unexpectedly makes everything louder
+- 16. "Stream specifier ':a' ... matches no streams" on the final render
+- 17. A long, unfragmented SRT cue ships as one on-screen wall of text

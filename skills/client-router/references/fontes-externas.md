@@ -23,7 +23,7 @@ AGPL e sem licença, não).
 
 | Ideia | Fonte | Onde ficou |
 |---|---|---|
-| Projeto editável Premiere Pro + DaVinci Resolve (XML do FCP7) | kvrancic/oneshot-video (MIT) | `podcast-reels/scripts/projeto_nle.py` — sempre oferecer, gerar só sob pedido; no Resolve 20 o encaixe automático, o centro relativo ao clipe encaixado, o `<when>` com o `<in>` e o áudio de MP4 quebram este gerador: use as regras validadas em `bombordo-boreste` SKILL.md, seção "XML para o DaVinci" |
+| Projeto editável Premiere Pro + DaVinci Resolve (XML do FCP7) | kvrancic/oneshot-video (MIT) | `podcast-reels/scripts/projeto_nle.py` — sempre oferecer, gerar só sob pedido; no Resolve 20 o encaixe automático, o centro relativo ao clipe encaixado, o `<when>` com o `<in>` e o áudio de MP4 quebram este gerador: use as regras validadas em `bombordo-boreste/references/davinci-xml.md`, seção "XML para o DaVinci" |
 | MFA (tempo exato de palavra, português) | louisedesadeleer/cut-video | `fala-limpa/scripts/alinha_mfa.py`, instalado no SSD |
 | Lottie no Remotion | remotion-dev/skills, diffusionstudio/lottie | `lettering-motion` template `LottieOverlay`, acervo `--type lottie` |
 | Variações de gancho + checagem AVFoundation | krusemediallc/video-editor-agent | `podcast-reels/scripts/variacoes_gancho.py`, `av_check.swift` |

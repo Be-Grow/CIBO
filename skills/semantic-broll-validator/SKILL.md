@@ -1,6 +1,6 @@
 ---
 name: semantic-broll-validator
-description: Analyze, search, score, and approve B-roll for dialogue-led talking-head videos by matching the complete meaning and narrative function of a speech passage, not isolated keywords. Use when selecting, downloading, replacing, or auditing stock/reference footage, split-screen inserts, or visual examples for Reels, Shorts, ads, interviews, and business content.
+description: Avalia e aprova B-roll pelo sentido completo e pela função narrativa da fala, não por palavra-chave. Use ao escolher, trocar ou auditar footage de referência, inserts e exemplos visuais.
 ---
 
 # Semantic B-roll Validator

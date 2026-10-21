@@ -1,6 +1,6 @@
 ---
 name: lettering-motion
-description: Anime legendas, letterings, cards, lower thirds e CTAs. Legenda palavra a palavra fica em Pillow com curvas de easing nomeadas; grafismo desenhado que entra na tela (cartão Seguir, lower third, título de gancho, número animado, CTA) é feito em Remotion com a skill anthropic-skills:motion-graphics, com template pronto em assets/remotion-template. Use ao criar ou revisar qualquer texto/card animado em qualquer skill de corte.
+description: Anima legendas, letterings, cards, lower thirds e CTAs (Pillow para legenda palavra a palavra, Remotion para grafismo). Use ao criar ou revisar texto/card animado em qualquer skill de corte.
 ---
 
 # Lettering Motion

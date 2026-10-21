@@ -1,6 +1,6 @@
 ---
 name: gancho-e-ritmo
-description: Nota criativa de um reel ou corte de fala, de 0 a 10 com justificativa, em seis critérios — gancho dos 3 primeiros segundos, tempo morto (pausa de fala e tela parada), densidade de mudanças na tela, variação de ritmo, ênfase de legenda e final — num relatório curto que diz onde mexer primeiro. Roda sem render e sem modelo, a partir do props.json/segs/sfx do reel-motion ou de qualquer SRT. Bloqueia o final só abaixo do limiar do cliente. Use em todo reel antes do render (o `reel.py revisa` e o `final` já rodam), ao comparar versões de gancho e quando o editor perguntar se um corte "está prendendo".
+description: Nota criativa 0–10 com justificativa (gancho 3 s, tempo morto, densidade, variação, ênfase, final) a partir do props/SRT, sem render. Use em todo reel antes do render e ao comparar ganchos.
 ---
 
 # Gancho e ritmo

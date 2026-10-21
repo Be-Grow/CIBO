@@ -1,6 +1,6 @@
 ---
 name: caption-quality-gate
-description: Faça um pente-fino obrigatório nas legendas de vídeos, verificando fidelidade à fala e ao contexto, português, timing, velocidade de leitura, quebras, ênfases, sobreposições e legibilidade no render. Detecta o hardware e usa o caminho mais eficiente para transcrição assistida e extração visual. Use antes do QA final de qualquer vídeo com legendas.
+description: Pente-fino obrigatório de legendas — fidelidade à fala, português, timing, leitura, quebras, ênfases e legibilidade no render. Use antes do QA final de qualquer vídeo com legenda.
 ---
 
 # Pente-fino de legendas

@@ -1,6 +1,6 @@
 ---
 name: video-delivery-safety-check
-description: Execute o checking final obrigatório de um vídeo antes da entrega, confrontando o MP4 com o job esperado e detectando falhas técnicas, visuais, sonoras e editoriais, incluindo baixa qualidade, blur, compressão, exposição, cor, frames pretos/congelados, bitrate, capa, legendas e elementos ausentes. Use após todo render final.
+description: Checagem final obrigatória do MP4 contra o job — qualidade, blur, compressão, cor, pretos/congelados, bitrate, capa, legenda e elementos ausentes. Use após todo render final.
 ---
 
 # Trava final de qualidade e segurança do vídeo

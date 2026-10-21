@@ -1,6 +1,6 @@
 ---
 name: podcast-reels
-description: Turn a long podcast episode plus its SRT into vertical 9:16 Reels/TikTok/Shorts cuts with baseline-aligned Cal Sans captions, emphasis lettering, camera-click SFX, a blue film-burn intro, an eased zoom-out-with-blur opener, and a headline cover. Use when the user asks for "cortes", clips, Reels, Shorts or TikToks from a podcast, or wants captions burned into a vertical clip.
+description: Episódio de podcast + SRT viram cortes 9:16 com legenda Cal Sans, ênfases, clique, burn azul, abertura com zoom e capa. Use quando pedirem cortes, Reels, Shorts ou TikToks de podcast no estilo podcast-reels.
 ---
 
 # Podcast → Reels
@@ -11,7 +11,6 @@ description: Turn a long podcast episode plus its SRT into vertical 9:16 Reels/T
 `source ~/.claude/skills/podcast-reels/.venv/bin/activate` first, instead of the
 bare `python3` shown below. Requires `ffmpeg`/`ffprobe` on PATH (already present
 via Homebrew).
-
 
 Builds finished vertical cuts from a master video + SRT. Everything is driven by one
 `job.json`; the scripts do transcription-free caption timing (reused from the SRT),
@@ -66,207 +65,12 @@ Onde todo "clipador" automático erra (testes do Opus Clip descartam 13–40% da
 - Antes do render: `JOB=job.json scripts/checa_cortes.py` (começo com conectivo, pronome sem
   referência, minúscula no meio da frase, fim em vírgula ou conectivo, duração).
 
-## Choosing `keeps`
+## Referências (abra só quando o gatilho bater)
 
-`keeps` is the edit. Drop filler, false starts, repeated phrases and dead air; keep
-whole clauses. Boundaries are then **snapped automatically** to the quietest 10 ms
-frame within ±160 ms and given 35 ms/55 ms fades, so cuts land in breaths instead of
-on top of a word. Do not hand-tune to the millisecond — snap it.
-
-The first `keeps` start and the last end are never snapped, so the clip opens and
-closes exactly where you asked.
-
-## What the pipeline produces
-
-| Stage | What it does |
+| Arquivo | Abra se |
 |---|---|
-| `plan.py` | snaps keeps to silence, maps SRT cues through the trim, merges them into ≤18-char captions, flags emphasis words |
-| `render_caps.py` | draws captions to a 1080×420 band as two H.264 streams (colour + alpha matte) — fast and small |
-| `clicks.py` | synthesises a soft shutter click, one per emphasis caption |
-| `render.py` | cut+crop+scale with a per-segment eased ken-burns zoom, eased zoom-out with blur opener (Python, frame-exact), screen-blends the blue film burn, overlays captions, mixes clicks, prepends the cover — **all in one x264 pass** |
-| `cover.py` | grabs `cover_t`, adds scrim + headline + logo → `capa_*.png` |
-
-## Changing a finished cut
-
-This is the common case, and it must not cost a full rebuild. Stages are
-fingerprinted in `work/.stamps.json`; only what actually changed re-renders.
-A no-op run is ~0.5 s.
-
-| Request | Edit | Rebuilds | Cost |
-|---|---|---|---|
-| wrong word, bad line break, emphasis | `work/captions_<clip>.json` | caps → compose → deliver | ~35 s |
-| caption position / size / colour | `job.style`, then `REPLAN=0` | caps → compose → deliver | ~35 s |
-| headline or cover frame | `job.clips.<k>.headline` / `cover_t` | cover → deliver | ~8 s |
-| trim, extend, drop a beat | `job.clips.<k>.keeps` + `REPLAN=1` | everything | ~2 min |
-| framing | `cropx` | everything | ~2 min |
-| bitrate / size | `crf`, `preset`, `extra_v` | deliver | ~15 s |
-
-`work/captions_<clip>.json` is the source of truth once it exists — `plan.py` will
-not overwrite it unless `REPLAN=1`. Hand-edit `t`, `w` and `em` there; that is where
-a Portuguese fix belongs after the first pass. `work/review.csv` maps every caption to
-its timecode **in the delivered file** (cover included), so a note like "aos 12 s está
-errado" resolves to a row without opening the video.
-
-## Never render a full clip to look at something
-
-```bash
-JOB=job.json python3 scripts/tools.py probe corte01 12 18   # 6 s @540p, ~2 s
-JOB=job.json python3 scripts/tools.py sheet corte01         # 8-frame sheet, ~2 s
-```
-
-`sheet` crops to the caption band. Run it after **any** visual change and actually
-look at it before rendering or delivering. Every visual bug in this skill's history
-was visible in a contact sheet and got caught only after a full render instead.
-
-## Render padrão (rápido) e opções
-
-Comece todo job assim (detalhes no item 46 do histórico):
-
-```bash
-taskpolicy -B -t 0 -l 0 -p $$          # em background o macOS usa os núcleos lentos
-export JOB=job.json ZOOM_AMT=0 BURN_OUT=0 VENC=auto PASSA_DIRECT=1 PARALLEL=auto \
-       BURN_END_INLINE=1 BURN_END_LIMIT=0.84 BURN_END_BT709=1
-~/.claude/skills/podcast-reels/.venv/bin/python3 scripts/make_reels.py corte01 | grep -E "built|DONE|Error"
-```
-
-| Chave | Onde | O que faz |
-|---|---|---|
-| `VENC=auto` | env | encoder escolhido pelo perfil de hardware (`video-render-optimizer`); falhou → x264 |
-| `PASSA_DIRECT=1` | env | recorte direto no ffmpeg (só com `ZOOM_AMT=0`) |
-| `BURN_END_INLINE=1` | env | burn de saída sobre preto dentro do `final()` (+`BURN_END_LIMIT`, `BURN_END_BT709`) |
-| `overlays` | clipe | `.mov` com alpha (Remotion) + SFX opcional, na mesma codificação |
-| `crop_h` | clipe | recorte mais baixo para tirar logo de terceiros do rodapé |
-| `cropx_timeline`, `cropx_interp` | clipe | enquadramento por plano / seguindo a pessoa no palco |
-| `cover_src`, `cover_src_t`, `cover_src_x` | clipe | capa de qualquer momento da gravação |
-| `voice_af`, `music`, `mix` | clipe | cadeia da voz; trilha com ducking (`duck_ratio` 3, `duck_threshold` 0.1, `music_db` −18 em fala contínua) |
-| `burn_at`, `nosnap`, `cover_style` | clipe | burn no meio; emenda sem snap; estilo de capa (`lpa`) |
-| `REPLAN=1` | env | refaz o plano de legendas (senão `captions_<clip>.json` manda) |
-| `PARALLEL=auto` | env | vários cortes ao mesmo tempo (número pela RAM, perfil de hardware); 7 cortes: 400 → 236 s |
-| `PROFILE` / `profile` | env / job | perfil de cliente (`<skill>/assets/profile.json`): `env` + padrões do job; env > job > perfil |
-| `COVER_Y`, `COVER_BAR=0` | env | altura da manchete na capa; tira a barra azul (perfis) |
-| `CAP_PRESET` | env | estilo de legenda pelo conteúdo: `veredito` (opinião forte, gancho, < 40 s: 1–3 palavras, letra 92), `historia` (caso contado: ~22 caracteres, letra 70), `aula` (explicação: até 30 caracteres, letra 62); padrão = 18 caracteres, letra 74. Liga também `EMPH_MAX` (1 destaque por bloco, em ≤ 15–20% dos blocos). Trocar num corte já planejado: `REPLAN=1` |
-| `CAP_CHARS`, `CAP_BASE`, `CAP_EMPH`, `EMPH_MAX` | env | os ajustes finos que os presets usam |
-
-**Clientes neste motor:** `podcast-reels` (genérico, João Campos) e `katia` (perfil). Bombordo,
-Autismo Cast e Content Hub ainda têm motor próprio (recursos a migrar: `impact_pulses`,
-`long_moves`, `punch`, saída com fade, letterings, B-roll); receberam as correções de travamento.
-Movimento e variação, para todos esses motores: `reel-motion/scripts/movimento.py planeja --formato podcast` gera
-`impact_pulses`/`long_moves` no formato que os renders já leem, e `confere --clip clip.json [--sfx …]` aplica o orçamento
-de variação (nenhum cliente foi migrado: o render de cada um continua o mesmo).
-
-Trilha: escolha com `talking-head-music` (por corte, com offset). Fim do corte: vídeo acaba seco
-e o burn passa do fim sobre preto, nunca fade.
-
-## Projeto editável (Premiere Pro / DaVinci Resolve) — só sob pedido
-
-`JOB=job.json scripts/projeto_nle.py [corte01 ...] [--master ORIGINAL] [--clicks 'x_{k}.wav']` grava
-`<outdir>/Projetos editáveis/PROJETO - <nome>.xml` + `.srt` + LEIAME. Um XML do Final Cut 7 serve aos
-dois programas: V1 trechos sobre o original com Movimento (keyframes do `cropx_timeline`), V2 film
-burn em modo Tela, V3 `overlays`, A1/A2 voz, A3/A4 trilha no nível do job, A5 cliques, marcador em
-cada emenda. Sem o quadro da capa e sem o ducking (feito no render). Ofereça sempre na entrega;
-gere só se o editor pedir. Pendente: confirmar a importação no Premiere e no Resolve com o editor
-(o primeiro teste está em `joãoCortes/05_qa/projetos_teste`).
-
-## Variações de gancho (teste A/B)
-
-`scripts/variacoes_gancho.py CORPO.mp4 GANCHO1.mp4 [GANCHO2 ...] --sem-capa --out PASTA`: um vídeo por
-gancho, volume do gancho igualado ao do corpo (LUFS), tamanho/qps ajustados, GPU com `VENC=auto`.
-Cada saída é conferida pelo ffmpeg e pelo AVFoundation (`av_check`, compilado de `av_check.swift`):
-arquivo que roda no ffmpeg pode travar no QuickTime/iPhone. Ganchos de 3 s em 1 corte de 58 s: 24 s.
-
-## Economia de tokens
-
-- Filtre a saída: `| grep -E "built|DONE|Error"`. O plano de legendas só é impresso com
-  `PLAN_VERBOSE=1`; para revisar, abra `work/review.csv` no trecho que interessa.
-- QA de lote numa chamada: `scripts/qa_lote.py PASTA` (verify, LUFS, pico, cor, duração e uma
-  folha de contato por corte numa imagem só).
-- Uma folha de contato por decisão, nunca quadro a quadro.
-- Capa: `cover_scan.py` (varredura) + `cover_rank.py SCAN VIDEO --crop-h ...` (nota do Vision da
-  Apple: qualidade do rosto, pose, olhos, mão acima do queixo, tamanho) → uma folha com os 8
-  melhores. Calibrado com as capas do João: as 6 aprovadas acima das 3 reprovadas.
-- Som: `audio_qa.py` (clique sobre fala ou alto, trilha sumindo ou alta, emenda cortando
-  palavra, última palavra engolida), uma linha por corte.
-- Antes de subir mudança de motor para o CIBO: `python3 ~/CIBO/tests/regressao.py check`.
-
-## Rules that matter
-
-- **Ênfase com parcimônia:** no máximo uma palavra destacada por bloco e em ~20% dos blocos; a
-  palavra da surpresa (número, negação, conceito, contraste). Bloco aparece ~100 ms antes da
-  palavra (adiantado parece sincronizado; atrasado parece atrasado) e fica ~0,6 s depois.
-- **Áreas seguras 9:16:** nada importante nos 160 px de cima, nos 400 px de baixo, a menos de
-  72 px das laterais e na coluna direita de 140 px abaixo de y=1100 (botões). A capa precisa
-  funcionar no recorte 3:4 central que a grade do Instagram mostra.
-- **Captions align on a shared baseline.** Words are positioned by font ascent, never
-  by their own bounding box — otherwise `o`, `aí`, `É` float up and the line looks
-  crooked. Emphasis words are larger but sit on the same baseline.
-- **≤18 characters** per caption, auto-wrapped to two lines and auto-shrunk to fit.
-- **Fix the Portuguese.** Auto-transcribed SRTs mangle jargon. Put regex→replacement
-  pairs in `job.fix`; they run *after* cues are merged, so multi-word fixes work.
-- **Emphasis** words come from `job.emph` (space-separated, matched case- and
-  punctuation-insensitively).
-- **Alpha in ffmpeg:** this build's `libvpx-vp9` silently drops alpha and `qtrle`/PNG
-  MOVs are huge. Ship colour + `alphaextract` matte as two H.264 files and
-  `alphamerge` them at compose time.
-- **`blend=all_mode=screen` must run in RGB.** Screening YUV planes tints the whole
-  frame magenta — `format=gbrp` both inputs first.
-- **Fixed crop per clip.** `cropx` is the horizontal centre (0–1) of the 608×1080
-  window; set it per clip so an off-centre speaker isn't clipped.
-
-## Deliverables
-
-`outdir/<clip>.mp4` (1 s cover + film burn + clip) and `outdir/capa_<clip>.png`.
-Also hand back the DaVinci `HH:MM:SS:FF` in/out of each source window so the editor
-can find the moment in the master.
-
-## Falhas conhecidas (índice)
-
-Texto completo em `references/historico-falhas.md`: abra o item quando o sintoma aparecer.
-
-- 1. Captions look crooked
-- 2. Whole frame goes magenta
-- 3. Caption band renders as an opaque black bar
-- 4. Cuts sound abrupt
-- 5. File too big to deliver
-- 6. A clip comes out too short
-- 7. Encoding the same frames twice
-- 8. A static talking head reads as dead
-- 9. Synthesised SFX sound cheap
-- 10. Background jobs die
-- 11. Ken-burns zoom looks shaky/vibrating
-- 12. A variable-weight font (e.g. Montserrat) renders too thin for captions/cover
-- 13. A click SFX steps on the opening word
-- 14. A long, unfragmented SRT cue ships as one on-screen wall of text
-- 15. `music`/`mix`/`filename` silently vanish from the render
-- 16. A imagem desliza de lado numa emenda
-- 17. Uma legenda mostra frase que foi cortada fora
-- 18. `cropx_timeline` tambem existe aqui
-- 19. O snap move a emenda para dentro da palavra
-- 20. Multicâmera:
-- 21. Voz de microfone distante elevada +20 dB traz chiado e sala
-- 22. Vídeo para em 2:01 e só o áudio segue
-- 23. Encode que chega ao fim mas não fecha (0% de CPU)
-- 24. Legenda invisível ao baixar a faixa
-- 25. MP4 truncado aceito pelo cache
-- 26. Opções novas por clipe:
-- 27. O recorte pula para o lugar errado em alguns trechos
-- 28. O mix final saía sem cliques e sem tratamento de voz
-- 29. passA quadrático
-- 30. Palavras curtas sumiam da legenda
-- 31. Ênfase vazando de outro cliente
-- 32. Capa de qualquer momento da gravação
-- 33. Palestra de palco, câmera única ou corte ao vivo
-- 34. Clique de ênfase reprovado: "som de click bizarro… no meio das falas do jg"
-- 35. Tags Rec.709 sumiam no `burn_end.py`
-- 34. Capa nova, MP4 com a capa velha
-- 35. Tempo de palavra do Whisper atrasado ~0,3 s em fonte do YouTube
-- 36. Download do YouTube sem perda
-- 37. Grafismo da fonte cortado pelo 9:16
-- 38. Troca de câmera 1 quadro atrasada (plano de 1 quadro)
-- 39. Clique:
-- 40. Capa `cover_style: "lpa"`
-- 41. `burn_end.py` recodifica o vídeo inteiro
-- 42. Ganho de voz é por episódio, não por cliente
-- 43. Logo de transmissão queimado no bruto (Marandu TV, João Campos 12/10/2026)
-- 44. Capa: varra a gravação, não pegue o primeiro quadro bom
-- 45. Acabamento em cima do MP4 entregue não é idempotente
-- 46. Render rápido: uma codificação só, na GPU
+| `references/motor-comum.md` | escolher `keeps`, mudar um corte pronto, conferir algo sem render inteiro, regras do motor, entregáveis |
+| `references/render.md` | renderizar (opções de render, VENC, PARALLEL, overlays) ou gerar projeto Premiere/DaVinci |
+| `references/gancho-ab.md` | testar ganchos diferentes para o mesmo corte (`variacoes_gancho.py`) |
+| `references/eficiencia.md` | o job está caro em tokens ou turnos |
+| `references/historico-falhas.md` | algo falhou: índice de falhas conhecidas e o histórico de cada uma |

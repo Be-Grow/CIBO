@@ -1,6 +1,6 @@
 ---
 name: transcricao-aulas
-description: Transcreva, organize e resuma gravações longas de aulas, cursos, lives e mentorias (várias horas, muitos arquivos) com rapidez e pouca RAM, sempre com marcação de tempo, separando por aula/módulo/bloco, achando intervalos (café, almoço, manhã/tarde) e entregando numa estrutura pronta para subir no Drive, com sumário. Use quando o usuário pedir transcrição de curso/aula/pós/live, "onde tem intervalo/pausa", "em qual módulo essa aula se encaixa", ou organizar/renomear/juntar/dividir arquivos de aula (Andrea Francomano, Fernanda Ben/IFB e outros).
+description: Transcreve e organiza gravações longas de aulas, cursos e lives com tempo, por módulo/bloco, achando intervalos e entregando pronto para o Drive. Use para transcrição de curso/live ou organizar arquivos de aula.
 ---
 
 # Transcrição e organização de aulas longas

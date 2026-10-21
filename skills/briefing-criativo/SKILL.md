@@ -1,6 +1,6 @@
 ---
 name: briefing-criativo
-description: Antes de editar, levante com o editor as decisões artísticas e de estilo que ainda não estão definidas (objetivo, tom, gancho, legenda, capa, motion, cor, trilha, SFX, entrega), perguntando só o que está em aberto, com opções tiradas do histórico do cliente, e registre tudo num brief do projeto que guia o job. Inclui pontos de aprovação no mapa de cortes e num corte piloto antes do lote. Use no início de todo job de edição de qualquer cliente, logo depois do client-router, e sempre que o pedido não disser o estilo de algo que vai aparecer na tela ou no som.
+description: Levanta com o editor só as decisões de estilo em aberto (tom, gancho, legenda, capa, motion, cor, trilha, SFX), grava o brief e os pontos de aprovação. Use no início de todo job, logo após o client-router.
 ---
 
 # Briefing criativo
@@ -29,7 +29,7 @@ o editor, o perfil do cliente ou uma escolha registrada da IA que o editor aprov
 Leia, nesta ordem, e preencha o checklist de `references/checklist.md`:
 
 - a linha do cliente em `client-router/references/client-registry.md`;
-- `client-router/references/regras-transversais.md`;
+- `client-router/references/regras/_checklist.md` (e a fase atual em `regras/`);
 - a skill do cliente (`SKILL.md`, `references/client-content-bible.md`, `brand-profile.md`);
 - as memórias do projeto e `07_manifests/brief.md` de jobs anteriores do mesmo cliente;
 - o que o próprio pedido já diz.

@@ -1,6 +1,6 @@
 ---
 name: limpeza-gravacao-bruta
-description: Encontre e remova de uma gravação bruta longa (podcast, entrevista, live, videocast) os bastidores, pausas, retakes, falhas técnicas, bip de início e os assuntos que a equipe pediu para tirar, com emendas limpas definidas pelo sinal de áudio (início real da voz, sem suspiro, com folga na última palavra) e conferidas no arquivo final. Use quando o usuário perguntar se "pediram pra pausar/cortar algo" numa gravação, pedir para "tirar os bastidores", "limpar o bruto" ou "cortar esses trechos", ou apontar emendas ruins, em qualquer cliente; não use para criar cortes verticais/Reels (isso é a skill de corte do cliente).
+description: Remove de gravação bruta longa bastidores, pausas, retakes, falhas e trechos pedidos, com emendas limpas pelo sinal de áudio. Use para "limpar o bruto"; não para criar Reels.
 ---
 
 # Limpeza de gravação bruta

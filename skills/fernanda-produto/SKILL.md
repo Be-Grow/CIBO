@@ -1,6 +1,6 @@
 ---
 name: fernanda-produto
-description: Edite os vídeos verticais de apresentação de produto da Fernanda (linha Zeo — ZeoBody, ZeoDent etc.) gravados em câmera Sony deitada e em S-Log3, com colorização, suavização de pele, corte de bastidores e gaguejadas, zoom suave, referências do Pexels em tela dividida, burn azul, legenda no estilo Zeo, SFX nas transições e música em faixa separada. Use somente em trabalhos da Fernanda.
+description: Vídeos verticais de produto da Fernanda (linha Zeo), Sony deitada em S-Log3 — cor, pele, cortes, zoom, Pexels em tela dividida, burn azul, legenda Zeo, SFX e música. Use só em trabalhos da Fernanda.
 ---
 
 # Fernanda — vídeo de produto

@@ -1,6 +1,6 @@
 ---
 name: depoimento-vertical-blur
-description: Transforme depoimentos e talking heads horizontais de baixa resolução em vídeos 9:16 com a pessoa em um quadro vertical nítido ocupando toda a largura, blur somente acima e abaixo, legendas queimadas, capa e SRT. Use para Reels, Shorts e TikTok; não use quando o usuário quiser blur nas laterais ou reenquadramento horizontal.
+description: Depoimento horizontal de baixa resolução vira 9:16 com a pessoa nítida na largura toda, blur só acima e abaixo, legenda, capa e SRT. Não use se pedirem blur nas laterais.
 ---
 
 # Depoimento vertical com blur

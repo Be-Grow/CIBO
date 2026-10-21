@@ -1,6 +1,6 @@
 ---
 name: legenda-cruzada
-description: Verifique a legenda queimada de um vídeo já renderizado transcrevendo o áudio final de novo com um modelo mais forte e independente, e comparando palavra a palavra. Use depois do render e antes da entrega, sempre que houver legenda na tela; especialmente com convidado de sotaque não nativo, termo técnico ou nome próprio.
+description: Confere a legenda queimada retranscrevendo o áudio final com modelo mais forte e comparando palavra a palavra. Use depois do render, antes da entrega, sempre que houver legenda.
 ---
 
 # Legenda cruzada — verificação por modelo independente

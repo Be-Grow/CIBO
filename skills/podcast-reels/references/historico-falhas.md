@@ -1,6 +1,6 @@
 # podcast-reels — histórico de falhas e detalhes
 
-Texto completo das lições resumidas no índice do `SKILL.md`. Abra a seção do item quando o
+Texto completo das lições resumidas no índice no fim deste arquivo. Abra a seção do item quando o
 sintoma aparecer ou antes de mexer no código do motor.
 
 ## Known failure modes — check these first
@@ -368,3 +368,56 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
     travamento do agendador com muitas entradas (item 26) não voltou. Script de projeto pronto: `joãoCortes/04_work/render_all.sh`.
     Rode com `taskpolicy -B -t 0 -l 0 -p $$` no topo do script: em background o macOS joga o
     ffmpeg nos núcleos de eficiência.
+
+## Falhas conhecidas (índice)
+
+Texto completo em `references/historico-falhas.md`: abra o item quando o sintoma aparecer.
+
+- 1. Captions look crooked
+- 2. Whole frame goes magenta
+- 3. Caption band renders as an opaque black bar
+- 4. Cuts sound abrupt
+- 5. File too big to deliver
+- 6. A clip comes out too short
+- 7. Encoding the same frames twice
+- 8. A static talking head reads as dead
+- 9. Synthesised SFX sound cheap
+- 10. Background jobs die
+- 11. Ken-burns zoom looks shaky/vibrating
+- 12. A variable-weight font (e.g. Montserrat) renders too thin for captions/cover
+- 13. A click SFX steps on the opening word
+- 14. A long, unfragmented SRT cue ships as one on-screen wall of text
+- 15. `music`/`mix`/`filename` silently vanish from the render
+- 16. A imagem desliza de lado numa emenda
+- 17. Uma legenda mostra frase que foi cortada fora
+- 18. `cropx_timeline` tambem existe aqui
+- 19. O snap move a emenda para dentro da palavra
+- 20. Multicâmera:
+- 21. Voz de microfone distante elevada +20 dB traz chiado e sala
+- 22. Vídeo para em 2:01 e só o áudio segue
+- 23. Encode que chega ao fim mas não fecha (0% de CPU)
+- 24. Legenda invisível ao baixar a faixa
+- 25. MP4 truncado aceito pelo cache
+- 26. Opções novas por clipe:
+- 27. O recorte pula para o lugar errado em alguns trechos
+- 28. O mix final saía sem cliques e sem tratamento de voz
+- 29. passA quadrático
+- 30. Palavras curtas sumiam da legenda
+- 31. Ênfase vazando de outro cliente
+- 32. Capa de qualquer momento da gravação
+- 33. Palestra de palco, câmera única ou corte ao vivo
+- 34. Clique de ênfase reprovado: "som de click bizarro… no meio das falas do jg"
+- 35. Tags Rec.709 sumiam no `burn_end.py`
+- 34. Capa nova, MP4 com a capa velha
+- 35. Tempo de palavra do Whisper atrasado ~0,3 s em fonte do YouTube
+- 36. Download do YouTube sem perda
+- 37. Grafismo da fonte cortado pelo 9:16
+- 38. Troca de câmera 1 quadro atrasada (plano de 1 quadro)
+- 39. Clique:
+- 40. Capa `cover_style: "lpa"`
+- 41. `burn_end.py` recodifica o vídeo inteiro
+- 42. Ganho de voz é por episódio, não por cliente
+- 43. Logo de transmissão queimado no bruto (Marandu TV, João Campos 12/10/2026)
+- 44. Capa: varra a gravação, não pegue o primeiro quadro bom
+- 45. Acabamento em cima do MP4 entregue não é idempotente
+- 46. Render rápido: uma codificação só, na GPU

@@ -1,6 +1,6 @@
 ---
 name: busca-stock
-description: Busca B-roll de banco para um corte de fala — acervo primeiro, depois Pixabay (API) e Pexels (aba do Chrome) — com queries de cena inteira, filtro por slot (painel ou tela cheia), resolução e duração, sem repetir o que o cliente já usou, folha de quadros, nota de naturalidade e matriz semântica, relatório com top 3 por trecho e download do escolhido catalogado no acervo. Use sempre que um corte precisar de vídeo de inserção/referência em tela e a semantic-broll-validator mandar buscar.
+description: Busca B-roll de banco para corte de fala — acervo, Pixabay e Pexels — com filtro por slot, nota de naturalidade, top 3 por trecho e download catalogado. Use quando um corte precisar de vídeo de inserção.
 ---
 
 # busca-stock

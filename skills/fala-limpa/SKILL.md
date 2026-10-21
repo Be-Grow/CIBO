@@ -1,6 +1,6 @@
 ---
 name: fala-limpa
-description: Audite e limpe a fala de cortes de talking head e entrevista antes do render e no QA — detecta e manda cortar outra voz (entrevistador, alguém ao fundo), hesitações ("ééé", "ahn", pausas de pensamento) e palavra final engolida pelo fade. Use em todo corte de fala de qualquer cliente (Fernanda/Malu, podcasts, depoimentos), junto com a skill de corte do cliente.
+description: Audita e limpa a fala de cortes — outra voz, hesitações, palavra final engolida. Use em todo corte de fala de qualquer cliente, junto com a skill de corte.
 ---
 
 # Fala limpa

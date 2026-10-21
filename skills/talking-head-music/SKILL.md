@@ -1,6 +1,6 @@
 ---
 name: talking-head-music
-description: Select, compare, document, and mix background music for dialogue-led talking-head videos, podcast clips, Reels, Shorts, and business content. Use when music must support a speaker's emotion and cadence without reducing intelligibility; do not use for music videos or edits where the song is the primary content.
+description: Escolhe, compara, documenta e mixa trilha de fundo para vídeos de fala sem prejudicar a inteligibilidade. Use para trilha sob fala; não para clipes em que a música é o conteúdo.
 ---
 
 # Talking Head Music

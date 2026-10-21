@@ -1,6 +1,6 @@
 ---
 name: video-render-optimizer
-description: Detecte CPU, GPU e encoders FFmpeg, compare CPU versus aceleração por hardware em uma amostra real e escolha o encoder e o bitrate mais eficientes sem inflar o arquivo nem degradar perceptivelmente a imagem. Use antes de renderizações de edição de vídeo em uma máquina nova ou quando hardware, FFmpeg, resolução, FPS ou perfil de entrega mudarem.
+description: Detecta CPU/GPU/encoders, compara numa amostra real e escolhe encoder e bitrate sem inflar nem degradar. Use antes de render numa máquina nova ou quando hardware, resolução, FPS ou perfil mudarem.
 ---
 
 # Otimização de render de vídeo

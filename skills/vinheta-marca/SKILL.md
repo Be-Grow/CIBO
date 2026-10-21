@@ -1,6 +1,6 @@
 ---
 name: vinheta-marca
-description: Crie vinhetas, intros e aberturas de marca profissionais (programa, podcast, canal, palestrante) em Remotion a partir do manual de identidade, da logo e de imagens da pessoa — cold open com o nome, painéis verticais com a pessoa no ritmo da música, tela cheia com palavras da marca, linha que vira a revelação, símbolo se desenhando na pausa da trilha e logo completa no impacto, com partículas, brilho e fade. 16:9 em 1080p e 4K, master ProRes. Use quando pedirem vinheta, intro, abertura, sting de logo ou logo animada; o som é feito com a skill desenho-de-som.
+description: Vinhetas, intros e aberturas de marca em Remotion a partir da identidade, logo e imagens da pessoa, 16:9 em 1080p/4K, master ProRes. Use quando pedirem vinheta, intro, abertura ou logo animada.
 ---
 
 # Vinheta de marca

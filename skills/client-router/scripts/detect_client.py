@@ -17,6 +17,22 @@ import json
 from pathlib import Path
 
 DEFAULT_REGISTRY = Path(__file__).resolve().parent.parent / "references" / "client-registry.json"
+REGISTRY_MD = DEFAULT_REGISTRY.with_suffix(".md")
+
+
+def linha_md(client: str, skill: str) -> list[str]:
+    """a linha do cliente no client-registry.md como campos rotulados (o .md inteiro nunca entra no contexto)"""
+    if not REGISTRY_MD.exists():
+        return []
+    rows = [l for l in REGISTRY_MD.read_text(encoding="utf-8").splitlines() if l.startswith("|")]
+    if len(rows) < 3:
+        return []
+    cab = [c.strip() for c in rows[0].strip("|").split("|")]
+    for l in rows[2:]:
+        cel = [c.strip() for c in l.strip("|").split("|")]
+        if f"`{skill}`" in cel or f"`{client}`" in cel:
+            return [f"  {k}: {v[:160]}" for k, v in zip(cab, cel) if v and v != "—"][:14]
+    return []
 
 
 def load_registry(path: Path) -> dict:
@@ -45,11 +61,12 @@ def main() -> None:
     if not hits:
         print("Nenhum cliente conhecido identificado. Não assuma um fallback — "
               "pergunte ao usuário de qual cliente é o material, ou confirme "
-              "que é um job genérico para 'podcast-reels'.")
+              "que é um cliente novo no motor padrão 'reel-motion' (tema novo).")
     elif len(hits) == 1:
         skill = registry[hits[0]].get("skill", hits[0])   # cliente sem skill própria aponta o motor
         print(f"Cliente identificado: {hits[0]}  ->  skills/{skill}/"
               + (f"  ({registry[hits[0]]['note']})" if registry[hits[0]].get("note") else ""))
+        print("\n".join(linha_md(hits[0], skill)))
     else:
         print("Mais de um cliente bateu com o texto — desambigue antes de seguir: "
               + ", ".join(hits))

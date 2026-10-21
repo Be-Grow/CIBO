@@ -1,6 +1,6 @@
 ---
 name: foto-evento-cor
-description: Corrija e nivele a cor de uma série de fotos (evento, palestra, corporativo) seguindo o padrão de correção de cor. O neutro de referência fica com os dois eixos certos, a pele fica na linha de tom de pele do vetorscópio (~123°), com brilho consistente entre fotos da mesma pessoa, e pretos e brancos ficam dentro do limite. Tudo é medido antes e depois, com tabela. Use quando o usuário pedir para ajustar, nivelar, igualar, deixar homogênea ou "acertar a cor" de várias fotos; não use para dar look/estilo (grading) sem antes corrigir.
+description: Corrige e nivela a cor de séries de fotos (neutro, pele na linha do vetorscópio, brilho e pretos/brancos), medindo antes e depois. Use para igualar a cor de várias fotos; não para look/grading.
 ---
 
 # Correção e nivelamento de cor de fotos (padrão mensurável)

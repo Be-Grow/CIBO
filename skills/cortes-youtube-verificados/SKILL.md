@@ -1,6 +1,6 @@
 ---
 name: cortes-youtube-verificados
-description: Baixe e recorte trechos de vídeos do YouTube com yt-dlp e FFmpeg, preservando falas completas e validando obrigatoriamente a minutagem, a correspondência com a fonte e a integridade técnica do arquivo final. Use para cortes horizontais do YouTube; não use para transformar podcasts em Reels verticais com legendas e identidade visual.
+description: Baixa e recorta trechos horizontais do YouTube (yt-dlp + FFmpeg) com falas completas e minutagem, fonte e integridade conferidas. Não use para transformar podcast em Reels verticais.
 ---
 
 # Cortes do YouTube Verificados

@@ -1,6 +1,6 @@
 ---
 name: malu-cortes
-description: Edite os cortes verticais 9:16 da Malu (entrevista sobre a linha Zeo/Turi-Ita, câmera Sony em Rec.709, plano aberto com ela sentada e entrevistador fora de quadro) no padrão de Reel de marca premium de bem-estar editado por motion designer sênior — mapa de edição obrigatório, fala limpa, enquadramento por plano com rastreamento de rosto, kit de motion (título de gancho, lower third, números, callouts, cards), legenda Montserrat fina animada palavra por palavra, biblioteca de SFX curada, referências em tela dividida, tela cheia ou card, e pente-fino obrigatório antes do render. Use somente em trabalhos da Malu; o padrão da Fernanda continua na fernanda-produto e o do Bombordo na bombordo-boreste.
+description: Cortes verticais 9:16 da Malu (entrevista Zeo/Turi-Ita) no padrão premium de bem-estar — mapa de edição, fala limpa, motion, legenda Montserrat, SFX curados, pente-fino. Use só em trabalhos da Malu.
 ---
 
 # Malu — cortes de entrevista
@@ -35,22 +35,6 @@ Regras de ritmo (valem para o mapa e são conferidas no pente-fino):
 14. **Prévia e pente-fino de motion.** Renderize a prévia (`render.py job.json preview INICIO DURACAO`, 1080×1920). Extraia frames **no meio de cada movimento** (zoom, entrada de gráfico, transição de referência, destaque) e monte folhas de contato (`kinetic/cli.py job.json sheet PREVIA SAIDA.jpg --start T0`). Confira: motion blur natural (sem fantasma), rosto e legenda na zona segura, gráfico sem cobrir o rosto, nenhum trecho parado demais nem poluído demais. **Só depois peça o ok do usuário para o render completo.**
 15. **Render** (`render.py prep/check/render`, em background com vigia de CPU) e **QA** no arquivo final: `video-delivery-safety-check`, `caption-quality-gate`, `fala-limpa` no áudio final, `legenda-cruzada`. Um arquivo de 0 bytes ou incompleto em `06_deliverables` nunca fica lá: se o render travar, apague a saída parcial e registre.
 
-## Kit de motion
-
-Toda animação usa **ease in e ease out como no Premiere** (`cubic-bezier(0.33, 0, 0.67, 1)` ou mais suave), **sem spring e sem overshoot**, com **motion blur de câmera em shutter angle 360°** em tudo o que se move. Os gráficos são renderizados em camada transparente (skill `motion-graphics` com Remotion quando disponível, exportando ProRes 4444 ou WebM com alfa) e compostos pelo `render.py`.
-
-- **Câmera que respira**: em plano longo sem zoom, push-in lento de 2 a 3% ao longo do plano. Nada fica 100% parado.
-- **Zooms**: o estilo aprovado do fluxo (item 8), variando entre punch-in e push-in.
-- **Título de gancho**: 1 a 2 linhas em Montserrat, revelado por máscara com blur, sai com fade e blur antes de 2,5 s.
-- **Lower third** na primeira aparição da Malu: nome e função (pergunte o texto ao usuário), entrada suave, sai em 3 s.
-- **Números e prazos** ("40 dias"): número grande animado por 1 a 1,5 s.
-- **Linhas de produto** (premium, gold, silver, standard): callout ou lista animada quando ela compara. Mostre só o que ela afirma; ela troca os nomes às vezes (ver bíblia).
-- **Transições de referência**: varie entre tela dividida com deslize, tela cheia com push lento e card flutuante com cantos arredondados e sombra suave.
-- **Troca de layout nunca em corte seco** ("deixa o vídeo feio e amador"): film burn vermelho do arquivo do usuário (`scripts/burn.py`, `burn_events`, `burn: true`) com o pico de luz exatamente no corte, em toda saída de tela dividida/card/tela cheia e em toda entrada de tela cheia; alterne os burns B9, B13, B10, B12 e B4. A tela dividida entra com deslize e o card com a própria animação. O som do burn vai para a trilha de SFX (evento com `src`). Jump cut com troca de nível dentro da mesma fala continua seco.
-- **Encerramento**: o último quadro dela desfoca em fade (`malu_refs` `endbg`), a música termina no fim natural e o vídeo sai em fade. **Sem cartão final de produto e sem card com o recorte dos pacotes Turi-Ita**: o usuário reprovou os dois em todos os cortes (o recorte fica mole ampliado).
-- **Unidade visual**: grão de filme bem sutil e o mesmo tratamento de cor sobre tudo (câmera, referências e gráficos), para colar as fontes diferentes.
-- **Proibido**: shake, glitch, transições de template, emojis, cores fora da paleta da bíblia. Exceção pedida pelo usuário: o film burn vermelho nas trocas de layout.
-
 ## Legenda
 
 - **Montserrat fina**: Regular no texto e SemiBold no destaque, substituindo DM Sans + Playfair. No teste do reel 01, a Light branca sumiu sobre a estante clara ("da Turi-Ita", tela dividida); por isso o padrão é Regular com sombra suave e halo escuro largo (`halo_alpha`). Use Light só sobre fundo escuro, conferindo na prévia. O destaque é **contido**: 1,3x (faixa de 1,2 a 1,4x), nunca os 2x do Bombordo.
@@ -59,29 +43,6 @@ Toda animação usa **ease in e ease out como no Premiere** (`cubic-bezier(0.33,
 - **Altura logo abaixo do queixo**, pelo queixo medido no vídeo já com zoom (o zoom de 14% desce o queixo). Nunca cobre o rosto e respeita a área segura do Reels (coluna de botões à direita, faixa de baixo). Em tela dividida e card, a legenda segue a regra do layout.
 - **Camada sem perdas**: QuickTime Animation RGBA. Se um dia ela virar H.264 cor + máscara, a máscara tem que ser qp 0 e a cor yuv444p; a Light é fina e serrilha com compressão.
 - Mantém: texto revisado à mão (quebra por sentido, linha ≤ 26 caracteres, nunca terminar linha em palavra funcional), `sync_captions.py` para colocar cada bloco no ataque real da fala, 6 a 8 palavras-chave (destaques) por minuto escolhidas pelo sentido. Casos que nenhuma regra resolve: `caption_pins` (tempo do original).
-
-## SFX: biblioteca curada da Malu
-
-Substitui o whoosh e o clique fixos da `fernanda-produto`. A biblioteca fica em `assets/sfx/` desta skill e é reaproveitada em todos os cortes da Malu.
-
-- **Categorias**: whoosh suave (zoom e entrada de referência), swish curto (texto), riser (antes do gancho ou da punchline), impacto suave e grave (revelação de número), pop ou clique discreto (palavra-chave), brilho (produto) e foley ligado à imagem (água caindo no copo, pó, respiração).
-- **Fontes**: Freesound (só CC0), Pixabay e Mixkit. Confira a licença de cada arquivo e registre fonte, URL e licença em `assets/sfx/licencas.csv`. Se precisar de chave de API, peça ao usuário.
-- **Seleção**: baixe de 4 a 6 candidatos por categoria e filtre por análise: sem ruído de fundo, sem voz (rode o Whisper para conferir), ataque limpo, duração compatível.
-- **Aprovação**: como você não consegue ouvir, monte uma audição (vídeo com cada candidato numerado na tela) para o usuário aprovar a biblioteca **uma única vez**. Só os aprovados entram em `assets/sfx/`.
-- **Uso**: o pico do whoosh cai no ponto mais rápido do movimento; SFX nunca por cima de consoante da fala; nunca o mesmo arquivo duas vezes seguidas; foley só quando a imagem justifica; em média 1 SFX a cada 3 a 5 s. `sfx_db: -8` é o ponto de partida; `whoosh_post: 0.1` e `click_lead: 0.3` continuam valendo (a fala dela volta colada nos cortes).
-
-## Referências
-
-- Busque no **Pexels, Pixabay e Mixkit**, sempre em inglês e com descritores visuais: *close up, slow motion, macro, soft natural light, shallow depth of field*.
-- Baixe de 5 a 8 candidatos por trecho, monte uma folha de contatos com 3 frames de cada e dê nota (`semantic-broll-validator`) para: relação com a fala, estética cinematográfica, cor compatível com o estúdio (quente e suave), recorte 9:16 e movimento dentro do plano.
-- **Recuse**: cara de banco de imagem (gente sorrindo para a câmera, fundo branco), marca d'água, texto na imagem, imagem escura ou estourada, baixa resolução.
-- Literal para coisas concretas, metáfora visual para ideias abstratas.
-- **Inserts do próprio master em 4K**: só quando o recorte for grande (o copo na mão, as mãos). O card com os pacotes Turi-Ita da estante foi reprovado (região pequena, fica mole).
-- Aplique o tratamento de cor e o grão do kit de motion e conforme para 29,97 fps.
-- Tela dividida: `ref_push: 0.06` (push lento no painel), `shift: 1150`.
-- **Entrega em Full HD** (1080×1920, ~12 Mb/s: `out_size: [1080, 1920]`, `vbitrate: "12M"`), não em 4K. O processamento interno continua em 4K; o usuário pediu "exporta em fullhd somente" quando o render 4K demorou.
-- **Resolução decide o layout**: tela cheia só com fonte 4K (1080p ampliaria 3,6× no 4K); 1080p e 720p vão em tela dividida ou card. O Mixkit gratuito tem muito vídeo só em 720p.
-- Na tela cheia a legenda ganha faixa escura em degradê atrás (automática na camada): o dourado some sobre stock claro.
 
 ## Nunca mais (erros reprovados)
 
@@ -97,21 +58,12 @@ Substitui o whoosh e o clique fixos da `fernanda-produto`. A biblioteca fica em 
 - Flash de 1 quadro na emenda (plano seguinte com o enquadramento do anterior): o `camera.py` decide o plano pela contagem exata de quadros do trim, nunca pelo tempo arredondado.
 - Palavra final comida pelo `out` ("desconforto" sem o "-to"): confira no envelope o fim real da última palavra.
 
-## Motor da Malu (scripts desta skill)
+## Referências (abra só quando o gatilho bater)
 
-Ligado só no job da Malu; o `render.py` da `fernanda-produto` chama tudo no `prep`. Sem as chaves abaixo o grafo da Fernanda é idêntico ao de antes (conferido quadro a quadro e no PCM da voz e da música). Nada do Bombordo foi alterado: o código veio por cópia adaptada.
-
-- **`camera_engine: "malu"` → `scripts/camera.py`**: cortes, enquadramento por plano (face track), zooms, push-in e respiro saem da fonte 4K num warp só, com Easy Ease `cubic-bezier(0.33,0,0.67,1)`, escala em log e shutter 360° (até 16 subquadros). O resultado é `<work>/camera.mov` (ProRes 422 HQ), reaproveitado enquanto nada muda (impressão digital em `camera.json`). Movimentos em `camera_moves`: `{"t", "kind": "punch"|"push"|"breathe", "amount", "in", "until"}`, em tempo editado; sem essa chave, os `smooth_zooms` viram `punch`. Leva ~9 min por reel de 50 s num M4 e usa ~0,6 GB. O grafo antigo do zoom (escala 4K repetida por janela) travou o v10 com 11 GB.
-- **`caption_engine: "kinetic"` → `scripts/kinetic/cli.py job.json words|blocks|chin|layer|all|sheet`**:
-  - `words`: tempo por palavra, com o texto do `captions.json` e o tempo do Whisper do áudio editado (`word_timing`), ajustado no ataque só depois de pausa real e com o master em 16 kHz (`audio16k`).
-  - `blocks`: gera `<work>/kinetic/blocks.json`, editável. Divide os blocos pelo conjunto da frase: nunca separa "40 dias", nunca termina bloco em artigo, "não" ou demonstrativo, e as quebras feitas à mão são fronteiras. O destaque vem com a palavra pequena por cima.
-  - `chin`: mede o queixo no `camera.mov` e gera `<work>/chin_track.json` e `kinetic/chin_sheet.jpg`.
-  - `layer`: gera `<work>/kinetic_caps.mov` em QuickTime Animation, RGBA sem perdas.
-  - `sheet`: gera a folha de contatos com o meio de cada entrada, destaque, saída e zoom.
-  - Destaques pelo sentido: `kinetic.highlights`, em ordem de fala; `"Toxina#2"` indica a segunda ocorrência.
-  - Configuração: `kinetic/config.json` + `job["kinetic"]` + `<work>/kinetic.json`.
-- **Altura da legenda**: cada bloco fica abaixo do queixo mais baixo do tempo em que está na tela, incluindo o auge do zoom, com folga para a entrada e a saída. Dentro de um plano a altura é a do bloco mais exigente, então a legenda só muda de altura no corte. Na tela dividida vale `position.split_cy`, e outros layouts vão em `caption_layouts` (`start`, `end`, `cy`, `kind`). Nenhum bloco fica na tela durante uma troca de layout. Se a zona segura de baixo vencer, a camada lista o bloco. Relatório em `kinetic/positions.json`.
-- **Queixo**: `chin_track.py` ignora os quadros de referência (não é o rosto dela) e descarta falso rosto isolado (mão/copo que foge 0,6 altura de rosto da mediana dos vizinhos).
-- **Mapa**: `scripts/mapa.py job.json 05_qa/<reel>_mapa_edicao.md` monta a tabela de eventos e mede o maior trecho sem mudança visual.
-- **Gráficos** (`job["graphics"]`): `title`, `callout` (pílulas empilham quando não cabem), `number` (unidade longa vai embaixo; `big_px`/`unit_px`/`cy` configuráveis — sobre o rosto dela, nunca: no plano dela o número vai pequeno e em linha única no alto, acima da cabeça, como "150 milhões de anos" no reel 04), `endcard` (recorte do master sem o ombro: `[1760, 1860, 400, 533]` em 47,5 s).
-- **Ainda não construído** (fazer antes de usar): lower third (falta o texto: nome e função), audição da biblioteca de SFX com o usuário e a regra "SFX nunca sobre consoante" dentro do `review_job.py` (hoje o `audio.py` já desvia os picos das consoantes).
+| Arquivo | Abra se |
+|---|---|
+| `references/motor.md` | rodar ou corrigir os scripts (mapa, burn, áudio, render) e o motor da Fernanda por baixo |
+| `references/motion.md` | título de gancho, lower third, números, callouts, cards |
+| `references/sfx.md` | escolher ou nivelar SFX |
+| `references/referencias-tela.md` | referência em tela dividida, tela cheia ou card |
+| `references/client-content-bible.md` | identidade e tom da cliente |
