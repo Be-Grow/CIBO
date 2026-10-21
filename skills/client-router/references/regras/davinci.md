@@ -1,5 +1,12 @@
 # Regras transversais — DaVinci Resolve pela API (medido no Resolve 20.2.3, EP 06, 18/10/2026)
 
+**Conferência é no preview do DaVinci, sempre (editor, 21/10/2026: "preview no davinci sempre").** Monte as camadas, avise e
+o editor confere no preview do Resolve. Não renderize nem exporte quadro/still pelo Resolve para conferir, e render final só
+quando ele pedir. Conferência minha fica fora do Resolve (folha de contato com os MOVs/PNGs sobre quadros do MP4).
+
+**Capa tem 1 quadro só, sempre ("isso é lei", 21/10/2026).** MOV de 1 quadro entra como still de 5 s no `AppendToTimeline`
+(ignora `endFrame`): use uma fonte de 10 quadros da mesma imagem e `startFrame 0, endFrame 1`; confira `GetDuration() == 1`.
+
 **Projeto organizado (regra do CIBO, 20/10/2026: "os projetos que são feitos no DaVinci precisam estar sim organizados"):**
 todo projeto entregue no Resolve sai arrumado, não só a timeline.
 - Project Manager: pasta do cliente na árvore que o editor já usa (`BeGrow/<Cliente>/`) e projeto com o nome do job (`EP 07 - Izaac Nava`), nunca solto na raiz nem "Untitled".
