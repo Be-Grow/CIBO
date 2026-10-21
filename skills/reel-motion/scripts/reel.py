@@ -572,6 +572,8 @@ PARTES = {
     'cards': lambda p: [(f'item{k}', f"card {c['text']}") for k, c in enumerate(p.get('cards', []))],
     'sides': lambda p: [('titulo', f"título {p.get('title', '')} {p.get('accent', '')}"), ('linha', 'divisória'), ('item0', f"lado {p.get('left', '')}"), ('item1', f"lado {p.get('right', '')}")],
     'route': lambda p: [('titulo', f"título {p.get('title', '')} {p.get('accent', '')}"), ('linha', 'rota'), ('item0', f"de {p.get('from', '')}"), ('item1', f"para {p.get('to', '')}")],
+    'hub': lambda p: ([('titulo', f"título {p['title']} {p.get('titleAccent', '')}")] if p.get('title') else []) + [('linha', 'raios'), ('centro', f"centro {p['center']}")]
+        + [(f'item{k}', f"saída {it['text']}") for k, it in enumerate(p.get('items', []))],
     'stack': lambda p: ([('titulo', f"título {p['title']}")] if p.get('title') else []) + [(f'item{k}', f"card {c['text']}") for k, c in enumerate(p.get('cards', []))],
     'roles': lambda p: [('titulo', f"título {p.get('title', '')} {p.get('accent', '')}")] + [(f'item{k}', f"papel {r['text']}") for k, r in enumerate(p.get('roles', []))]
         + ([('centro', f"centro {p['center']['text']}")] if p.get('center') else []),
@@ -585,6 +587,8 @@ def _at_parte(p, k):
         return p.get('strikeAt', p['s']) if k == 'risco' else p.get('line2At', p['s'])
     if ty in ('sides', 'route'):
         return p.get({'sides': ('leftAt', 'rightAt'), 'route': ('fromAt', 'toAt')}[ty][k == 'item1'], p['s'])
+    if ty == 'hub':
+        return p['items'][int(k[4:])]['at']
     if ty in ('cards', 'stack', 'roles', 'ladder'):
         if k == 'centro':
             return p['center'].get('at', p['s'])

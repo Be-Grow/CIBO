@@ -474,10 +474,10 @@ const PanelHub: React.FC<PanelProps> = ({p, t}) => {
   const n = items.length, R = p.radius ?? 330;
   return (
     <>
-      {p.title && <div style={{position: 'absolute', top: 70, left: 0, right: 0, textAlign: 'center', ...fTitle(64), color: C.ink2,
+      {p.title && <Pt k="titulo"><div style={{position: 'absolute', top: 70, left: 0, right: 0, textAlign: 'center', ...fTitle(64), color: C.ink2,
         opacity: ramp(t, p.s + 0.1, 0.4, OUT)}}>{p.title}{p.titleAccent && <span style={{color: t >= (p.titleAccentAt ?? 0) ? C.terra : C.ink2,
-        transition: 'none', display: 'inline-block', marginLeft: '0.3em', transform: `scale(${1 + 0.12 * Math.sin(Math.PI * ramp(t, p.titleAccentAt ?? 0, 0.4))})`}}>{p.titleAccent}</span>}</div>}
-      <svg width={1080} height={SPLIT} style={{position: 'absolute', left: 0, top: 0}}>
+        transition: 'none', display: 'inline-block', marginLeft: '0.3em', transform: `scale(${1 + 0.12 * Math.sin(Math.PI * ramp(t, p.titleAccentAt ?? 0, 0.4))})`}}>{p.titleAccent}</span>}</div></Pt>}
+      <Pt k="linha"><svg width={1080} height={SPLIT} style={{position: 'absolute', left: 0, top: 0}}>
         {items.map((it, i) => {
           const a = Math.PI * (0.15 + 0.7 * (n === 1 ? 0.5 : i / (n - 1))), x = cx - R * Math.cos(a), y = cy + R * Math.sin(a) * 1.25;
           const ray = p.raysAt !== undefined ? ramp(t, p.raysAt + i * 0.12, 0.5) : 0, q = ramp(t, it.at - 0.25, 0.5);
@@ -489,18 +489,18 @@ const PanelHub: React.FC<PanelProps> = ({p, t}) => {
             </g>
           );
         })}
-      </svg>
-      <div style={{position: 'absolute', left: cx, top: cy, translate: '-50% -50%', padding: '26px 48px', borderRadius: 26, background: C.terra, color: C.onAccent,
+      </svg></Pt>
+      <Pt k="centro"><div style={{position: 'absolute', left: cx, top: cy, translate: '-50% -50%', padding: '26px 48px', borderRadius: 26, background: C.terra, color: C.onAccent,
         ...fTitle(130), opacity: c, transform: `scale(${(0.7 + 0.3 * c) * (1 + 0.1 * Math.sin(Math.PI * (p.pulseAt !== undefined ? ramp(t, p.pulseAt, 0.5) : 0)))})`,
-        boxShadow: `0 0 40px ${C.terra}66`, whiteSpace: 'nowrap'}}>{p.center}</div>
+        boxShadow: `0 0 40px ${C.terra}66`, whiteSpace: 'nowrap'}}>{p.center}</div></Pt>
       {items.map((it, i) => {
         const a = Math.PI * (0.15 + 0.7 * (n === 1 ? 0.5 : i / (n - 1))), x = cx - R * Math.cos(a), y = cy + R * Math.sin(a) * 1.25;
         const q = ramp(t, it.at, 0.45, OUT);
         return (
-          <div key={i} style={{position: 'absolute', left: x, top: y, translate: '-50% -50%', textAlign: 'center', opacity: q, transform: `scale(${0.85 + 0.15 * q})`}}>
+          <Pt key={i} k={`item${i}`}><div style={{position: 'absolute', left: x, top: y, translate: '-50% -50%', textAlign: 'center', opacity: q, transform: `scale(${0.85 + 0.15 * q})`}}>
             <div style={{padding: '16px 28px', borderRadius: 20, background: C.white, color: C.ink, ...fTitle(82), whiteSpace: 'nowrap', boxShadow: '0 12px 30px rgba(0,0,0,0.3)'}}>{it.text}</div>
             {it.sub && <div style={{marginTop: 12, ...fLab(), fontSize: 30, letterSpacing: 2, color: C.terra, textTransform: 'uppercase', opacity: ramp(t, it.subAt ?? it.at + 0.3, 0.35, OUT)}}>{it.sub}</div>}
-          </div>
+          </div></Pt>
         );
       })}
     </>

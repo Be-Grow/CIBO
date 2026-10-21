@@ -28,6 +28,12 @@ Referência viva: `andreia/demandaVideoEstiloPriscilla/` (brief, review_2026-10-
 | 9 | Depois do render do editor | `qa_render.py PROJ` (sincronia por trecho, offline, preto) nos dois formatos; `video-delivery-safety-check` |
 | 10 | Correção | só o que mudou (`--so-el`, `trecho`, `resolve_refaz_de_backup.py`); nunca ciclos de .drt; QA de novo em todas as versões |
 
+Teste de ponta a ponta (20/10/2026, `andreia/…/04_work/t01`, 15 s, painel `hub`, Resolve aberto): `fila_davinci.py` levou
+3 min (pacote 0,6 GB, 26 clipes, 2 camadas de Fusion, `qa_resolve` OK). Achou e corrigiu: fundo do painel e etiquetas caíam
+no bin `01 BRUTO`, e a reimportação do .drt deixava SFX órfãos duplicados ("X.wav import") — o `resolve_projeto.py organiza`
+agora reclassifica e apaga só duplicado de mesmo arquivo que nenhuma timeline usa. Atalhos do teste: o `mix` remonta a voz do
+`src_48k.wav` (copie/ligue o da fonte); `qa_paineis`, `capa_pausas` e `sfx_tema` rodam com `~/.venvs/audiotools/bin/python`.
+
 Nomes no pacote: todo arquivo leva o sufixo do reel (`voz__r01.wav`, `el/painel_0__r01h.mov`, `capa__r01.mov`), porque o
 Resolve junta arquivos de mesmo nome entre pacotes (foi o "áudio de outro vídeo" do 03). Pacote antigo sem sufixo é
 renomeado na próxima etapa `davinci`, sem renderizar de novo.
@@ -64,7 +70,7 @@ takes, MFA e capa).
   Só crie peça nova quando nenhuma serve — e ela entra em `primitives.tsx`, genérica, usando só o
   tema (`C`, `fTitle`, `fAcc`, `fLab`), para o próximo cliente herdar.
 - Sombra e escurecimento também são do tema (`C.shadow`, `C.scrim` em r,g,b; helpers `sh(a)`/`scr(a)`); destaque com fonte própria em `accent.family`; burn do pacote DaVinci em `theme.burnFF` (filtro ffmpeg). Antes ficavam no marrom da Priscilla em todo cliente (17/10/2026).
-- Pacote DaVinci separa as partes de cada painel: envolva título, cada item, linha e risco em `<Pt k=…>` e liste as chaves em `PARTES` no `reel.py` (feito em checklist, timeline, waves, balance, root, curve, pillars, strike, cards, sides, route, stack, roles, ladder; faça igual nos demais). Só importar no Resolve, sem render: `SEM_RENDER=1 resolve_render.py …` (deixa o projeto novo aberto). Pedido do editor, 17/10/2026.
+- Pacote DaVinci separa as partes de cada painel: envolva título, cada item, linha e risco em `<Pt k=…>` e liste as chaves em `PARTES` no `reel.py` (feito em checklist, timeline, waves, balance, root, curve, pillars, strike, cards, sides, route, stack, roles, ladder, hub; faça igual nos demais). Só importar no Resolve, sem render: `SEM_RENDER=1 resolve_render.py …` (deixa o projeto novo aberto). Pedido do editor, 17/10/2026.
 - Nenhuma cor ou fonte fixa em componente: sempre `C.<papel>` e os helpers do tema. Papéis das cores:
   `paper/paper2` fundo do painel; `ink/ink2` texto no painel; `terra` destaque; `terraDark` faixa;
   `peach` destaque sobre vídeo; `white` superfície de card; `video` texto sobre vídeo;

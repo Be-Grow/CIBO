@@ -68,6 +68,9 @@ def tipo_bin(clip):
     fp = (clip.GetClipProperty('File Path') or '').lower(); n = os.path.basename(fp)
     if clip.GetClipProperty('Type') == 'Timeline': return '00 TIMELINES'
     if n.endswith(AUD) and 'voz' in n: return '02 VOZ'                  # voz_bruto.wav é voz, não bruto
+    # elementos do pacote DaVinci (teste do motor padrão, 20/10/2026: fundo do painel e etiquetas caíam no 01 BRUTO —
+    # "paineis_fundo" não contém "painel")
+    if '/_camadas/el/' in fp or '/paineis_fundo/' in fp or n.startswith(('tag_', 'step_', 'painel_', 'titulo_')): return '06 GRAFISMOS'
     if '/01_sources/' in fp or 'bruto' in n: return '01 BRUTO'
     if n.endswith(AUD):
         return '02 VOZ' if 'voz' in n else '03 TRILHA' if ('trilha' in n or '/music' in fp or '/musica' in fp) else '04 SFX'
@@ -80,13 +83,37 @@ def tipo_bin(clip):
 
 
 def organiza(p, formato_timeline=None):
-    """Tira tudo da Master: cada clipe vai para o bin do tipo; timelines para 00 TIMELINES[/formato]."""
+    """Tira tudo da Master: cada clipe vai para o bin do tipo; timelines para 00 TIMELINES[/formato]. Também corrige o que
+    já está num bin de tipo errado (classificação melhorada depois da importação)."""
     mp = p.GetMediaPool(); raiz = mp.GetRootFolder(); movidos = 0
-    for c in list(raiz.GetClipList() or []):
+    soltos = [(c, None) for c in raiz.GetClipList() or []]
+    soltos += [(c, f.GetName()) for f in raiz.GetSubFolderList() or [] if f.GetName() in BINS[1:] for c in f.GetClipList() or []]
+    for c, onde in soltos:
         destino = tipo_bin(c)
+        if destino == onde: continue
         if destino == '00 TIMELINES' and formato_timeline: destino += '/' + formato_timeline
         if mp.MoveClips([c], bin_(mp, destino)): movidos += 1
-    return movidos
+    return movidos, limpa_duplicados(p)
+
+
+def limpa_duplicados(p):
+    """A reimportação por .drt (resolve_fx.py) cria cópias "X.wav import" dos SFX e a timeline passa a usar a cópia; o original
+    fica órfão no bin (teste do motor padrão, 20/10/2026). Apaga só item com o MESMO arquivo de outro e que nenhuma timeline usa."""
+    mp = p.GetMediaPool(); usados = set(); todos = []
+    for i in range(1, p.GetTimelineCount() + 1):
+        t = p.GetTimelineByIndex(i)
+        for ty in ('video', 'audio'):
+            for k in range(1, t.GetTrackCount(ty) + 1):
+                usados |= {it.GetMediaPoolItem().GetMediaId() for it in t.GetItemListInTrack(ty, k) or [] if it.GetMediaPoolItem()}
+    def anda(f):
+        todos.extend(c for c in f.GetClipList() or [] if c.GetClipProperty('Type') != 'Timeline')
+        for s in f.GetSubFolderList() or []: anda(s)
+    anda(mp.GetRootFolder())
+    por_arq = {}
+    for c in todos: por_arq.setdefault(c.GetClipProperty('File Path'), []).append(c)
+    sobra = [c for fp, cs in por_arq.items() if fp and len(cs) > 1 and any(x.GetMediaId() in usados for x in cs)
+             for c in cs if c.GetMediaId() not in usados]
+    return len(sobra) if sobra and mp.DeleteClips(sobra) else 0
 
 
 def arvore(p):
@@ -106,5 +133,5 @@ if __name__ == '__main__':
         p = abre(sys.argv[2], sys.argv[3])
     else:
         p = resolve()[1].GetCurrentProject()
-    if acao == 'organiza': print('movidos:', organiza(p))
+    if acao == 'organiza': print('movidos, duplicados apagados:', organiza(p))
     print(p.GetName()); print(arvore(p))
