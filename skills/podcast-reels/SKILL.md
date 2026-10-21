@@ -150,6 +150,9 @@ export JOB=job.json ZOOM_AMT=0 BURN_OUT=0 VENC=auto PASSA_DIRECT=1 PARALLEL=auto
 **Clientes neste motor:** `podcast-reels` (genérico, João Campos) e `katia` (perfil). Bombordo,
 Autismo Cast e Content Hub ainda têm motor próprio (recursos a migrar: `impact_pulses`,
 `long_moves`, `punch`, saída com fade, letterings, B-roll); receberam as correções de travamento.
+Movimento e variação, para todos esses motores: `reel-motion/scripts/movimento.py planeja --formato podcast` gera
+`impact_pulses`/`long_moves` no formato que os renders já leem, e `confere --clip clip.json [--sfx …]` aplica o orçamento
+de variação (nenhum cliente foi migrado: o render de cada um continua o mesmo).
 
 Trilha: escolha com `talking-head-music` (por corte, com offset). Fim do corte: vídeo acaba seco
 e o burn passa do fim sobre preto, nunca fade.

@@ -548,6 +548,9 @@ def e_revisa():
         for t in achou:
             print(f"  {t['ini']:.2f}-{t['fim']:.2f} olha para {t['lado']} colado no corte: corte antes ou segure o quadro")
         print('  OK' if not achou else f'  {len(achou)} ponto(s)')
+    print('== variação (movimento.py: mesmo SFX/burn/movimento/painel seguidos além do limite do tema)', flush=True)
+    subprocess.run([sys.executable, str(ENG / 'scripts/movimento.py'), 'confere', '--tema', str(ENG / 'temas' / f"{C.get('tema', 'priscilla')}.json"),
+                    '--sfx', str(W / 'sfx.json'), '--props', str(PUB / R / 'props.json'), '--reel', str(W / 'reel.json')])
     print('== gancho e ritmo (gancho-e-ritmo: nota 0–10, limiar no tema "qualidade")', flush=True)
     (W / 'work').mkdir(exist_ok=True)
     return subprocess.run([sys.executable, str(SK / 'gancho-e-ritmo/scripts/gancho_ritmo.py'), '--props', str(PUB / R / 'props.json'),

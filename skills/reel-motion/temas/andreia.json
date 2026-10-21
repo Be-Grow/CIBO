@@ -140,5 +140,14 @@
       0.1,
       0.35
     ]
+  },
+  "variacao": {
+    "sfx": 0,
+    "burn": 2,
+    "movimento": 3,
+    "painel": 3
+  },
+  "movimento": {
+    "preset": "editorial"
   }
 }

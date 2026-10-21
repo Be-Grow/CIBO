@@ -240,6 +240,12 @@ então o que mais economiza é fazer menos turnos e não encher o contexto.
   hesita, checa_props (inclui etiqueta que ela não diz) e olhar nas pontas dos cortes. O `final` roda a revisa antes. ~15 s.
   Por último, a nota criativa do `gancho-e-ritmo` (gancho 3 s, tempo morto, densidade, variação, ênfase, final; limiar no
   bloco `"qualidade"` do tema). No `final`, nota abaixo do limiar para o render; o editor libera com `GANCHO_OK=1`.
+- **Variação e movimento (biblioteca compartilhada `scripts/movimento.py`, 20/10/2026).** `planeja` transforma ênfases
+  candidatas em movimentos alternando punch/pulse/long com intervalo mínimo por tipo (presets `editorial`, `podcast`,
+  `energetico`, ajustáveis no bloco `"movimento"` do tema); sai como `camera_moves` (reel) ou `impact_pulses`/`long_moves`
+  (motores de podcast, mesmo formato que o render deles já lê). `confere` é o orçamento: no máximo N iguais seguidos por
+  categoria (`"variacao": {"sfx": 3, "burn": 2, "movimento": 2, "painel": 1}`, 0 = sem limite), e roda no `revisa` como aviso.
+  Andreia: sfx 0 (a tigela única foi aprovada), movimento 3, painel 3.
   Validado no estado antigo do 05: pegou marketplace, "Depois" solto, "seis por cen|to" e "mandioca, milho, tofu".
   O Whisper adianta o início das palavras: serve para conferir o FIM do corte, não o início.
   O aviso de olhar tem falso positivo (1:18 do 05 estava olhando a câmera): é lista para conferir numa tira, não verdade.
