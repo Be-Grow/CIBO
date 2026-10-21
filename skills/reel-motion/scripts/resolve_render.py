@@ -56,7 +56,7 @@ try:
         itens = sum(len(tl.GetItemListInTrack("video", k) or []) for k in range(1, v + 1))
         print(f'{nome}: {v} faixas de vídeo, {a} de áudio, {itens} clipes; início {tl.GetStartFrame()}', flush=True)
         p.SetCurrentTimeline(tl)
-        if (pac / 'legenda.srt').exists():                    # legenda do pacote na faixa de legenda da timeline
+        if (pac / 'legenda.srt').exists() and not (pac / 'legenda').is_dir():   # reel com legenda em camadas: o SRT é só referência                    # legenda do pacote na faixa de legenda da timeline
             if not tl.GetTrackCount('subtitle'): tl.AddTrack('subtitle')   # sem a faixa, o AppendToTimeline "aceita" e não põe nada
             # a legenda entra onde está o cursor (logo depois da importação ele fica no fim e ela caía depois do último clipe):
             # cursor no início, confere o 1º bloco e refaz se caiu fora
@@ -72,7 +72,8 @@ try:
         p.LoadRenderPreset("H.264 Master")
         p.SetCurrentRenderFormatAndCodec("mov", "H264")
         ok = p.SetRenderSettings({"TargetDir": str(OUT / '_mov'), "CustomName": nome, "SelectAllFrames": True,
-                                  "FormatWidth": w, "FormatHeight": h, "ExportVideo": True, "ExportAudio": True, "AudioCodec": "lpcm"})
+                                  "FormatWidth": w, "FormatHeight": h, "ExportVideo": True, "ExportAudio": True, "AudioCodec": "lpcm",
+                                  "VideoQuality": 25000})   # 25.000 kb/s, nunca o automático (regras/davinci.md, Andreia 19/10)
         assert ok, 'SetRenderSettings falhou'
         j = p.AddRenderJob(); p.StartRendering([j], isInteractiveMode=False); t0 = time.time()
         while p.IsRenderingInProgress() and time.time() - t0 < 3600: time.sleep(2)

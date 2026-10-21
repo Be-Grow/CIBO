@@ -110,10 +110,13 @@ for f in (OUT / 'sfx').glob('*'):
     f.unlink()
 for i, e in enumerate([] if GROSSO else json.load(open(W / 'sfx.json'))):
     f = Path(e['f'] if os.path.isabs(e['f']) else SFXDIR + e['f'] + '.wav')
-    dst = OUT / 'sfx' / U(f'{i:02d}_{f.stem}{f.suffix}'); shutil.copy(f, dst)
+    # 48 kHz/24 bit com 0,2 s de silêncio no fim: o asset em quadros inteiros arredondava para além do fim do arquivo e o
+    # Resolve deixava o SFX offline (João, anúncios 21/10/2026: 1,4014 s de asset para 1,393 s de arquivo)
+    dst = OUT / 'sfx' / U(f'{i:02d}_{f.stem}.wav')
+    sh('ffmpeg', '-v', 'error', '-y', '-i', f, '-af', 'apad=pad_dur=0.2', '-ar', '48000', '-c:a', 'pcm_s24le', dst)
     x, sr = sf.read(dst); x = x.mean(1) if x.ndim > 1 else x; pk = int(np.argmax(np.abs(x))) / sr
     st = e['t'] - pk                                          # o pico cai no instante do evento
-    sfx.append((dst, fr(max(0.0, -st)), fr(max(0.0, st)), fr(dur(dst) - max(0.0, -st)), e['db'] + G))
+    sfx.append((dst, fr(max(0.0, -st)), fr(max(0.0, st)), fr(dur(dst) - 0.2 - max(0.0, -st)), e['db'] + G))
 # ---- burns com a cor do tema e alfa ----
 burns = []
 for f in (OUT / 'burns').glob('*'):
@@ -356,7 +359,7 @@ def asset(f, video, audio, tc=0):
     f = Path(f)
     if f not in ids:
         ids[f] = f'a{len(ids) + 1}'
-        assets.append(f'<asset id="{ids[f]}" name={quoteattr(f.name)} start="{tt(tc)}" duration="{tt(fr(dur(f)))}" hasVideo="{int(video)}" hasAudio="{int(audio)}"'
+        assets.append(f'<asset id="{ids[f]}" name={quoteattr(f.name)} start="{tt(tc)}" duration="{tt(int(dur(f) / FD))}" hasVideo="{int(video)}" hasAudio="{int(audio)}"'
                       + (' format="r1"' if video else '') + (' audioSources="1" audioChannels="1" audioRate="48000"' if audio else '')
                       + f'>\n  <media-rep kind="original-media" src={quoteattr(f.resolve().as_uri())}/>\n</asset>')
     return ids[f]
