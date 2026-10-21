@@ -26,7 +26,7 @@ C = json.load(open(W / 'reel.json')); PR = json.load(open(PUB / R / 'props.json'
 # título, burn, SFX, rastreio nem movimento de câmera, e nada renderizado no Remotion
 GROSSO = bool(C.get('grosso'))
 if GROSSO:
-    PR = {**PR, 'panels': [], 'burns': [], 'inserts': [], 'hook': None, 'titles': [], 'lower': None, 'keywords': [], 'endCard': None}
+    PR = {**PR, 'split': [], 'panels': [], 'burns': [], 'inserts': [], 'hook': None, 'titles': [], 'lower': None, 'keywords': [], 'endCard': None}
     C = {**C, 'camera_davinci': True, 'camera_moves': []}; C.pop('track', None)
 # versão horizontal 16:9 ("orient": "h", Andreia 19/10/2026): timeline 1920×1080, painel à esquerda, deslocamento da pessoa em x
 HZ = C.get('orient') == 'h'; VW, VH = (1920, 1080) if HZ else (1080, 1920)
@@ -252,7 +252,9 @@ def transf(k, t):
         w = RW if HZ else RH * 9 / 16
         if not HZ and VW / w > 1:                                     # vertical sem zoom além da escala nativa (Andreia 19/10/2026:
             w = VW                                                    # "a cabeça ficou muito pequena… tira zoom e põe background com blur")
-        cx = min(max(cx, w / 2), RW - w / 2); sc0 = VW / w
+        cx = min(max(cx, w / 2), RW - w / 2); sc0 = VW / w * C.get('zoom', 1)
+        # "zoom"/"zoom_cy" no reel.json: recorte fixo feito no Resolve (aula do João 21/10/2026: 1,2245x em y 549 tira os logos
+        # do palco, sem rastreio e sem mezanino renderizado)
         # zoom in/out (camera_moves do reel.json, Easy Ease em espaço log) centrado no rosto: o ponto do rosto fica parado
         z = math.exp(zlog(t)); sc = sc0 * z
         dx, dy = (RW / 2 - cx) * sc, (fy - RH / 2) * sc0 * (1 - z)
@@ -266,7 +268,7 @@ def transf(k, t):
             alvo = fx + (PW + (VW - PW) / 2 - fx) * sp
             sc = max(sc, (VW - alvo) / max(1.0, RW - fx))                 # borda direita sempre com imagem
             dx = alvo - (VW / 2 + (fx - RW / 2) * sc)                      # a esquerda descoberta fica sob o painel
-            dy = (fy - RH / 2) * (sc0 - sc)
+            dy = (fy - RH / 2) * (sc0 - sc) + (C.get('zoom_cy', RH / 2) - RH / 2) * sc
         else:
             spI = split_amt(t, SPL(True))
             if RH * sc0 < VH - 1:                                     # imagem mais baixa que o quadro: na tela dividida o topo dela

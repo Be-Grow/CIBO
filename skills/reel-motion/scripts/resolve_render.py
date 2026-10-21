@@ -58,7 +58,14 @@ try:
         p.SetCurrentTimeline(tl)
         if (pac / 'legenda.srt').exists():                    # legenda do pacote na faixa de legenda da timeline
             if not tl.GetTrackCount('subtitle'): tl.AddTrack('subtitle')   # sem a faixa, o AppendToTimeline "aceita" e não põe nada
-            it = mp.ImportMedia([str(pac / 'legenda.srt')]); it and mp.AppendToTimeline(it)
+            # a legenda entra onde está o cursor (logo depois da importação ele fica no fim e ela caía depois do último clipe):
+            # cursor no início, confere o 1º bloco e refaz se caiu fora
+            it = mp.ImportMedia([str(pac / 'legenda.srt')]); r.OpenPage('edit')
+            for _ in range(3):
+                tl.DeleteClips(tl.GetItemListInTrack('subtitle', 1) or []); time.sleep(1)
+                tl.SetCurrentTimecode(tl.GetStartTimecode()); time.sleep(0.5); it and mp.AppendToTimeline(it)
+                s1 = tl.GetItemListInTrack('subtitle', 1) or []
+                if s1 and s1[0].GetStart() < tl.GetStartFrame() + 30 * 60: break
             n = len(tl.GetItemListInTrack('subtitle', 1) or [])
             print(f'  legenda.srt: {n} blocos na timeline' if n else '  legenda.srt: NÃO ENTROU (importe na mão)', flush=True)
         if SEM: continue
