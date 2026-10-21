@@ -128,5 +128,17 @@
     "lufs_abaixo_voz": 16,
     "abertura": true,
     "nota": "final aprovado 20/10/2026: tigela grave só nas trocas de painel; a aguda (singing-bowl-hit-agudo-36st) soou 'feliz demais'; nada em frase/legenda"
+  },
+  "qualidade": {
+    "limiar": 6,
+    "alvo_eventos_10s": [
+      1.5,
+      4.5
+    ],
+    "max_parado": 7,
+    "enfase": [
+      0.1,
+      0.35
+    ]
   }
 }

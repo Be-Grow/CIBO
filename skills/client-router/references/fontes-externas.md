@@ -44,3 +44,18 @@ Web/3D interativo (claudedesignskills: Framer Motion, GSAP de rolagem, Three.js,
 tempo real no navegador, incompatível com render quadro a quadro. Avatares/IA generativa, vídeo
 explicativo com narração sintética, recaps em chinês: fora do tipo de trabalho do CIBO.
 OpenMontage, OpenChatCut, Montara (AGPL): não copiar código.
+
+## Rodada de 20/10/2026 (qualidade criativa: gancho, ritmo, variação)
+
+Clones rasos em `~/.cibo/vendor/<dono>_<repo>`. Nenhum código copiado; só ideias e números.
+
+| Fonte | Licença | Aproveitado | Onde |
+|---|---|---|---|
+| SamurAIGPT/AI-Youtube-Shorts-Generator | MIT | gancho nos 3 primeiros s; nunca cortar no meio da frase; não completar o lote com clipe fraco; justificativa por clipe | `gancho-e-ritmo` (gancho, final) |
+| FujiwaraChoki/supoclip | **AGPL-3.0 — só ideias** | notas por dimensão com justificativa; tipo de gancho (pergunta, afirmação, número, história, contraste, nenhum); histórico do criador só como desempate | `gancho-e-ritmo` (tipo de gancho), `rubrica.md` |
+| mutonby/openshorts | MIT | push-in ≤12 % com curva assimétrica e intervalo mínimo entre pushes; "crop estático longo é o vídeo menos editado" | `gancho-e-ritmo` (tempo morto visual), `variacao.py` |
+| browser-use/video-use | MIT | self-eval nos cortes e nos 2 s de início/fim; crítico com problemas ranqueados por timecode e as 5 primeiras correções; no máximo 3 passes; memória por projeto; anti-padrão "SFX em toda transição" | `gancho-e-ritmo` (relatório), `licoes.md`, `variacao.py` |
+| SysAdminDoc/OpenCut | MIT | ranking de takes repetidos (completude, muleta, estabilidade de ritmo ±35 % da mediana, duração); muletas seguras × dependentes de contexto; ducking attack 20 ms / release 300 ms | `gancho-e-ritmo` (variação de ritmo); candidato para `fala-limpa` |
+| digitalsamba/claude-code-video-toolkit | MIT | perfil de marca em JSON separado do motor; projeto multi-sessão com histórico | confirma `temas/<cliente>.json`; `licoes.md` |
+
+Descartado: gancho reescrito por LLM (o CIBO só usa a fala real), efeitos por batida estilo clipe musical, reframe automático.

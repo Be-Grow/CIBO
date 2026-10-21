@@ -548,6 +548,11 @@ def e_revisa():
         for t in achou:
             print(f"  {t['ini']:.2f}-{t['fim']:.2f} olha para {t['lado']} colado no corte: corte antes ou segure o quadro")
         print('  OK' if not achou else f'  {len(achou)} ponto(s)')
+    print('== gancho e ritmo (gancho-e-ritmo: nota 0–10, limiar no tema "qualidade")', flush=True)
+    (W / 'work').mkdir(exist_ok=True)
+    return subprocess.run([sys.executable, str(SK / 'gancho-e-ritmo/scripts/gancho_ritmo.py'), '--props', str(PUB / R / 'props.json'),
+                           '--segs', str(W / 'segs.json'), '--sfx', str(W / 'sfx.json'), '--reel', str(W / 'reel.json'),
+                           '--tema', str(ENG / 'temas' / f"{C.get('tema', 'priscilla')}.json"), '--json', str(W / 'work' / 'gancho_ritmo.json')]).returncode
 
 
 # partes isoladas por tipo de painel (as chaves batem com <Pt k=…> no panels.tsx)
@@ -728,7 +733,8 @@ def e_davinci():
 
 
 def e_final():
-    e_revisa()
+    if e_revisa() == 2 and os.environ.get('GANCHO_OK') != '1':
+        sys.exit('gancho-e-ritmo abaixo do limiar do cliente: ajuste o que o relatório aponta ou libere com GANCHO_OK=1 (decisão do editor)')
     remotion(W / 'video.mp4', ['--crf=16', '--x264-preset=slow'])
     cp = C['capa']
     faz_capa(cp)

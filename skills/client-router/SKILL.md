@@ -26,6 +26,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Vinheta, intro, abertura, logo animada | `vinheta-marca` (template Remotion 16:9/4K) |
 | Som conduzido por música (vinheta, teaser, motion): trilha medida, cortes na batida, SFX pelo pico | `desenho-de-som` |
 | Encoder e velocidade de render | `video-render-optimizer` (`VENC=auto`) |
+| Qualidade criativa (gancho 3 s, tempo morto, ritmo, ênfase, final): nota 0–10 antes do render | `gancho-e-ritmo` (já roda no `reel.py revisa`/`final`; em SRT para os outros motores) |
 | Legenda: pente-fino | `caption-quality-gate` |
 | Legenda: retranscrição cruzada | `legenda-cruzada` |
 | Checagem final do MP4 | `video-delivery-safety-check` (`podcast-reels/scripts/qa_lote.py` no lote, `audio_qa.py` no som) |
