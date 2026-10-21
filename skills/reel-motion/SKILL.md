@@ -21,8 +21,8 @@ pelo mesmo pacote DaVinci. Referência viva: `andreia/demandaVideoEstiloPriscill
 | 4 | Legenda | etapa `legenda` (MFA) → `conserta_mfa.py rNN/` onde o MFA colapsou → `legenda-cruzada` |
 | 5 | Motion | `props.py` com painéis nascidos da fala (`references/catalogo.md`), `checa_props`, perfil do tema; `qa_paineis --video` |
 | 6 | Som | trilha `talking-head-music` (prévia de 10 s no trecho real, 2–3 opções) e `sfx_tema.py rNN/ public/rNN/props.json temas/<tema>.json`, também com prévia antes do render |
-| 7 | Prévia | `previa` + `revisa`; aprovação do piloto antes do lote |
-| 8 | Pacote + Resolve | `fila_davinci.py PROJ "Projeto" "BeGrow/<Cliente>" r01 r01h …` = capa → pacote → projeto novo organizado → Fusion/cores → bins → `qa_resolve.py` |
+| 7 | Revisão | `revisa` (sem render). **Prévia é no Resolve, não no Remotion** (Andreia 19/10: "tem como fazer a prévia no davinci?"; João 21/10: noite perdida em prévia Remotion de aula): o piloto vai pelo passo 8 e o editor aprova lá. `previa` só se ele pedir MP4 |
+| 8 | Pacote + Resolve | **Sempre pela API, sem perguntar se ele prefere importar** (João 21/10): `fila_davinci.py PROJ "Projeto" "BeGrow/<Cliente>" r01 r01h …` = capa → pacote → projeto novo organizado → Fusion/cores → bins → `qa_resolve.py`. Antes, leia `client-router/references/regras/davinci.md` inteiro (lições da Andreia). Aula/vídeo longo: `"grosso": true` (bruto cortado + voz + trilha + legenda SRT, sem painel/rastreio/render) |
 | 9 | Depois do render do editor | `qa_render.py PROJ` (sincronia por trecho, offline, preto) nos dois formatos; `video-delivery-safety-check` |
 | 10 | Correção | só o que mudou (`--so-el`, `trecho`, `resolve_refaz_de_backup.py`); nunca ciclos de .drt; QA de novo em todas as versões |
 
