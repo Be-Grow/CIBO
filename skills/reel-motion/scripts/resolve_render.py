@@ -7,7 +7,7 @@ SEM_RENDER=1: só importa e deixa o projeto novo aberto (editor finaliza; Andrei
 uso: resolve_render.py "Nome do projeto" "Pasta/Sub" SAIDA_DIR pacote1 [pacote2 …]"""
 if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
     import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
-import os, subprocess, sys, time, json
+import os, re, subprocess, sys, time, json
 from pathlib import Path
 sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")
 import DaVinciResolveScript as dvr
@@ -34,11 +34,15 @@ try:
         pm.OpenFolder(f)
     p = pm.LoadProject(NOME) if NOME in (pm.GetProjectListInCurrentFolder() or []) else pm.CreateProject(NOME)
     assert p, 'projeto não abriu'
-    p.SetSetting("timelineFrameRate", "29.97")
+    # fps e tamanho vêm do FCPXML do 1º pacote (aula "grosso" em 30 fps, João 21/10/2026); antes era fixo 29,97
+    _fd = re.search(r'frameDuration="(\d+)/(\d+)s"', (PACS[0] / 'timeline.fcpxml').read_text(encoding='utf-8')) if PACS else None
+    _fps = int(_fd[2]) / int(_fd[1]) if _fd else 30000 / 1001
+    p.SetSetting("timelineFrameRate", "29.97" if abs(_fps - 29.97) < 0.01 else f'{_fps:g}')
     mp = p.GetMediaPool(); OUT.mkdir(parents=True, exist_ok=True)
     for pac in PACS:
         nome = pac.name; xml = pac / 'timeline.fcpxml'
-        w, h = (1920, 1080) if '16x9' in nome else (1080, 1920)
+        _f = re.search(r'<format [^>]*width="(\d+)" height="(\d+)"', xml.read_text(encoding='utf-8'))
+        w, h = (int(_f[1]), int(_f[2])) if _f else ((1920, 1080) if '16x9' in nome else (1080, 1920))
         for i in range(p.GetTimelineCount(), 0, -1):          # reimportação: tira a timeline antiga de mesmo nome
             t = p.GetTimelineByIndex(i)
             if t and t.GetName() == nome: mp.DeleteTimelines([t])
@@ -52,6 +56,11 @@ try:
         itens = sum(len(tl.GetItemListInTrack("video", k) or []) for k in range(1, v + 1))
         print(f'{nome}: {v} faixas de vídeo, {a} de áudio, {itens} clipes; início {tl.GetStartFrame()}', flush=True)
         p.SetCurrentTimeline(tl)
+        if (pac / 'legenda.srt').exists():                    # legenda do pacote na faixa de legenda da timeline
+            if not tl.GetTrackCount('subtitle'): tl.AddTrack('subtitle')   # sem a faixa, o AppendToTimeline "aceita" e não põe nada
+            it = mp.ImportMedia([str(pac / 'legenda.srt')]); it and mp.AppendToTimeline(it)
+            n = len(tl.GetItemListInTrack('subtitle', 1) or [])
+            print(f'  legenda.srt: {n} blocos na timeline' if n else '  legenda.srt: NÃO ENTROU (importe na mão)', flush=True)
         if SEM: continue
         p.LoadRenderPreset("H.264 Master")
         p.SetCurrentRenderFormatAndCodec("mov", "H264")
