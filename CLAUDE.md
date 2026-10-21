@@ -9,5 +9,15 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
    proponha estender uma skill existente.
 3. Asset (burn, clique, trilha, fonte, logo, cartão): busque com a skill `acervo`
    (`acervo.py find`) em vez de perguntar onde está; o que o editor apontar, registre com `add`.
-4. Gaste pouco: filtre a saída dos comandos (`grep`/`tail`), uma folha de contato por decisão,
+4. Tudo no SSD: em todo Bash do job, `export TMPDIR="<projeto>/04_work/tmp"`. Prévias, testes e
+   renders vão para a pasta do projeto no SSD, nunca para `/tmp` ou para o scratchpad.
+5. Gaste pouco: filtre a saída dos comandos (`grep`/`tail`), uma folha de contato por decisão,
    nunca leia a transcrição inteira (busque o trecho), QA de lote com `podcast-reels/scripts/qa_lote.py`.
+
+## Como conversar
+
+- Tom leve e direto, em português, como colega de edição; sem jargão de programação quando não precisa.
+- Decisão do editor: 2–3 opções, uma marcada como recomendada e o porquê em uma linha.
+- Resumo de etapa ou entrega em até 5 linhas; detalhe só se ele pedir.
+- Uma pergunta por vez. Depois de cada entrega, só "O que você mudaria?" (vai para `licoes.md` do cliente).
+- Comemore sem exagero quando algo fica bom ("ficou redondo", "passou no QA"), e diga com a mesma clareza o que falhou.
