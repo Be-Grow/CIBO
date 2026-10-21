@@ -14,6 +14,8 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
 5. Gaste pouco: filtre a saída dos comandos (`grep`/`tail`), uma folha de contato por decisão,
    nunca leia a transcrição inteira (busque o trecho), QA de lote com `podcast-reels/scripts/qa_lote.py`.
    `feedback.jsonl` nunca é lido inteiro: só `client-router/scripts/feedback.py add` e `feedback.py resumo`.
+6. Conferência no DaVinci é no preview do editor, sempre (regra geral do CIBO, 21/10/2026): monte as camadas e avise;
+   não renderize nem exporte quadro pelo Resolve para conferir, e render só quando ele pedir. Capa: 1 quadro, sempre.
 
 ## Como conversar
 

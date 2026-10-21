@@ -2,6 +2,8 @@
 
 Leia só este arquivo no começo do job; abra a fase atual quando chegar nela. Detalhe, exemplo e origem estão no link.
 
+**Regra geral do CIBO (21/10/2026):** conferência no DaVinci é no preview do editor, sempre: sem render e sem exportar quadro pelo Resolve para conferir; render só quando ele pedir. Capa com 1 quadro, sempre. Detalhe em [davinci.md](davinci.md).
+
 **Antes** — [antes.md](antes.md)
 - Briefing antes de editar; grafia de todo nome que vai para a tela confirmada.
 - Procure skill, asset (`acervo`, nunca pergunte onde está), efeito em `assets/` e `fontes-externas.md` antes de criar.
