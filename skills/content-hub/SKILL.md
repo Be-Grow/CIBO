@@ -43,6 +43,11 @@ Use 35–60 s como faixa normal e adapte ao pensamento completo. Um bom corte da
 
 ## Pipeline
 
+> **Entrega — padrão atual: MP4** (exceção temporária ao padrão DaVinci do CIBO, editor 20/10/2026). O render final sai
+> pelo ffmpeg (`podcast-reels/references/render-ffmpeg-legado.md`) até existir o adaptador `job.json` → pacote DaVinci.
+> Regra: `client-router/references/regras/davinci.md`.
+
+
 O job é controlado por `job.json`; veja `assets/job.example.json`.
 
 Na primeira utilização em uma máquina nova, crie `.venv` e instale `requirements.txt`. FFmpeg e FFprobe também precisam estar disponíveis no sistema.

@@ -41,9 +41,6 @@
   `video-render-optimizer`, testado de novo a cada 10 renders) e uma codificação só (`overlays`,
   `BURN_END_INLINE`). Nunca recodifique o MP4 entregue para pôr cartão ou burn. ("demora
   muito", 12/10/2026)
-- **Pacote DaVinci é a entrega padrão** (substitui a regra de 12/10 "só gerar se pedirem"): camadas + XML
-  validados num projeto novo, render final com o editor; ver "DaVinci Resolve pela API". Premiere Pro só
-  se pedirem. MP4 queimado só se pedirem (ex.: postar direto sem passar pelo Resolve).
 - **Ritmo e som de referência** (6 reels de criadores; `kurbaitaev/ghost-editor` e
   `kmilo93sd/agent-video-editor`, 12/10/2026): ~95% das transições são corte seco; plano médio
   de ~3 s; algo novo na tela a cada 5–7 s em Reels; SFX 0,4–0,9 a cada 10 s, nos grafismos e

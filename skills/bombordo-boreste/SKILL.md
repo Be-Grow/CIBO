@@ -104,7 +104,8 @@ Before editing, read and update `references/client-content-bible.md` and `refere
    (genuine smiles: strict smile + teeth + eyes open, whole episode). Approved by the
    client: a real smile with eyes open, or a soft smile in a slight 3/4 turn. Rejected:
    mid-word mouths, raised eyebrows, a serious/sad face, a flat straight-on close-up.
-6. **Run it:**
+6. **Run it** — gera só camadas (legenda com alfa, capa) e prévias de conferência; o MP4 final sai do DaVinci
+   (regra "Tudo no DaVinci" acima). MP4 queimado só se o editor pedir.
    ```bash
    JOB=job.json python3 scripts/make_reels.py            # all clips
    JOB=job.json python3 scripts/make_reels.py corte01    # one clip

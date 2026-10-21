@@ -26,7 +26,8 @@ pelo mesmo pacote DaVinci. Referência viva: `andreia/demandaVideoEstiloPriscill
 | 9 | Depois do render do editor | `qa_render.py PROJ` (sincronia por trecho, offline, preto) nos dois formatos; `video-delivery-safety-check` |
 | 10 | Correção | só o que mudou (`--so-el`, `trecho`, `resolve_refaz_de_backup.py`); nunca ciclos de .drt; QA de novo em todas as versões |
 
-Todo arquivo do pacote leva o sufixo do reel (`voz__r01.wav`): o Resolve junta mídia de mesmo nome entre pacotes (`references/davinci-licoes.md`).
+Todo arquivo do pacote leva o sufixo do reel (`voz__r01.wav`): o Resolve junta mídia de mesmo nome entre pacotes. Toda regra geral do DaVinci (nomes, FPS, .drt/GlobalIn,
+LoadRenderPreset, bins, cores) mora em `client-router/references/regras/davinci.md`.
 
 ## Estrutura
 
@@ -107,8 +108,9 @@ takes, MFA e capa).
 | `references/catalogo.md` | for montar painel: veja o que já existe (peças e painéis pela função na fala) antes de escrever JSX |
 | `references/motion-regras.md` | painel novo, perfil de movimento, cor do tema, pílulas sobrepostas, tela invertida, olhar para o lado, capa do feed |
 | `references/fonte-e-legenda.md` | bruto multicâmera (`acha_trechos`/`aplica_mapa`), `edit_fix` na legenda, recorte, RAM |
-| `references/davinci-licoes.md` | pacote DaVinci: nomes, partes de painel, FPS, .drt, cache, SSD lotado, mix do editor, corrigir texto sem remontar |
-| `references/fusion-camera.md` | movimento de câmera no Fusion, curva dura, render falhando no Fusion |
+| `references/davinci-licoes.md` | etapa `davinci` do motor: fragmentação, custo, `so_legenda`, `extras` |
+| `client-router/references/regras/davinci.md` | qualquer regra do Resolve: nomes, FPS, .drt/GlobalIn, cache, render, bins, cores |
+| `references/fusion-camera.md` | movimento de câmera no Fusion, curva dura, mix do editor, corrigir texto sem remontar |
 | `references/horizontal-16x9.md` | versão 16:9 (`orient: h`) ou fonte de celular (rotação, 30 fps, full range) |
 | `references/eficiencia-auditorias.md` | custo do job, `status.py`, auditorias e validação dos checadores |
 | `references/historico.md` | quiser saber de onde veio uma regra (datas, falas do editor, testes medidos) |

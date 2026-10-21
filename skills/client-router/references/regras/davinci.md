@@ -34,10 +34,8 @@ só o clipe. Aplicar com `reel-motion/scripts/resolve_cores.py` (o `resolve_fx.p
 | SFX | Chocolate | SFX |
 
 **Motor padrão = fluxo da Andreia (20/10/2026, "gostaria que fosse o padrão de edição da CIBO"):** todo job de fala segue
-a receita de 10 etapas da `reel-motion` ("Padrão de edição do CIBO"): briefing com tema e grafia dos nomes → fonte (rastreio,
-fps automático) → trechos e fala limpa → legenda MFA conferida → motion nascido da fala no perfil do cliente → trilha e SFX
-com prévia no trecho real → prévia aprovada → `fila_davinci.py` (pacote com nomes únicos, projeto organizado, Fusion,
-cores, `qa_resolve`) → `qa_render` depois do render do editor → correção só do que mudou. Cliente com skill própria
+a receita de 10 etapas que mora só na `reel-motion` → "Padrão de edição do CIBO" (do briefing ao `qa_render` e à
+correção só do que mudou). Cliente com skill própria
 mantém estilo, assets e regras dele; o que muda é a entrega pelo mesmo pacote DaVinci.
 
 **Nada de ffmpeg na entrega (20/10/2026, Bombordo EP 07, segunda vez que o editor cobra):** nem o episódio completo
@@ -90,5 +88,37 @@ A API funciona
   - Renderize só o que mudou, na ordem que o editor precisa; não refaça os 8 por mudança num só.
 - **Render no Deliver pela API (19/10/2026):** H.264 com qualidade limitada a **25.000 kb/s** (`SetRenderSettings({'VideoQuality': 25000})`),
   nunca o automático/80.000 do preset. Resolução de cada job = a da timeline. Pedido do editor (Andreia).
+- **Pacote DaVinci é o padrão de entrega do CIBO, com exceções temporárias** (editor, 20/10/2026, opção 1):
+  camadas + XML validados num projeto novo, render final com o editor (`reel-motion/scripts/fila_davinci.py` nos clientes do
+  reel-motion; fluxo DaVinci do Bombordo). **Exceções temporárias, padrão atual MP4:** Katia, Autismo Cast, Content Hub e
+  `podcast-reels` genérico, pelo caminho `podcast-reels/references/render-ffmpeg-legado.md`, até existir o adaptador
+  `job.json` → pacote (`~/CIBO/todo.md`; piloto Content Hub; Katia e Autismo Cast estão inativos e ficam fora). Fora delas, ffmpeg só para análise e prévia; MP4 queimado só se o editor pedir.
+  Premiere Pro só se pedirem. Texto anterior da regra:
+  > - **Pacote DaVinci é a entrega padrão** (substitui a regra de 12/10 "só gerar se pedirem"): camadas + XML
+  >   validados num projeto novo, render final com o editor; ver "DaVinci Resolve pela API". Premiere Pro só
+  >   se pedirem. MP4 queimado só se pedirem (ex.: postar direto sem passar pelo Resolve).
 
 Volta ao checklist: [`_checklist.md`](_checklist.md).
+
+## Detalhe das lições do Resolve (movido de `reel-motion/references/fusion-camera.md` e `davinci-licoes.md`, 21/10/2026)
+
+- **FPS da fonte (Andreia 19/10/2026, "Media Offline" no fim + áudio atrasado):** a timeline é 29,97; bruto de iPhone
+  em 30 fps é forçado 1:1 pelo Resolve (escorrega 1 quadro/1000 e o último trecho passa do fim do arquivo → offline).
+  Resolvido em 20/10/2026: o `davinci.py` lê o fps e, fora de 29,97, usa uma cópia por tempo em `01_sources/_2997/`
+  (feita uma vez por fonte, 1 s de folga, sem timecode). Testado no r01: timeline idêntica à entregue, só com o bruto trocado.
+  Timeline já montada: `scripts/resolve_refaz_audio.py` (ReplaceClip do bruto; trilha/SFX novos no lugar dos arquivos).
+- **.drt não troca mídia:** o Resolve religa pelo `MediaRef` e ignora `MediaFilePath`; ele também junta arquivos de mesmo nome
+  entre pacotes (o 03 abriu com a trilha.wav do 01). Troca de mídia: `MediaPoolItem.ReplaceClip` ou arquivo novo no mesmo caminho.
+  Trecho sem media pool item: `DeleteClips` + `AppendToTimeline` (endFrame exclusivo) copiando Pan/Zoom/Rotation do vizinho.
+- **Cache de render do Resolve** fica no disco interno (`~/Movies/CacheClip`) e lotou o Mac: aponte para o SSD.
+- **Nunca encadeie ciclos de .drt (exportar→importar) na mesma timeline** (Andreia, 20/10/2026): cada ciclo soma 1 ao `GlobalIn`
+  do `MediaIn1` das camadas de ajuste (Fusion) e o render falha com "The Fusion composition at 00:00:00:02 could not be processed".
+  A API não grava esse valor. Confira com `FindTool('MediaIn1').GetInput('GlobalIn')` (tem que ser 0) e refaça a partir do
+  backup numa importação só: `scripts/resolve_refaz_de_backup.py BACKUP.drt "NOME"`. Guarde o .drt antes de qualquer edição por XML.
+- **Mesmo nome entre pacotes = mídia trocada** (Andreia, 20/10/2026): o Resolve junta `voz.wav`/`trilha.wav` de pacotes diferentes
+  num item só; o 03 tocou trechos da voz do 01 ("o áudio parece de outro vídeo"). Resolvido no motor (sufixo `__rNN` em todo
+  arquivo do pacote, ver "Padrão de edição do CIBO"); para pacotes antigos, depois de importar, audite se cada clipe vem
+  de `07_davinci/<próprio pacote>/` — `resolve_refaz_de_backup.py` faz isso (`pacote_certo`) e também recoloca o clipe offline
+  da câmera com `RotationAngle 90` (o bruto do iPhone sai deitado sem ele). QA de sincronia por trecho: correlação do áudio do
+  render com o áudio da câmera no mesmo quadro (atraso ≈ 0 ms, corr > 0,9).
+- **O DaVinci ignora o modo de mesclagem do FCPXML:** burn vai com alfa (reel-motion, 14/10/2026).

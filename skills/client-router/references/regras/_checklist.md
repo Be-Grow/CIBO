@@ -17,7 +17,7 @@ Leia só este arquivo no começo do job; abra a fase atual quando chegar nela. D
 - Toda espera em segundo plano tem tempo limite e sai no erro; zsh: variável sempre entre aspas.
 - Pergunte o que o editor quis dizer antes de investigar.
 **DaVinci** — [davinci.md](davinci.md)
-- Pacote DaVinci é a entrega padrão; o projeto aberto é do editor (projeto NOVO para validar).
+- Pacote DaVinci é o padrão (exceções temporárias em MP4, sem adaptador job.json→pacote: Content Hub, podcast-reels genérico; Katia e Autismo inativos); projeto NOVO para validar.
 - XML do FCP7, render pela API, AAC 64 kb/s, `SetLUT` só da pasta do sistema, arquivo trocado no mesmo caminho fica em cache;
   render no Deliver H.264 limitado a 25.000 kb/s.
 - Lições da Andrea: FPS da fonte, nome único por pacote, nunca encadear ciclos de .drt, bins e cores.

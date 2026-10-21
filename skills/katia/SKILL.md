@@ -88,6 +88,11 @@ acima de 2 min, trilha em loop infinito travando o encode, frase sumindo da lege
 
 ## Workflow
 
+> **Entrega — padrão atual: MP4** (exceção temporária ao padrão DaVinci do CIBO, editor 20/10/2026). O render final sai
+> pelo ffmpeg (`podcast-reels/references/render-ffmpeg-legado.md`) até existir o adaptador `job.json` → pacote DaVinci.
+> Regra: `client-router/references/regras/davinci.md`.
+
+
 1. **Read the SRT, not the video.** Collapse it into a readable transcript first:
    group cues into ~15 s blocks and print `[start - end] text`. Pick the clips from
    that. Never scrub the video looking for moments.

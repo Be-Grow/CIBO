@@ -18,6 +18,11 @@ silence-snapped trimming, caption rendering, audio sweetening and the cover.
 
 ## Workflow
 
+> **Entrega — padrão atual: MP4** (exceção temporária ao padrão DaVinci do CIBO, editor 20/10/2026). O render final sai
+> pelo ffmpeg (`podcast-reels/references/render-ffmpeg-legado.md`) até existir o adaptador `job.json` → pacote DaVinci.
+> Regra: `client-router/references/regras/davinci.md`.
+
+
 Before editing, read and update `references/client-content-bible.md` and `references/asset-source-catalog.md`. Use `video-project-structure` to audit the fixed project layout and prevent raw/stock media from entering Drive asset packages.
 
 1. **Read the SRT, not the video.** Collapse it into a readable transcript first:

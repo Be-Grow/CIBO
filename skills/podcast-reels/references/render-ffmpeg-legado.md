@@ -1,4 +1,7 @@
-# podcast-reels — render e projeto editável
+# Render ffmpeg (caminho legado de entrega)
+
+Padrão atual (exceção temporária ao DaVinci do CIBO) de Katia, Autismo Cast, Content Hub e podcast-reels genérico;
+nos demais clientes, só se o editor pedir MP4 pronto. Regra: `client-router/references/regras/davinci.md`.
 
 Movido do SKILL.md em 20/10/2026 (carregar sob demanda). Conteúdo preservado sem cortes.
 

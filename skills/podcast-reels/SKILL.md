@@ -18,6 +18,11 @@ silence-snapped trimming, caption rendering, audio sweetening and the cover.
 
 ## Workflow
 
+> **Entrega — padrão atual: MP4** (exceção temporária ao padrão DaVinci do CIBO, editor 20/10/2026). O render final sai
+> pelo ffmpeg (`podcast-reels/references/render-ffmpeg-legado.md`) até existir o adaptador `job.json` → pacote DaVinci.
+> Regra: `client-router/references/regras/davinci.md`.
+
+
 1. **Read the SRT, not the video.** Collapse it into a readable transcript first:
    group cues into ~15 s blocks and print `[start - end] text`. Pick the clips from
    that. Never scrub the video looking for moments.
@@ -70,7 +75,7 @@ Onde todo "clipador" automático erra (testes do Opus Clip descartam 13–40% da
 | Arquivo | Abra se |
 |---|---|
 | `references/motor-comum.md` | escolher `keeps`, mudar um corte pronto, conferir algo sem render inteiro, regras do motor, entregáveis |
-| `references/render.md` | renderizar (opções de render, VENC, PARALLEL, overlays) ou gerar projeto Premiere/DaVinci |
+| `references/render-ffmpeg-legado.md` | renderizar o MP4 (padrão atual MP4 deste motor; opções VENC, PARALLEL, overlays) ou gerar projeto Premiere/DaVinci |
 | `references/gancho-ab.md` | testar ganchos diferentes para o mesmo corte (`variacoes_gancho.py`) |
 | `references/eficiencia.md` | o job está caro em tokens ou turnos |
 | `references/historico-falhas.md` | algo falhou: índice de falhas conhecidas e o histórico de cada uma |
