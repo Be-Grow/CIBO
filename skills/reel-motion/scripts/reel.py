@@ -723,6 +723,8 @@ def e_davinci():
         rel = f'el/{nome}.mov' if (cam / f'el/{nome}.mov').exists() else f'{nome}.mov'
         if (cam / rel).exists() and not (cam / U(rel)).exists():
             (cam / rel).rename(cam / U(rel))
+    if C.get('grosso'):                                         # aula longa: só o grosso (legenda vai como SRT)
+        jobs, man = [], []
     json.dump(man, open(cam / 'elementos.json', 'w'), ensure_ascii=False, indent=1)
     # câmera da referência pelo ffmpeg (deslocamento da tela dividida por quadro + escurecimento final): no Remotion levava
     # ~5,5 min por reel de 85 s abrindo o ProRes quadro a quadro; aqui ~1 min (Andreia, 19/10/2026). Sem o motion blur da troca.

@@ -22,12 +22,23 @@ import numpy as np, soundfile as sf
 P, R, OUT = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3]).resolve()
 W = P / '04_work' / R; PUB = P / '04_work' / 'public'; CAM = OUT / '_camadas'
 C = json.load(open(W / 'reel.json')); PR = json.load(open(PUB / R / 'props.json'))
+# "grosso" (aula longa, João 21/10/2026: "só editar o grosso"): bruto cortado, voz, trilha e legenda.srt; sem painel,
+# título, burn, SFX, rastreio nem movimento de câmera, e nada renderizado no Remotion
+GROSSO = bool(C.get('grosso'))
+if GROSSO:
+    PR = {**PR, 'panels': [], 'burns': [], 'inserts': [], 'hook': None, 'titles': [], 'lower': None, 'keywords': [], 'endCard': None}
+    C = {**C, 'camera_davinci': True, 'camera_moves': []}; C.pop('track', None)
 # versão horizontal 16:9 ("orient": "h", Andreia 19/10/2026): timeline 1920×1080, painel à esquerda, deslocamento da pessoa em x
 HZ = C.get('orient') == 'h'; VW, VH = (1920, 1080) if HZ else (1080, 1920)
 SFXDIR = '/Volumes/SSD/CIBO Acervo/sfx/_global/'
 FD = Fraction(1001, 30000)
+if GROSSO:                                                     # aula longa: timeline no fps da fonte, sem cópia 29,97 (João 21/10/2026:
+    _s = Path(C['src']) if os.path.isabs(C['src']) else P / '01_sources' / C['src']   # "o Resolve consegue fazer isso sozinho")
+    _r = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', str(_s)],
+                        capture_output=True, text=True).stdout.strip()
+    FD = 1 / Fraction(_r)
 fr = lambda t: max(0, round(t / FD))                       # segundos → quadros
-tt = lambda n: f'{n * 1001}/30000s' if n else '0s'         # quadros → tempo FCPXML
+tt = lambda n: f'{n * FD.numerator}/{FD.denominator}s' if n else '0s'         # quadros → tempo FCPXML
 D = fr(PR['duration'])
 slug = lambda s, n=40: re.sub(r'[^\w]+', '_', s.lower()).strip('_')[:n] or 'x'
 # nome único por pacote (Andreia 20/10/2026: o Resolve junta arquivos de MESMO NOME de pacotes diferentes num item só e o 03
@@ -97,7 +108,7 @@ for src, dst in ((W / 'voz.wav', U('voz.wav')), (W / 'musica.wav', U('trilha.wav
 sfx = []
 for f in (OUT / 'sfx').glob('*'):
     f.unlink()
-for i, e in enumerate(json.load(open(W / 'sfx.json'))):
+for i, e in enumerate([] if GROSSO else json.load(open(W / 'sfx.json'))):
     f = Path(e['f'] if os.path.isabs(e['f']) else SFXDIR + e['f'] + '.wav')
     dst = OUT / 'sfx' / U(f'{i:02d}_{f.stem}{f.suffix}'); shutil.copy(f, dst)
     x, sr = sf.read(dst); x = x.mean(1) if x.ndim > 1 else x; pk = int(np.argmax(np.abs(x))) / sr
@@ -124,8 +135,8 @@ BOP = (PR.get('theme') or {}).get('burnOpacity') or 0.85
 # ---- capa e SRT ----
 CP = P / '06_deliverables' / f"CAPA - {C['name']}.jpg"
 if not CP.exists():
-    CP = next(P.glob(f"06_deliverables/CAPA - {R[1:]} -*"))
-sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', CP, '-frames:v', '1', '-r', '30000/1001', '-vf', f'scale={VW}:{VH}',
+    CP = next(P.glob(f"06_deliverables/CAPA - {R[1:]} -*"), None)
+if CP: sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', CP, '-frames:v', '1', '-r', '30000/1001', '-vf', f'scale={VW}:{VH}',
    '-c:v', 'prores_videotoolbox', '-profile:v', 'standard', OUT / U('capa.mov'))
 hms = lambda t: f'{int(t // 3600):02d}:{int(t % 3600 // 60):02d}:{int(t % 60):02d},{int(round(t % 1 * 1000)) % 1000:03d}'
 txt = lambda b: ' '.join(w['t'] for w in b['words'])
@@ -135,7 +146,7 @@ pan = PR.get('panels', [])
 fundos = [] if not (CAM / U('painel_fundo.mov')).exists() else pedacos(CAM / U('painel_fundo.mov'), [fr(p['s']) for p in pan],
                  lambda x, y: (lambda p: f"fundo {p['type']} {p.get('title', '')}" if p else 'fundo')(perto(pan, x, y)), 'paineis_fundo')
 cap = PR['captions']
-legenda = pedacos(CAM / U('legenda.mov'), [fr(b['s']) for b in cap], lambda x, y: (lambda b: txt(b) if b else 'legenda')(perto(cap, x, y)), 'legenda')
+legenda = [] if not (CAM / U('legenda.mov')).exists() else pedacos(CAM / U('legenda.mov'), [fr(b['s']) for b in cap], lambda x, y: (lambda b: txt(b) if b else 'legenda')(perto(cap, x, y)), 'legenda')
 # elementos isolados (um arquivo cada, renderizado só no seu trecho): o clipe vai do 1º ao último quadro visível
 elem = {}
 for m in json.load(open(CAM / 'elementos.json')):
@@ -317,7 +328,7 @@ def fonte_2997(src):
     (mesmos segundos, 1 s de folga no fim, sem timecode), feita uma vez e reaproveitada por todos os reels da mesma fonte"""
     r = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', str(src)],
                        capture_output=True, text=True).stdout.strip()
-    if r == '30000/1001':
+    if r == '30000/1001' or GROSSO:
         return src
     dst = src.parent / '_2997' / (src.stem + '.mov') if src.parent.name != '_2997' else src
     if not dst.exists():
@@ -436,7 +447,7 @@ for e in C.get('extras', []):
 V = nova()
 for f, off, n in burns:
     L.append(clip(f, V, off, n, 'burn', extra=f'<adjust-blend amount="{BOP}"/>'))
-L.append(clip(OUT / U('capa.mov'), nova(), 0, 1, 'capa (quadro 0)'))
+if CP: L.append(clip(OUT / U('capa.mov'), nova(), 0, 1, 'capa (quadro 0)'))
 L.append(clip(OUT / U('trilha.wav'), -2, 0, fr(dur(OUT / U('trilha.wav'))), 'trilha', video=False, audio=True))
 fim = []                                                      # SFX: faixas de áudio sem sobreposição
 for f, ins_, off, n, db in sorted(sfx, key=lambda z: z[2]):
@@ -478,7 +489,7 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fcpxml>
 <fcpxml version="1.10">
 <resources>
-<format id="r1" name="FFVideoFormat{VW}x{VH}p2997" frameDuration="1001/30000s" width="{VW}" height="{VH}" colorSpace="1-1-1 (Rec. 709)"/>
+<format id="r1" name="FFVideoFormat{VW}x{VH}p{'2997' if FD == Fraction(1001, 30000) else round(1 / FD)}" frameDuration="{FD.numerator}/{FD.denominator}s" width="{VW}" height="{VH}" colorSpace="1-1-1 (Rec. 709)"/>
 {chr(10).join(assets)}
 </resources>
 <library><event name={quoteattr(C['name'])}><project name={quoteattr(C['name'])}>
