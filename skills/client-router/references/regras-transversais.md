@@ -211,6 +211,11 @@ A API funciona
   com a trilha do vídeo e a do efeito por cima, terminando depois dela. O pico do burn cai no
   último quadro do vídeo; nada de fade nem de congelar a imagem. No `podcast-reels`:
   `scripts/burn_end.py`. Vale para qualquer cliente que use burn na saída. (podLilian, 09/10/2026)
+- **Saída é decisão por cliente** (editor, 20/10/2026, opção "regra por cliente"): padrão **seco**; fade só onde foi aprovado.
+  reel-motion: bloco `"saida"` do tema (`{"tipo": "fade", "dur": 0.9}` em Andreia, Priscilla e João Campos; seco em Growth
+  Leaders e em todo tema novo), `reel.json "saida"` sobrepõe num reel. Bombordo, Autismo Cast e Content Hub: fade de 0,42 s
+  aprovado continua; `"saida": "seco"` no clipe ou `SAIDA=seco` tira o fade. Cliente novo: pergunte no briefing só se ele
+  pedir fade.
 - **Todo corte vertical leva trilha**, mesmo sem pedido. Biblioteca própria no SSD:
   `/Volumes/SSD/Music/Sound/Músicas edicao` e `/Volumes/SSD/Music/Projeto premiere/`
   (AMBIENTAÇÃO, IMPACTO, RISERS, HITS, ATMOSFERA, WHOOSHS). Escolha e nível pela skill

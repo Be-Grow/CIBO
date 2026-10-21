@@ -8,5 +8,6 @@
    {"family": "MSans", "file": "/Volumes/SSD/CIBO Acervo/fonte/priscilla-daher/Montserrat-Regular.ttf", "weight": "400"}
   ]
  },
- "capa": {"layout": "serif", "footer": "PRISCILLA DAHER"}
+ "capa": {"layout": "serif", "footer": "PRISCILLA DAHER"},
+ "saida": {"tipo": "fade", "dur": 0.9}
 }

@@ -10,4 +10,4 @@ reel-motion: use `gancho_ritmo.py --srt` no corte; o limiar ainda será calibrad
 | Legibilidade | legenda abaixo do queixo, estática ou kinetic palavra por palavra | legenda sobre o rosto |
 | Identidade | capa com o convidado sorrindo; assets e fonte do Bombordo; entrega no DaVinci com camadas organizadas | asset de outro cliente, MP4 queimado no lugar do XML/camadas |
 
-Final: hoje usa `OUTRO_FADE` (fade para preto). A regra transversal proíbe fade: questão aberta com o editor, não mude sem perguntar.
+Final: fade de 0,42 s para preto (`OUTRO_FADE`), aprovado e mantido como saída deste cliente; `SAIDA=seco` tira o fade.

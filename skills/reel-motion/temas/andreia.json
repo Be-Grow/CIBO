@@ -149,5 +149,6 @@
   },
   "movimento": {
     "preset": "editorial"
-  }
+  },
+  "saida": {"tipo": "fade", "dur": 0.9}
 }

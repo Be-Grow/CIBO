@@ -370,6 +370,10 @@ def e_props():
     for k in ('layout', 'layoutH'):
         if C.get(k):
             pr['theme'][k] = {**pr['theme'].get(k, {}), **C[k]}
+    # saída por cliente (editor 20/10/2026): tema "saida" {"tipo": "seco"|"fade", "dur": 0.9}; sem o bloco = seco (regra
+    # transversal). reel.json "saida" sobrepõe só neste reel.
+    sd = {'tipo': 'seco', **TEMA.get('saida', {}), **C.get('saida', {})}
+    pr['endFade'] = float(sd.get('dur', 0.9)) if sd['tipo'] == 'fade' else 0
     if C.get('formato') == 'so_legenda':
         # formato "só legenda" (crítica do 06 da Priscilla, 14/10/2026: nem tudo igual): ela em tela cheia com gancho, títulos
         # e legenda; sem painéis, tela dividida e burns. SFX ficam só nos textos (gancho e títulos); os dos painéis saem.

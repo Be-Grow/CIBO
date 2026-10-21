@@ -100,5 +100,6 @@
   "Título e degradê ocupam a base; nunca encobrem o rosto.",
   "Painéis devem representar o sentido da fala e não repetir o mesmo formato entre reels.",
   "Música fica 18 a 22 dB abaixo da voz e em faixa separada no pacote editável."
- ]
+ ],
+ "saida": {"tipo": "seco"}
 }

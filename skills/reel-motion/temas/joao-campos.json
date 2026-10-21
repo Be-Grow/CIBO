@@ -85,5 +85,6 @@
   "legenda dentro de 820 px (zona segura do Instagram)",
   "em corte com foco no João (2 por episódio) só ele aparece: plano de reação da convidada vira inserção; o corte do convidado (1 por episódio) tem foco no convidado",
   "trilha nivelada no tempo (music_level) e 18,5 dB abaixo da voz"
- ]
+ ],
+ "saida": {"tipo": "fade", "dur": 0.9}
 }

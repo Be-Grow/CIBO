@@ -8,6 +8,8 @@ B=os.environ.get('WORK','.'); SRCDIR=os.environ.get('SRCDIR','.')
 FPS=30; W,H=1080,1920
 INTRO=0.90; Z0=1.26; BLUR0=18.0
 OUTRO_BURN=0.80; OUTRO_FADE=0.42; OUTRO_BLACK=0.18
+# saída por cliente (editor 20/10/2026): 'fade' é o aprovado deste cliente; 'seco' (clipe ou SAIDA=seco) tira o fade e mantém o burn sobre o preto
+SAIDA=os.environ.get('SAIDA','fade')
 
 def sh(cmd):
     r=subprocess.run(cmd,shell=True,capture_output=True,text=True)
@@ -263,7 +265,7 @@ def final(c,passa,intro,out,cover=None,preset='veryfast',crf=21,extra=''):
        f"[vb][capa]overlay=x=0:y='{caption_y_expr(c)}':eval=frame:format=auto:eof_action=pass[vcap];"
        f"[6:v]format=yuva420p[l6];[l6][7:v]alphamerge[leta];"
        f"[vcap][leta]overlay=x=0:y=1180:format=auto:eof_action=pass,setsar=1,"
-       f"fade=t=out:st={fade_start:.6f}:d={OUTRO_FADE:.6f},format=yuv420p[bodyfade];"
+       f"{'fade=t=out:st=%.6f:d=%.6f,' % (fade_start, OUTRO_FADE) if c.get('saida', SAIDA) == 'fade' else ''}format=yuv420p[bodyfade];"
        f"color=c=black:s={W}x{H}:r={FPS}:d={OUTRO_BLACK:.6f},setsar=1,format=yuv420p[endblack];"
        f"[bodyfade][endblack]concat=n=2:v=1:a=0[body];"
        f"[0:a]highpass=f=70,lowpass=f=15500,"

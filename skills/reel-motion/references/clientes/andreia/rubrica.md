@@ -10,5 +10,4 @@ Medido com `gancho-e-ritmo`: 8,3–9,4 (limiar do tema: 6). Nome na tela é **An
 | Legibilidade | legenda Montserrat palavra a palavra, destaque dourado em 20–34 % das palavras, em expressões ("metade do caminho") | destaque em palavra vazia solta, bloco inteiro dourado, legenda sobre o painel |
 | Identidade | roxo profundo + dourado/âmbar + creme; títulos Cormorant Garamond com destaque itálico dourado; movimento suave (perfil editorial) | painel creme com texto violeta (não mostra o roxo), SFX genérico "feliz", animação dura |
 
-Final aprovado: escurece em 0,9 s (`endFade`) depois de uma frase fechada ("Te espero lá."). A regra geral do fade está em
-discussão com o editor: não mude sem perguntar.
+Final aprovado: escurece em 0,9 s depois de uma frase fechada ("Te espero lá."): `"saida": {"tipo": "fade", "dur": 0.9}` no tema.

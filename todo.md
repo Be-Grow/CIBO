@@ -4,7 +4,7 @@ Pendências de 12/10/2026 (detalhes em `skills/client-router/references/fontes-e
 
 - [ ] **Migrar Bombordo, Autismo Cast e Content Hub para o motor único** (`podcast-reels` + perfil),
       um cliente por sessão. Levar os recursos próprios como opções: `impact_pulses`, `long_moves`,
-      `punch`, saída com fade/preto/SFX (decidir com o editor: a regra transversal proíbe fade),
+      `punch`, saída com fade/preto/SFX (decidido 20/10/2026: saída por cliente, padrão seco; ver regras-transversais),
       mixagem própria, legenda cinética, chamada (Bombordo); letterings e B-roll (Content Hub).
       Proteção: `tests/regressao.py check` antes de cada push.
 - [ ] **Confirmar a importação do projeto editável** no Premiere Pro e no DaVinci Resolve
