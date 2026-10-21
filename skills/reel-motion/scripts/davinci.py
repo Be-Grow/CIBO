@@ -487,6 +487,21 @@ if FX:                                                        # movimentos.json:
         camadas.append(dict(nome=nome, tipo=tipo, inicio=n0, dur=n1 - n0, kf=[[q[0], round(q[1], 5), round(q[2], 5), round(q[3], 5)] for q in red]))
     json.dump(dict(src=str(SRC.resolve()), camadas=camadas), open(OUT / 'movimentos.json', 'w'), ensure_ascii=False, indent=1)
     print(f'movimentos de câmera em camadas de ajuste: {len(camadas)}')
+# aula no grosso: legenda como títulos (Text+ no Resolve) já na fonte do tema; a faixa de legenda (SRT) do Resolve não aceita
+# fonte pela API (João 21/10/2026: "precisa que tudo seja em Montserrat"). Um título por bloco, embaixo, caixa alta se o tema pede
+if GROSSO and PR.get('captions'):
+    _cp = ((PR.get('theme') or {}).get('caption') or {}); _up = _cp.get('upper', False)
+    _w = {700: 'Bold', 800: 'ExtraBold', 900: 'Black'}.get(_cp.get('weight', 800), 'ExtraBold')
+    assets.append('<effect id="rT" name="Basic Title" uid=".../Titles.localized/Bumper:Opener.localized/Basic Title.localized/Basic Title.moti"/>')
+    for i, b in enumerate(PR['captions']):
+        a0, a1 = fr(b['s']), max(fr(b['s']) + 1, fr(b['e']))
+        tx = txt(b).upper() if _up else txt(b)
+        L.append(f'<title ref="rT" lane="20" offset="{tt(a0)}" duration="{tt(a1 - a0)}" name={quoteattr(tx[:40])}>'
+                 '<adjust-transform position="0 -38"/>'                          # % da altura, como a câmera (y para cima)
+                 f'<text><text-style ref="ts{i}">{tx.replace("&", "&amp;").replace("<", "&lt;")}</text-style></text>'
+                 f'<text-style-def id="ts{i}"><text-style font="Montserrat" fontSize="{VH * 0.05:.0f}" fontFace="{_w}" fontColor="1 1 1 1" '
+                 f'shadowColor="0 0 0 0.75" shadowOffset="3 315" shadowBlurRadius="6" alignment="center"/></text-style-def></title>')
+    (OUT / 'legenda.srt').rename(OUT / 'legenda_texto.srt')      # o SRT fica de referência, sem ir para a timeline
 xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fcpxml>
 <fcpxml version="1.10">

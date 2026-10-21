@@ -23,7 +23,7 @@ def audita(t):
     for ty in ('video', 'audio'):
         for k, it in itens(t, ty):
             m = it.GetMediaPoolItem(); fp = nfc(m.GetClipProperty('File Path')) if m else ''
-            if not m and not it.GetFusionCompCount():
+            if not m and not it.GetFusionCompCount() and it.GetName() != 'Text':   # 'Text' = título do FCPXML (legenda da aula)
                 prob.append(f'{ty}{k} {it.GetName()[:30]}: sem mídia (offline)')
             if '/07_davinci/' in fp and fp.split('/07_davinci/')[1].split('/')[0] != n:
                 prob.append(f'{ty}{k} {fp.split("/")[-1]}: arquivo de outro pacote ({fp.split("/07_davinci/")[1].split("/")[0][:30]})')
