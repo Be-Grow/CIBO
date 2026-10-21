@@ -118,5 +118,15 @@
     "CTA final: Black das Blacks, lista VIP (grafia aprovada pelo editor)",
     "referências em tela: banco livre (Pexels/Pixabay) validado pelo sentido da fala",
     "16:9 em terços: painel nos 2/3 da esquerda (panelW 1280), ela centralizada no terço da direita pelo CORPO (editor, 19/10/2026); legenda da tela dividida no rodapé do painel"
-  ]
+  ],
+  "sfx": {
+    "kit": "/Volumes/SSD/CIBO Acervo/sfx/andreia/wav/",
+    "modo": "so_trocas",
+    "trocas": [
+      "tibetan-singing-bowl"
+    ],
+    "lufs_abaixo_voz": 16,
+    "abertura": true,
+    "nota": "final aprovado 20/10/2026: tigela grave só nas trocas de painel; a aguda (singing-bowl-hit-agudo-36st) soou 'feliz demais'; nada em frase/legenda"
+  }
 }

@@ -25,7 +25,7 @@ def audita(t):
                 prob.append(f'{ty}{k} {it.GetName()[:30]}: sem mídia (offline)')
             if '/07_davinci/' in fp and fp.split('/07_davinci/')[1].split('/')[0] != n:
                 prob.append(f'{ty}{k} {fp.split("/")[-1]}: arquivo de outro pacote ({fp.split("/07_davinci/")[1].split("/")[0][:30]})')
-    bruto = [it for _, it in itens(t) if it.GetName().startswith('v0')]
+    bruto = [it for _, it in itens(t) if it.GetMediaPoolItem() and '/01_sources/' in (it.GetMediaPoolItem().GetClipProperty('File Path') or '')]
     for p in ('Scaling', 'RotationAngle'):
         v = [it.GetProperty(p) for it in bruto]
         if len(set(map(str, v))) > 1:

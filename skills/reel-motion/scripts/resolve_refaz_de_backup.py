@@ -28,7 +28,7 @@ def religa(mp, t, bruto):
     """bruto .mp4 → .mov 29,97; clipe sem mídia na faixa do bruto volta com o item certo"""
     for _, it in itens(t):
         m = it.GetMediaPoolItem(); fp = m.GetClipProperty('File Path') if m else ''
-        mm = re.match(r'(.*/01_sources/)(v\d\d - .*)\.mp4$', fp or '')
+        mm = re.match(r'(.*/01_sources/)([^/]+)\.(?:mp4|MP4|mov|MOV)$', fp or '')
         if mm and Path(mm.group(1) + '_2997/' + mm.group(2) + '.mov').exists(): m.ReplaceClip(mm.group(1) + '_2997/' + mm.group(2) + '.mov')
     off = 0
     for ty, mt in (('video', 1), ('audio', 2)):                 # o áudio da câmera (A1) também fica offline no último trecho
@@ -80,12 +80,12 @@ def pacote_certo(mp, t, nome):
     return n
 
 
-def recarrega(mp, t, fins=('titulo_lower.mov', 'capa.mov')):
+def recarrega(mp, t, fins=('titulo_lower', 'capa')):
     """arquivo regravado no lugar (ex.: nome corrigido no lower e na capa): o item do media pool relê o disco"""
     feitos = set()
     for _, it in itens(t):
         m = it.GetMediaPoolItem(); fp = m.GetClipProperty('File Path') if m else ''
-        if fp.endswith(fins) and fp not in feitos: m.ReplaceClip(fp); feitos.add(fp)
+        if re.sub(r'__[^/]*$', '', Path(fp).stem) in fins and fp not in feitos: m.ReplaceClip(fp); feitos.add(fp)
     return len(feitos)
 
 

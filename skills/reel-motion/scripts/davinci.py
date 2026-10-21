@@ -28,6 +28,9 @@ fr = lambda t: max(0, round(t / FD))                       # segundos → quadro
 tt = lambda n: f'{n * 1001}/30000s' if n else '0s'         # quadros → tempo FCPXML
 D = fr(PR['duration'])
 slug = lambda s, n=40: re.sub(r'[^\w]+', '_', s.lower()).strip('_')[:n] or 'x'
+# nome único por pacote (Andreia 20/10/2026: o Resolve junta arquivos de MESMO NOME de pacotes diferentes num item só e o 03
+# tocou a voz do 01; vale para voz, trilha, SFX, burns, capa, legenda e cada elemento: r01 e r01h têm a mesma legenda)
+U = lambda nome: f'{Path(nome).stem}__{R}{Path(nome).suffix}'
 
 
 def sh(*a, **kw):
@@ -73,7 +76,7 @@ def pedacos(layer, cortes, nomes, pasta):
         cs = sorted({c for c in cortes if a + 2 < c < b - 2})
         for x, y in zip([a] + cs, cs + [b]):
             nome = nomes(x, y)
-            f = OUT / pasta / f'{len(res) + 1:03d}_{slug(nome)}.mov'
+            f = OUT / pasta / U(f'{len(res) + 1:03d}_{slug(nome)}.mov')
             sh('ffmpeg', '-v', 'error', '-y', '-ss', f'{float(x * FD):.6f}', '-i', layer, '-frames:v', y - x, '-c', 'copy', f)
             res.append((f, x, y - x, nome))
     return res
@@ -87,14 +90,14 @@ def perto(lista, x, y):
 (OUT / 'sfx').mkdir(parents=True, exist_ok=True); (OUT / 'burns').mkdir(exist_ok=True)
 # ---- áudio ----
 G = lufs(W / 'mix.wav') - lufs(W / 'mix_pre.wav')         # ganho do master (mix_pre → mix normalizado)
-for src, dst in ((W / 'voz.wav', 'voz.wav'), (W / 'musica.wav', 'trilha.wav')):
+for src, dst in ((W / 'voz.wav', U('voz.wav')), (W / 'musica.wav', U('trilha.wav'))):
     sh('ffmpeg', '-v', 'error', '-y', '-i', src, '-af', f'volume={G:.2f}dB', '-c:a', 'pcm_f32le', OUT / dst)
 sfx = []
 for f in (OUT / 'sfx').glob('*'):
     f.unlink()
 for i, e in enumerate(json.load(open(W / 'sfx.json'))):
     f = Path(e['f'] if os.path.isabs(e['f']) else SFXDIR + e['f'] + '.wav')
-    dst = OUT / 'sfx' / f'{i:02d}_{f.stem}{f.suffix}'; shutil.copy(f, dst)
+    dst = OUT / 'sfx' / U(f'{i:02d}_{f.stem}{f.suffix}'); shutil.copy(f, dst)
     x, sr = sf.read(dst); x = x.mean(1) if x.ndim > 1 else x; pk = int(np.argmax(np.abs(x))) / sr
     st = e['t'] - pk                                          # o pico cai no instante do evento
     sfx.append((dst, fr(max(0.0, -st)), fr(max(0.0, st)), fr(dur(dst) - max(0.0, -st)), e['db'] + G))
@@ -103,7 +106,7 @@ burns = []
 for f in (OUT / 'burns').glob('*'):
     f.unlink()
 for i, b in enumerate(PR.get('burns', [])):
-    dst = OUT / 'burns' / f'burn_{i:02d}.mov'
+    dst = OUT / 'burns' / U(f'burn_{i:02d}.mov')
     # aproximação do burnFilter CSS do tema (theme.burnFF); sem ele, o sépia da Priscilla (antes fixo para todo cliente)
     tint = f'scale={VW}:{VH}:force_original_aspect_ratio=increase,crop={VW}:{VH},' + ((PR.get('theme') or {}).get('burnFF') or
             'colorchannelmixer=rr=0.6735:rg=0.4235:rb=0.1040:gr=0.1925:gg=0.8355:gb=0.0925:br=0.1500:bg=0.2970:bb=0.6185,'
@@ -121,16 +124,16 @@ CP = P / '06_deliverables' / f"CAPA - {C['name']}.jpg"
 if not CP.exists():
     CP = next(P.glob(f"06_deliverables/CAPA - {R[1:]} -*"))
 sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', CP, '-frames:v', '1', '-r', '30000/1001', '-vf', f'scale={VW}:{VH}',
-   '-c:v', 'prores_videotoolbox', '-profile:v', 'standard', OUT / 'capa.mov')
+   '-c:v', 'prores_videotoolbox', '-profile:v', 'standard', OUT / U('capa.mov'))
 hms = lambda t: f'{int(t // 3600):02d}:{int(t % 3600 // 60):02d}:{int(t % 60):02d},{int(round(t % 1 * 1000)) % 1000:03d}'
 txt = lambda b: ' '.join(w['t'] for w in b['words'])
 open(OUT / 'legenda.srt', 'w').write(''.join(f"{i + 1}\n{hms(b['s'])} --> {hms(b['e'])}\n{txt(b)}\n\n" for i, b in enumerate(PR['captions'])))
 # ---- camadas de vídeo em pedaços ----
 pan = PR.get('panels', [])
-fundos = [] if not (CAM / 'painel_fundo.mov').exists() else pedacos(CAM / 'painel_fundo.mov', [fr(p['s']) for p in pan],
+fundos = [] if not (CAM / U('painel_fundo.mov')).exists() else pedacos(CAM / U('painel_fundo.mov'), [fr(p['s']) for p in pan],
                  lambda x, y: (lambda p: f"fundo {p['type']} {p.get('title', '')}" if p else 'fundo')(perto(pan, x, y)), 'paineis_fundo')
 cap = PR['captions']
-legenda = pedacos(CAM / 'legenda.mov', [fr(b['s']) for b in cap], lambda x, y: (lambda b: txt(b) if b else 'legenda')(perto(cap, x, y)), 'legenda')
+legenda = pedacos(CAM / U('legenda.mov'), [fr(b['s']) for b in cap], lambda x, y: (lambda b: txt(b) if b else 'legenda')(perto(cap, x, y)), 'legenda')
 # elementos isolados (um arquivo cada, renderizado só no seu trecho): o clipe vai do 1º ao último quadro visível
 elem = {}
 for m in json.load(open(CAM / 'elementos.json')):
@@ -142,7 +145,7 @@ for m in json.load(open(CAM / 'elementos.json')):
         r0, r1 = rr[0][0], rr[-1][1]
         elem.setdefault(m['grupo'], []).append((f, m['a'] + r0, r1 - r0, m['nome'], r0))
 ins = PR.get('inserts') or []
-midia = [(CAM / 'midia.mov', fr(v['s']) - 8, fr(v['e']) - fr(v['s']) + 16, Path(v['src']).stem) for v in ins] if (CAM / 'midia.mov').exists() else []
+midia = [(CAM / U('midia.mov'), fr(v['s']) - 8, fr(v['e']) - fr(v['s']) + 16, Path(v['src']).stem) for v in ins] if (CAM / U('midia.mov')).exists() else []
 # takes: pontos de corte no tempo editado
 S = json.load(open(W / 'segs.json')); S = S.get('segs', S) if isinstance(S, dict) else S
 takes, acc = [], 0.0
@@ -306,7 +309,25 @@ def kf(vals, nfmt):
     return keep
 
 
-SRC = Path(JOB['src']); TC0 = tc_frames(SRC)
+def fonte_2997(src):
+    """bruto fora de 29,97 (iPhone 30 fps, Andreia 19/10/2026): o Resolve conforma 1:1 na timeline 29,97, escorrega 1 quadro
+    a cada 1000, o áudio atrasa e o último take passa do fim do arquivo (Media Offline). Cópia por TEMPO em 01_sources/_2997/
+    (mesmos segundos, 1 s de folga no fim, sem timecode), feita uma vez e reaproveitada por todos os reels da mesma fonte"""
+    r = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', str(src)],
+                       capture_output=True, text=True).stdout.strip()
+    if r == '30000/1001':
+        return src
+    dst = src.parent / '_2997' / (src.stem + '.mov') if src.parent.name != '_2997' else src
+    if not dst.exists():
+        dst.parent.mkdir(exist_ok=True); tmp = dst.with_name('.parcial_' + dst.name)
+        print(f'bruto em {r} fps → cópia 29,97 em {dst.parent.name}/ (uma vez por fonte)', flush=True)
+        sh('ffmpeg', '-v', 'error', '-y', '-i', src, '-vf', 'fps=30000/1001,tpad=stop_mode=clone:stop_duration=1', '-af', 'apad=pad_dur=1',
+           '-c:v', 'libx264', '-crf', '16', '-preset', 'medium', '-c:a', 'pcm_s16le', '-write_tmcd', '0', '-f', 'mov', tmp)
+        tmp.rename(dst)
+    return dst
+
+
+SRC = fonte_2997(Path(JOB['src'])); TC0 = tc_frames(SRC) if SRC == Path(JOB['src']) else 0
 TK0, _acc = [], 0.0                                             # início de cada take no tempo editado
 for _a, _b in (lambda S: S.get('segs', S) if isinstance(S, dict) else S)(json.load(open(W / 'segs.json'))):
     TK0.append(_acc); _acc += _b - _a
@@ -379,7 +400,7 @@ def faixas(itens, nomear):
 
 BLUR = CROP and not HZ and RH * VW / min(RW, RH * 9 / 16) > RH * 1.001 and (PUB / R / 'camera.mov').exists()
 if BLUR:                                                      # fundo desfocado sob o bruto sem zoom (vertical): câmera editada, cobrindo o quadro
-    bg = OUT / '_camadas' / 'fundo_desfocado.mov'
+    bg = OUT / '_camadas' / U('fundo_desfocado.mov')
     if not bg.exists():
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(PUB / R / 'camera.mov'), '-an', '-vf',
                         f'scale={VW // 8}:{VH // 8}:force_original_aspect_ratio=increase,crop={VW // 8}:{VH // 8},gblur=sigma=6,eq=brightness=-0.06,scale={VW}:{VH}',
@@ -388,11 +409,11 @@ if BLUR:                                                      # fundo desfocado 
 V1 = nova()                                                   # bruto, take a take, com alça
 for k, (a, b, s0, s1) in enumerate(takes):
     L.append(bruto(k, a, b, s0).replace('lane="1"', f'lane="{V1}"', 1))
-    L.append(clip(OUT / 'voz.wav', -1, a, b - a, f'voz {s0:.2f}-{s1:.2f}', start=a, video=False, audio=True))
+    L.append(clip(OUT / U('voz.wav'), -1, a, b - a, f'voz {s0:.2f}-{s1:.2f}', start=a, video=False, audio=True))
 V2 = nova()                                                   # câmera renderizada por cima (imagem aprovada); para estender um
 for a, b, s0, s1 in takes:                                    # take, desligue o clipe dela e use o bruto embaixo
-    if (CAM / 'camera.mov').exists() and not C.get('camera_davinci'):   # "camera_davinci": o DaVinci monta a câmera do bruto (validado 19/10/2026)
-        L.append(clip(CAM / 'camera.mov', V2, a, b - a, f'câmera renderizada {s0:.2f}', start=a))
+    if (CAM / U('camera.mov')).exists() and not C.get('camera_davinci'):   # "camera_davinci": o DaVinci monta a câmera do bruto (validado 19/10/2026)
+        L.append(clip(CAM / U('camera.mov'), V2, a, b - a, f'câmera renderizada {s0:.2f}', start=a))
 if midia:
     V = nova()
     for f, off, n, nome in midia:
@@ -413,8 +434,8 @@ for e in C.get('extras', []):
 V = nova()
 for f, off, n in burns:
     L.append(clip(f, V, off, n, 'burn', extra=f'<adjust-blend amount="{BOP}"/>'))
-L.append(clip(OUT / 'capa.mov', nova(), 0, 1, 'capa (quadro 0)'))
-L.append(clip(OUT / 'trilha.wav', -2, 0, fr(dur(OUT / 'trilha.wav')), 'trilha', video=False, audio=True))
+L.append(clip(OUT / U('capa.mov'), nova(), 0, 1, 'capa (quadro 0)'))
+L.append(clip(OUT / U('trilha.wav'), -2, 0, fr(dur(OUT / U('trilha.wav'))), 'trilha', video=False, audio=True))
 fim = []                                                      # SFX: faixas de áudio sem sobreposição
 for f, ins_, off, n, db in sorted(sfx, key=lambda z: z[2]):
     k = next((i for i, e in enumerate(fim) if e <= off), len(fim))

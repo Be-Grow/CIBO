@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """QA do MP4 entregue (Andrea, 20/10/2026): sincronia por trecho do bruto (áudio do render × áudio da câmera no mesmo
 quadro; atraso em ms e correlação: bom = |atraso| < 40 ms e corr > 0,9; 0,26 foi a voz de outro vídeo), tela vermelha de
-Media Offline e quadros pretos. Trechos lidos do timeline.fcpxml do pacote; bruto em 01_sources/_2997/vNN*.mov.
+Media Offline e quadros pretos. Trechos e arquivo do bruto lidos do timeline.fcpxml do pacote.
 uso: ~/.claude/skills/content-hub/.venv/bin/python3 qa_render.py PROJETO"""
-import subprocess,numpy as np,re,glob,os,unicodedata
+import subprocess,numpy as np,re,glob,os,unicodedata,urllib.parse
 import sys; P=sys.argv[1].rstrip('/')+'/'; nfc=lambda x: unicodedata.normalize('NFC',x)
 def au(f,ss=0,d=None):
     c=['ffmpeg','-v','error','-ss',str(ss)]+(['-t',str(d)] if d else [])+['-i',f,'-ac','1','-ar','8000','-f','f32le','-']
@@ -11,7 +11,8 @@ def au(f,ss=0,d=None):
 fr=lambda s: eval(s[:-1]) if s!='0s' else 0
 for f in sorted(glob.glob(P+'06_deliverables/*.mp4')):
     n=nfc(os.path.basename(f)[:-4]); x=open(P+'07_davinci/'+n+'/timeline.fcpxml',encoding='utf-8').read() if os.path.exists(P+'07_davinci/'+n) else open(next(P+'07_davinci/'+d for d in os.listdir(P+'07_davinci') if nfc(d)==n)+'/timeline.fcpxml',encoding='utf-8').read()
-    mov=glob.glob(P+'01_sources/_2997/v'+n[:2]+'*.mov')[0]; res=[]
+    ref=re.search(r'<asset-clip ref="([^"]+)"[^>]*name="bruto',x).group(1)
+    mov=urllib.parse.unquote(re.search(r'<asset id="'+ref+r'".*?src="file://([^"]+)"',x,re.S).group(1)); res=[]
     for o,s,d in re.findall(r'<asset-clip[^>]*offset="([^"]*)" start="([^"]*)" duration="([^"]*)"[^>]*name="bruto',x):
         o,s,d=fr(o),fr(s),fr(d); w=min(d-0.6,6)
         if w<1.5: continue

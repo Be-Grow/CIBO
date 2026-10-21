@@ -35,17 +35,17 @@ def tipo(it, faixa):
     n = it.GetName() or ''; mpi = it.GetMediaPoolItem()
     fp = (mpi.GetClipProperty('File Path') if mpi else '') or ''
     if faixa == 'audio':
-        return 'a_voz' if fp.endswith('/voz.wav') else 'a_trilha' if fp.rsplit('/', 1)[-1].startswith('trilha') else 'a_sfx' if '/sfx/' in fp \
+        return 'a_voz' if re.search(r'/voz(__[^/]*)?\.wav$', fp) else 'a_trilha' if fp.rsplit('/', 1)[-1].startswith('trilha') else 'a_sfx' if '/sfx/' in fp \
             else 'a_camera' if '/01_sources/' in fp or not fp else 'a_sfx'
     if re.match(r'(punch|zoom) ', n): return 'mov_zoom'
     if n.startswith('tela dividida'): return 'mov_split'
     if '/01_sources/' in fp or n.startswith('bruto'): return 'camera'
     if 'fundo_desfocado' in fp: return 'fundo_cam'
-    if fp.endswith('/camera.mov') or n.startswith('câmera'): return 'cam_ref'
+    if re.search(r'/camera(__[^/]*)?\.mov$', fp) or n.startswith('câmera'): return 'cam_ref'
     if '/paineis_fundo/' in fp or '/painel_fundo' in fp: return 'painel_bg'
     if '/legenda/' in fp: return 'legenda'
     if '/burns/' in fp: return 'burn'
-    if fp.endswith('/capa.mov'): return 'capa'
+    if re.search(r'/capa(__[^/]*)?\.mov$', fp): return 'capa'
     b = fp.rsplit('/', 1)[-1]
     for pre, t in (('painel_', 'painel'), ('step_', 'etapa'), ('tag_', 'tag'), ('titulo_', 'titulo'), ('kw_', 'titulo'), ('cartao', 'titulo')):
         if b.startswith(pre): return t

@@ -696,15 +696,24 @@ def e_davinci():
     if pr.get('endCard'):
         ec = pr['endCard']; a = q(ec['s'] - 0.1)
         jobs.append(('titulo_end', 'titulo', 'end', a, N - 1, alfa)); man.append(dict(arq='el/titulo_end.mov', a=a, grupo='titulo', nome=f"cartão final {ec.get('l1', '')}"))
+    # nome único por pacote (o Resolve junta arquivos de mesmo nome entre pacotes; ver davinci.py): el/painel_0__r01.mov.
+    # Pacote antigo sem sufixo: renomeia em vez de renderizar de novo
+    U = lambda rel: str(Path(rel).with_name(f'{Path(rel).stem}__{R}{Path(rel).suffix}'))
+    for m in man:
+        m['arq'] = U(m['arq'])
+    for nome in [j[0] for j in jobs] + ['fundo_desfocado']:
+        rel = f'el/{nome}.mov' if (cam / f'el/{nome}.mov').exists() else f'{nome}.mov'
+        if (cam / rel).exists() and not (cam / U(rel)).exists():
+            (cam / rel).rename(cam / U(rel))
     json.dump(man, open(cam / 'elementos.json', 'w'), ensure_ascii=False, indent=1)
     # câmera da referência pelo ffmpeg (deslocamento da tela dividida por quadro + escurecimento final): no Remotion levava
     # ~5,5 min por reel de 85 s abrindo o ProRes quadro a quadro; aqui ~1 min (Andreia, 19/10/2026). Sem o motion blur da troca.
     if C.get('camera_davinci'):                                 # câmera montada pelo DaVinci a partir do bruto: não renderiza
         jobs = [j for j in jobs if j[0] != 'camera']
-    elif C.get('camera_ffmpeg', True) and not (cam / 'camera.mov').exists():
-        camera_ffmpeg(pr, cam / 'camera.mov'); jobs = [j for j in jobs if j[0] != 'camera']
+    elif C.get('camera_ffmpeg', True) and not (cam / U('camera.mov')).exists():
+        camera_ffmpeg(pr, cam / U('camera.mov')); jobs = [j for j in jobs if j[0] != 'camera']
     for nome, lay, el, a, b, codec, *pt in jobs:
-        f = cam / (f'el/{nome}.mov' if el is not None else f'{nome}.mov')
+        f = cam / U(f'el/{nome}.mov' if el is not None else f'{nome}.mov')
         if f.exists() and (not ARGS or not any(x in nome for x in ARGS)) and (ARGS or f.stat().st_mtime > (PUB / R / 'props.json').stat().st_mtime):
             continue                                            # já renderizado e props sem mudança
         pf = PUB / R / f'props_{nome}.json'; json.dump({**pr, 'layer': lay, **({'el': el} if el is not None else {}), **({'part': pt[0]} if pt and pt[0] else {})}, open(pf, 'w'), ensure_ascii=False)

@@ -28,7 +28,7 @@ def ajusta(xml, sfx, trilha):
         c = m.group(0); fp = re.search(r'<MediaFilePath>([^<]*)', c).group(1)
         if '/sfx/' in fp and sfx is not None:
             cont['sfx'] += 1; return ganho(c, lambda d: d + sfx)
-        if fp.endswith('/trilha.wav') and trilha is not None:
+        if re.search(r'/trilha(__[^/]*)?\.wav$', fp) and trilha is not None:
             cont['trilha'] += 1; return ganho(c, lambda d: trilha)
         return c
     a = re.sub(r'<Sm2TiAudioClip .*?</Sm2TiAudioClip>', troca, xml[i:j], flags=re.S)

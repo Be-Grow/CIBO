@@ -126,6 +126,13 @@ só o clipe. Aplicar com `reel-motion/scripts/resolve_cores.py` (o `resolve_fx.p
 | Trilha | Olive | TRILHA |
 | SFX | Chocolate | SFX |
 
+**Motor padrão = fluxo da Andreia (20/10/2026, "gostaria que fosse o padrão de edição da CIBO"):** todo job de fala segue
+a receita de 10 etapas da `reel-motion` ("Padrão de edição do CIBO"): briefing com tema e grafia dos nomes → fonte (rastreio,
+fps automático) → trechos e fala limpa → legenda MFA conferida → motion nascido da fala no perfil do cliente → trilha e SFX
+com prévia no trecho real → prévia aprovada → `fila_davinci.py` (pacote com nomes únicos, projeto organizado, Fusion,
+cores, `qa_resolve`) → `qa_render` depois do render do editor → correção só do que mudou. Cliente com skill própria
+mantém estilo, assets e regras dele; o que muda é a entrega pelo mesmo pacote DaVinci.
+
 **Nada de ffmpeg na entrega (20/10/2026, Bombordo EP 07, segunda vez que o editor cobra):** nem o episódio completo
 "só com corte e fade" sai pelo ffmpeg. Todo cliente usa o fluxo DaVinci do `reel-motion` (pacote por camadas, projeto novo
 organizado, Fusion nos movimentos, QA na timeline e no render). ffmpeg é só para análise, extração e prévia leve.
@@ -163,7 +170,8 @@ A API funciona
   - Nunca edite a timeline por ciclos de exportar/importar .drt: o GlobalIn do Fusion sobe e o render falha. Edite o XML do
     backup e importe uma vez (`reel-motion/scripts/resolve_refaz_de_backup.py`).
   - Arquivo de mesmo nome em pacotes diferentes (`voz.wav`, `trilha.wav`, `sfx/*.wav`) vira um item só no Media Pool: o
-    vídeo 03 tocou a voz do 01. Nome único por pacote ou religar com `pacote_certo()`.
+    vídeo 03 tocou a voz do 01. O `davinci.py` grava todo arquivo com o sufixo do reel (`voz__r01.wav`) desde 20/10/2026;
+    pacote antigo: religar com `pacote_certo()`. Gerador de outra skill (XML do Bombordo etc.) faz igual.
   - Clipe recolocado pela API entra com Scaling 0 e sem RotationAngle: copie as propriedades dos irmãos.
   - Importação de XML (EP 07, 20/10/2026): um still PNG no xmeml faz `ImportTimelineFromFile` devolver None para a timeline
     inteira. Capa fora do XML e pela API: `ImportMedia` + `AppendToTimeline` com `startFrame 0, endFrame 1` (endFrame 0 é

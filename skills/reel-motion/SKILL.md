@@ -1,6 +1,6 @@
 ---
 name: reel-motion
-description: Motor genérico de reels verticais 9:16 com tela dividida (painel de motion em cima, pessoa embaixo, tela cheia no gancho e nas viradas), legenda palavra a palavra, burn nas trocas de painel e capa — configurado por tema de cliente (cores, fontes, caixa alta, estilo do destaque, burn, layout da capa) e montado com uma biblioteca de componentes Remotion reutilizáveis. Use para qualquer reel "com motion" no estilo Priscilla Daher, de qualquer cliente (Priscilla, João Campos/Vai Lá e Faz Caxt e novos), em vez de copiar o motor para o projeto.
+description: Motor PADRÃO de edição do CIBO (aprovado no job da Andreia Francomano, 20/10/2026) — reels 9:16 e versões 16:9 de talking head com motion nascido da fala (tela dividida, painel em cima ou ao lado, tela cheia no gancho e nas viradas), legenda palavra a palavra, burn nas trocas, SFX e trilha pelo tema, capa, e entrega como pacote por camadas montado no DaVinci Resolve pela API (projeto novo organizado, movimentos de câmera no Fusion, cores por tipo, QA na timeline e no render). Configurado por tema de cliente e montado com uma biblioteca de componentes Remotion. Use em todo job de edição de fala de cliente novo ou sem skill própria, e em qualquer reel "com motion" (Priscilla, João Campos, Andreia e novos), em vez de copiar o motor para o projeto.
 ---
 
 # reel-motion — motor genérico de reel com motion
@@ -8,6 +8,29 @@ description: Motor genérico de reels verticais 9:16 com tela dividida (painel d
 Nasceu do motor aprovado da Priscilla Daher (13/10/2026). O editor pediu: **um motor generalista que
 aceita configurações, não um motor por cliente**, e **uma biblioteca de componentes reutilizáveis
 (princípio do React), não animação feita do zero a cada reel**.
+
+## Padrão de edição do CIBO: o fluxo da Andreia (editor, 20/10/2026)
+
+"Eu gostei muito do que foi feito lá e gostaria que fosse o padrão de edição da CIBO." Todo job de fala sem skill própria
+segue esta receita; clientes com skill própria mantêm identidade e regras deles, mas entregam pelo mesmo pacote DaVinci.
+Referência viva: `andreia/demandaVideoEstiloPriscilla/` (brief, review_2026-10-20.md, 8 timelines).
+
+| # | Etapa | Como |
+|---|---|---|
+| 1 | Briefing | `briefing-criativo`: tema (paleta, fontes, perfil de movimento `theme.motion`), formatos (9:16 e/ou 16:9 `orient: h`), trilha, desenho de som (bloco `sfx` do tema), **grafia de todo nome na tela** |
+| 2 | Fonte | girar/full range no reel.json (`rotate`, `full_range`); rastreio de rosto `rastreio.py` → `track`; fps qualquer (o `davinci.py` faz a cópia 29,97 sozinho) |
+| 3 | Trechos | roteiro fechado: `segs_auto.py` → fechar pela energia → `fala-limpa` (`hesita.py`, `checa_takes.py`); conversa: `takes.py` |
+| 4 | Legenda | etapa `legenda` (MFA) → `conserta_mfa.py rNN/` onde o MFA colapsou → `legenda-cruzada` |
+| 5 | Motion | `props.py` com painéis nascidos da fala (catálogo abaixo), `checa_props`, perfil do tema; `qa_paineis --video` |
+| 6 | Som | trilha `talking-head-music` (prévia de 10 s no trecho real, 2–3 opções) e `sfx_tema.py rNN/ public/rNN/props.json temas/<tema>.json`, também com prévia antes do render |
+| 7 | Prévia | `previa` + `revisa`; aprovação do piloto antes do lote |
+| 8 | Pacote + Resolve | `fila_davinci.py PROJ "Projeto" "BeGrow/<Cliente>" r01 r01h …` = capa → pacote → projeto novo organizado → Fusion/cores → bins → `qa_resolve.py` |
+| 9 | Depois do render do editor | `qa_render.py PROJ` (sincronia por trecho, offline, preto) nos dois formatos; `video-delivery-safety-check` |
+| 10 | Correção | só o que mudou (`--so-el`, `trecho`, `resolve_refaz_de_backup.py`); nunca ciclos de .drt; QA de novo em todas as versões |
+
+Nomes no pacote: todo arquivo leva o sufixo do reel (`voz__r01.wav`, `el/painel_0__r01h.mov`, `capa__r01.mov`), porque o
+Resolve junta arquivos de mesmo nome entre pacotes (foi o "áudio de outro vídeo" do 03). Pacote antigo sem sufixo é
+renomeado na próxima etapa `davinci`, sem renderizar de novo.
 
 ## Estrutura
 
@@ -253,7 +276,7 @@ então o que mais economiza é fazer menos turnos e não encher o contexto.
 - **Correções do editor (Andreia, 19/10/2026):** (1) identidade roxo + dourado tem que aparecer: painel roxo profundo, texto creme,
   destaque dourado (tema `andreia`); (2) 16:9 em **terços**: painel nos 2/3 da esquerda (`layoutH.panelW` 1280), pessoa centralizada
   no terço da direita, legenda da tela dividida no rodapé do painel; (3) SFX: whoosh variado (nunca o mesmo em tudo) e temático
-  (`04_work/sfx_andreia.py` do projeto: grupos por tipo de evento girando, kit em `CIBO Acervo/sfx/andreia/wav`), nível medido
+  (hoje `scripts/sfx_tema.py`, modo `variado`; kit em `CIBO Acervo/sfx/andreia/wav`), nível medido
   contra a voz — os do kit global ficaram 8–10 dB abaixo e sumiram; (4) câmera e zoom no DaVinci (`camera_davinci` + `camera_moves`).
 
 ## Movimentos de câmera no Fusion (Andreia, 19/10/2026)
@@ -274,10 +297,10 @@ então o que mais economiza é fazer menos turnos e não encher o contexto.
   A API não lê nem grava volume de clipe nem efeito de faixa: o volume vai pelo .drt (`EffectFiltersBA`, parâmetro 124, dB em
   double) e a timeline volta com o mesmo nome (Fusion e camadas preservados). O ducker da faixa TRILHA (Inspector > Audio, fonte VOZ)
   não vai no .drt: o editor salva um preset do Fairlight na timeline dele e o `--preset` aplica nas outras.
-- **FPS da fonte (Andreia 19/10/2026, "Media Offline" no fim + áudio atrasado):** `davinci.py` fixa 29,97 (`FD`); bruto de iPhone
+- **FPS da fonte (Andreia 19/10/2026, "Media Offline" no fim + áudio atrasado):** a timeline é 29,97; bruto de iPhone
   em 30 fps é forçado 1:1 pelo Resolve (escorrega 1 quadro/1000 e o último trecho passa do fim do arquivo → offline).
-  Até o davinci.py ler o fps da fonte: converta o bruto para 29,97 por tempo antes do pacote
-  (`ffmpeg -vf "fps=30000/1001,tpad=stop_mode=clone:stop_duration=1" -af apad=pad_dur=1`, em `01_sources/_2997/`).
+  Resolvido em 20/10/2026: o `davinci.py` lê o fps e, fora de 29,97, usa uma cópia por tempo em `01_sources/_2997/`
+  (feita uma vez por fonte, 1 s de folga, sem timecode). Testado no r01: timeline idêntica à entregue, só com o bruto trocado.
   Timeline já montada: `scripts/resolve_refaz_audio.py` (ReplaceClip do bruto; trilha/SFX novos no lugar dos arquivos).
 - **.drt não troca mídia:** o Resolve religa pelo `MediaRef` e ignora `MediaFilePath`; ele também junta arquivos de mesmo nome
   entre pacotes (o 03 abriu com a trilha.wav do 01). Troca de mídia: `MediaPoolItem.ReplaceClip` ou arquivo novo no mesmo caminho.
@@ -290,11 +313,12 @@ então o que mais economiza é fazer menos turnos e não encher o contexto.
   A API não grava esse valor. Confira com `FindTool('MediaIn1').GetInput('GlobalIn')` (tem que ser 0) e refaça a partir do
   backup numa importação só: `scripts/resolve_refaz_de_backup.py BACKUP.drt "NOME"`. Guarde o .drt antes de qualquer edição por XML.
 - **Mesmo nome entre pacotes = mídia trocada** (Andreia, 20/10/2026): o Resolve junta `voz.wav`/`trilha.wav` de pacotes diferentes
-  num item só; o 03 tocou trechos da voz do 01 ("o áudio parece de outro vídeo"). Depois de importar, audite se cada clipe vem
+  num item só; o 03 tocou trechos da voz do 01 ("o áudio parece de outro vídeo"). Resolvido no motor (sufixo `__rNN` em todo
+  arquivo do pacote, ver "Padrão de edição do CIBO"); para pacotes antigos, depois de importar, audite se cada clipe vem
   de `07_davinci/<próprio pacote>/` — `resolve_refaz_de_backup.py` faz isso (`pacote_certo`) e também recoloca o clipe offline
   da câmera com `RotationAngle 90` (o bruto do iPhone sai deitado sem ele). QA de sincronia por trecho: correlação do áudio do
   render com o áudio da câmera no mesmo quadro (atraso ≈ 0 ms, corr > 0,9).
 - **Corrigir texto de um elemento sem remontar o pacote:** `reel.py PROJ rNN davinci titulo_lower --so-el` (não chama o davinci.py,
   que regravaria voz/trilha/SFX) + `so_capa`; depois `ReplaceClip` no item para o Resolve reler o arquivo.
-- **Tigela da Andrea:** `tibetan-singing-bowl` grave em todos os vídeos (editor, 20/10/2026: a aguda `sfx-singing-bowl-hit-agudo-36st` soou "feliz demais"), 16 LUFS abaixo da voz, só nas trocas de painel; escolha o som pelo tom do vídeo, com prévia no trecho real (voz+trilha). A grave "não combina
+- **Tigela da Andrea** (bloco `sfx` do tema `andreia`, modo `so_trocas`): `tibetan-singing-bowl` grave em todos os vídeos (editor, 20/10/2026: a aguda `sfx-singing-bowl-hit-agudo-36st` soou "feliz demais"), 16 LUFS abaixo da voz, só nas trocas de painel; escolha o som pelo tom do vídeo, com prévia no trecho real (voz+trilha). A grave "não combina
   com a ideia de frequência" (editor, 20/10/2026); agudo alto incomoda. Prévias de tom: asetrate+atempo encadeado (atempo ≥ 0,5 por filtro).

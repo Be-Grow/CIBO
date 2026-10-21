@@ -43,10 +43,11 @@ def nivel(src, out, alvo, ss, d, fade_fim):
 
 def arquivos(pac, lixo, musica, sfx_src, gap, ini, fim):
     """grava trilha.wav e sfx/*.wav novos no lugar (mesma duração); os antigos vão para o lixo"""
-    voz = lufs(pac / 'voz.wav'); bk = lixo / pac.name; feito = []
-    if not (bk / 'trilha.wav').exists():
-        bk.mkdir(parents=True, exist_ok=True); shutil.copy2(pac / 'trilha.wav', bk / 'trilha.wav'); shutil.copytree(pac / 'sfx', bk / 'sfx')
-    nivel(musica, pac / 'trilha.wav', voz - gap, ini, max(dur(bk / 'trilha.wav'), fim + 1), 2.5); feito.append('trilha')
+    um = lambda base: next(pac.glob(f'{base}__*.wav'), pac / f'{base}.wav')      # voz__r01.wav (pacote novo) ou voz.wav
+    tr = um('trilha'); voz = lufs(um('voz')); bk = lixo / pac.name; feito = []
+    if not (bk / tr.name).exists():
+        bk.mkdir(parents=True, exist_ok=True); shutil.copy2(tr, bk / tr.name); shutil.copytree(pac / 'sfx', bk / 'sfx')
+    nivel(musica, tr, voz - gap, ini, max(dur(bk / tr.name), fim + 1), 2.5); feito.append('trilha')
     for f in sorted((bk / 'sfx').glob('*.wav')):
         d = dur(f); nivel(sfx_src, pac / 'sfx' / f.name, voz - 10, 0, d, min(1.5, d / 2))
     return round(voz, 1)
@@ -77,9 +78,9 @@ def edita(s):
     for e, _ in sx:
         a = a.replace(e, re.sub(EFX, f'<EffectFiltersBA>{VOL(0.0)}</EffectFiltersBA>', e, count=1) if e in fica else '', 1)
     for e in el:
-        if re.search(r'/trilha\.wav<', e):
+        if re.search(r'/trilha(__[^/<]*)?\.wav<', e):
             a = a.replace(e, re.sub(EFX, f'<EffectFiltersBA>{VOL(0.0)}</EffectFiltersBA>', e, count=1), 1)
-    fim = max((int(re.search(r'<Start>(\d+)', e).group(1)) + int(re.search(r'<Duration>(\d+)', e).group(1)) for e in el if '/voz.wav' in e), default=0) / FPS
+    fim = max((int(re.search(r'<Start>(\d+)', e).group(1)) + int(re.search(r'<Duration>(\d+)', e).group(1)) for e in el if re.search(r'/voz(__[^/<]*)?\.wav<', e)), default=0) / FPS
     return s[:i] + a + s[j:], {'burns': len(burns), 'sfx': f'{len(fica)}/{len(sx)}', 'bruto refs': len(refs)}, fim
 
 
@@ -116,10 +117,10 @@ if __name__ == '__main__':
     troca = {'bruto': 0, 'audio': 0}
     for m in mpis.values():
         fp = m.GetClipProperty('File Path') or ''
-        mm = re.match(r'(.*/01_sources/)(v\d\d - .*)\.mp4$', fp)
+        mm = re.match(r'(.*/01_sources/)([^/]+)\.(?:mp4|MP4|mov|MOV)$', fp)
         if mm and Path(mm.group(1) + '_2997/' + mm.group(2) + '.mov').exists():
             troca['bruto'] += bool(m.ReplaceClip(mm.group(1) + '_2997/' + mm.group(2) + '.mov'))
-        elif '/07_davinci/' in fp and (fp.endswith('/trilha.wav') or '/sfx/' in fp):
+        elif '/07_davinci/' in fp and (re.search(r'/trilha(__[^/]*)?\.wav$', fp) or '/sfx/' in fp):
             troca['audio'] += bool(m.ReplaceClip(fp))
     print('media pool:', troca, flush=True)
     # 3. timelines voltam com o mesmo nome
