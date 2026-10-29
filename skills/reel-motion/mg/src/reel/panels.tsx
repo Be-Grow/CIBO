@@ -188,15 +188,16 @@ const PanelRuler: React.FC<{p: Panel; t: number}> = ({p, t}) => {
 
 // 7) dois cards numerados: a ordem certa
 const PanelCards: React.FC<{p: Panel; t: number}> = ({p, t}) => (
-  <div style={{position: 'absolute', top: 210, left: 90, right: 90, display: 'flex', flexDirection: 'column', gap: 34}}>
+  // top/gap/pad/size opcionais (IFB 27/10/2026: o 3º cartão descia até a legenda na tela dividida)
+  <div style={{position: 'absolute', top: p.top ?? 210, left: 90, right: 90, display: 'flex', flexDirection: 'column', gap: p.gap ?? 34}}>
     {p.cards.map((c: any, i: number) => {
       const q = ramp(t, c.at, 0.5, OUT);
       return (<Pt key={i} k={`item${i}`}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 34, padding: '34px 44px', borderRadius: 30,
+        <div style={{display: 'flex', alignItems: 'center', gap: 34, padding: `${p.pad ?? 34}px 44px`, borderRadius: 30,
           background: i === 0 ? C.ink : C.white, color: i === 0 ? C.white : C.ink, boxShadow: `0 20px 50px ${sh(0.16)}`,
           opacity: q, transform: `translateX(${(1 - q) * (i === 0 ? -60 : 60)}px)`, filter: `blur(${(1 - q) * 10}px)`}}>
-          <div style={{...fTitle(120), ...fAcc(), lineHeight: 0.8, color: C.terra}}>{i + 1}</div>
-          <div style={{...fTitle(82), lineHeight: 1}}>{c.text}</div>
+          <div style={{...fTitle(120 * (p.size ?? 82) / 82), ...fAcc(), lineHeight: 0.8, color: C.terra}}>{i + 1}</div>
+          <div style={{...fTitle(p.size ?? 82), lineHeight: 1}}>{c.text}</div>
         </div>
       </Pt>);
     })}

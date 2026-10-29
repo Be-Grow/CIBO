@@ -114,6 +114,8 @@ const Captions: React.FC<{blocks: Block[]; t: number; sp: number; hide?: boolean
 };
 
 // ---------- gancho e lower third ----------
+// punchlines em tela cheia (gancho/palavras-chave) têm escala própria: title.scale engorda os painéis e cobria o rosto (IFB 27/10/2026)
+const zp = (s: number) => s * (T.title.punch ?? T.title.scale);
 const Hook: React.FC<{h: NonNullable<ReelProps['hook']>; t: number; hz?: boolean}> = ({h, t, hz}) => {
   if (t > h.e + 0.3) return null;
   const k = hz ? T.layoutH.hookScale : 1;
@@ -125,12 +127,29 @@ const Hook: React.FC<{h: NonNullable<ReelProps['hook']>; t: number; hz?: boolean
   return (
     // horizontal em tela cheia: o rosto fica no meio (x≈970–1210, y≈170–505, r01h 19/10/2026), então gancho/títulos vão
     // para a coluna esquerda alinhados à esquerda (antes centrados no topo, em cima do rosto: reprovado pelo editor)
-    <div style={{position: 'absolute', top: hz ? 250 : 120, left: hz ? 110 : 50, right: hz ? 1040 : 50, textAlign: hz ? 'left' : 'center', ...fTitle(), color: C.video,
-      textShadow: '0 3px 18px rgba(0,0,0,0.45)'}}>
-      <span style={{...line(l1), fontSize: z(104) * k, lineHeight: 1}}>{h.l1}</span>
-      <span style={{...line(l2), fontSize: z(120) * k, lineHeight: 1.05}}>{h.l2} <I color={C.peach}>{h.accent}</I></span>
+    // 16:9 (IFB 27/10/2026: "bem maior e centralizado no plano vertical"): coluna esquerda inteira, centrado na altura,
+    // cada linha no maior tamanho que cabe em 770 px (gancho longo quebra a ênfase em linha própria)
+    <div style={{position: 'absolute', top: hz ? 0 : 120, bottom: hz ? 0 : undefined, left: hz ? 110 : 50, right: hz ? 1090 : 50, textAlign: hz ? 'left' : 'center', ...fTitle(), color: C.video,
+      ...(hz ? {display: 'flex', flexDirection: 'column', justifyContent: 'center'} : {}),
+      textShadow: hz ? '0 2px 6px rgba(0,0,0,0.55), 0 4px 26px rgba(0,0,0,0.6)' : '0 3px 18px rgba(0,0,0,0.45)'}}>
+      {hz ? (() => {
+        // um tamanho só para o gancho todo (proporção l1 104 : l2 120), limitado pela palavra mais longa (linha longa quebra)
+        // e pela altura total (≤ 860 px na coluna de 720 px) — IFB 27/10/2026
+        const W = 720, cw = 0.47, b1 = zp(104) * k, b2 = zp(120) * k;
+        const linhas = [[h.l1, b1], [h.l2, b2], [h.accent, b2]] as [string, number][];
+        let f = Math.min(1, ...linhas.map(([t, b]) => W / (Math.max(...t.split(' ').map((w) => w.length), 1) * cw) / b));
+        const alt = (ff: number) => linhas.reduce((a, [t, b]) => a + Math.ceil(t.length * cw * b * ff / W) * b * ff * 1.05, 0);
+        while (alt(f) > 860 && f > 0.3) f *= 0.92;
+        return (<>
+          <span style={{...line(l1), fontSize: b1 * f, lineHeight: 1}}>{h.l1}</span>
+          <span style={{...line(l2), fontSize: b2 * f, lineHeight: 1.05}}>{h.l2} <I color={C.peach}>{h.accent}</I></span>
+        </>);
+      })() : (<>
+      <span style={{...line(l1), fontSize: zp(104) * k, lineHeight: 1}}>{h.l1}</span>
+      <span style={{...line(l2), fontSize: zp(120) * k, lineHeight: 1.05}}>{h.l2} <I color={C.peach}>{h.accent}</I></span>
+      </>)}
       {h.aside && (
-        <span style={{...line(as), fontSize: z(58) * k, ...fAcc(), marginTop: 18, position: 'relative'}}>
+        <span style={{...line(as), fontSize: zp(58) * k, ...fAcc(), marginTop: 18, position: 'relative'}}>
           <span style={{position: 'relative', display: 'inline-block'}}>
             {h.aside}
             <svg style={{position: 'absolute', left: -10, top: '50%', overflow: 'visible'}} width="calc(100% + 20px)" height="10" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -183,8 +202,8 @@ const Keyword: React.FC<{k: Kw; t: number; hz?: boolean}> = ({k, t, hz}) => {
     <div style={{position: 'absolute', top: k.y ?? (hz ? 250 : 150), left: hz ? 110 : 40, right: hz ? 1040 : 40, display: 'flex', flexDirection: 'column', alignItems: hz ? 'flex-start' : 'center', gap: 12}}>
       {k.sub && <div style={{...fTitle(), fontSize: 34, letterSpacing: '0.3em', textTransform: 'uppercase', color: C.terra, ...lift(sub, 18),
         textShadow: '0 2px 12px rgba(0,8,30,0.6)'}}>{k.sub}</div>}
-      {k.text && <div style={{...font, fontSize: fit(k.text, 112), color: C.video, ...lift(a), textShadow: '0 3px 22px rgba(0,8,30,0.6)'}}>{k.text}</div>}
-      {k.accent && <div style={{...font, fontSize: fit(k.accent, 138), ...lift(b), ...goldText(), padding: '0 6px 6px'}}>{k.accent}</div>}
+      {k.text && <div style={{...font, fontSize: fit(k.text, 112 * (T.title.punch ?? 1)), color: C.video, ...lift(a), textShadow: '0 3px 22px rgba(0,8,30,0.6)'}}>{k.text}</div>}
+      {k.accent && <div style={{...font, fontSize: fit(k.accent, 138 * (T.title.punch ?? 1)), ...lift(b), ...goldText(), padding: '0 6px 6px'}}>{k.accent}</div>}
       <div style={{width: 120 * rule, height: 4, borderRadius: 2, background: GOLD, opacity: 1 - out, marginTop: 6}} />
     </div>
     </>
@@ -317,7 +336,9 @@ export const Reel: React.FC<ReelProps> = (props) => {
         </div>
       )}
       {tit('hookbg') && props.hook && t < props.hook.e + 0.3 && (
-        <AbsoluteFill style={{background: `linear-gradient(180deg, ${scr(0.62)} 0%, ${scr(0.28)} 22%, ${scr(0)} 38%)`,
+        // 16:9: gancho fica na coluna esquerda → escurece da esquerda, não de cima (IFB 27/10/2026: 'quase não dá pra ver' na janela clara)
+        <AbsoluteFill style={{background: HZ ? `linear-gradient(90deg, ${scr(0.72)} 0%, ${scr(0.5)} 28%, ${scr(0.18)} 46%, ${scr(0)} 60%)`
+          : `linear-gradient(180deg, ${scr(0.62)} 0%, ${scr(0.28)} 22%, ${scr(0)} 38%)`,
           opacity: ramp(t, 0, 0.3) * (1 - ramp(t, props.hook.e - 0.25, 0.3))}} />
       )}
       {tit('hook') && props.hook && <Hook h={props.hook} t={t} hz={HZ} />}

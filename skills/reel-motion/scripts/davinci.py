@@ -268,7 +268,9 @@ def transf(k, t):
             # Antes usava o camX das props e o zoom no centro do quadro: rosto medido em x≈1406 com alvo 1600.
             PW = ((PR.get('theme') or {}).get('layoutH') or {}).get('panelW', 1040)
             fx = float(np.interp(st, [r[0] for r in TRK], [r[1] for r in TRK])) if TRK else cx
-            alvo = fx + (PW + (VW - PW) / 2 - fx) * sp
+            # fx está em px da FONTE; alvo é px da TELA (fonte 4K num 16:9 1080p jogava a câmera 960 px para a direita, IFB 27/10/2026)
+            f0 = VW / 2 + (fx - RW / 2) * sc
+            alvo = f0 + (PW + (VW - PW) / 2 - f0) * sp
             sc = max(sc, (VW - alvo) / max(1.0, RW - fx))                 # borda direita sempre com imagem
             dx = alvo - (VW / 2 + (fx - RW / 2) * sc)                      # a esquerda descoberta fica sob o painel
             dy = (fy - RH / 2) * (sc0 - sc) + (C.get('zoom_cy', RH / 2) - RH / 2) * sc

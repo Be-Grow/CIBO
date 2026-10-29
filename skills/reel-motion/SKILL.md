@@ -24,7 +24,7 @@ pelo mesmo pacote DaVinci. Referência viva: `andreia/demandaVideoEstiloPriscill
 | 7 | Revisão | `revisa` (sem render). **Prévia é no Resolve, não no Remotion** (Andreia 19/10: "tem como fazer a prévia no davinci?"; João 21/10: noite perdida em prévia Remotion de aula): o piloto vai pelo passo 8 e o editor aprova lá. `previa` só se ele pedir MP4 |
 | 8 | Pacote + Resolve | **Sempre pela API, sem perguntar se ele prefere importar** (João 21/10): `fila_davinci.py PROJ "Projeto" "BeGrow/<Cliente>" r01 r01h …` = capa → pacote → projeto novo organizado → Fusion/cores → bins → `qa_resolve.py`. Antes, leia `client-router/references/regras/davinci.md` inteiro (lições da Andreia). Aula/vídeo longo: `"grosso": true` (bruto cortado + voz + trilha + legenda SRT, sem painel/rastreio/render) |
 | 9 | Depois do render do editor | `qa_render.py PROJ` (sincronia por trecho, offline, preto) nos dois formatos; `video-delivery-safety-check` |
-| 10 | Correção | só o que mudou (`--so-el`, `trecho`, `resolve_refaz_de_backup.py`); nunca ciclos de .drt; QA de novo em todas as versões |
+| 10 | Correção | **direto na timeline do Resolve pela API, render só da camada que muda** (kit `scripts/timeline/`, README; editor 29/10/2026: "ajuste mais rápido na timeline, pacote só dos componentes que mudam"). Nunca pacote inteiro novo nem `rNN` novo por ajuste. Também: `--so-el`, `trecho`, `resolve_refaz_de_backup.py`; nunca ciclos de .drt; QA de novo em todas as versões |
 
 Todo arquivo do pacote leva o sufixo do reel (`voz__r01.wav`): o Resolve junta mídia de mesmo nome entre pacotes. Toda regra geral do DaVinci (nomes, FPS, .drt/GlobalIn,
 LoadRenderPreset, bins, cores) mora em `client-router/references/regras/davinci.md`.

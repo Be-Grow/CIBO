@@ -1,0 +1,190 @@
+{
+  "cliente": "Instituto Fernanda Ben (IFB) — saúde integrativa, lançamento Black da Saúde Integral",
+  "origem": "editor 21/10/2026: identidade do IFB é bordô + dourado (prints do site). Cores medidas: bordô #531623, dourado #B08A42, botão #D3B061→#E6CC89, off-white #FDFCF9; rodapé ~#1F080C, dourado claro ~#E8C77A. Marca em sans caixa alta espaçada → Montserrat. Molde: andreia.json (refino do motor) · 26/10/2026 refeito no nível da Andreia: serifa Instrument (acervo global), perfil editorial, 1/3–2/3, sem pílulas",
+  "theme": {
+    "colors": {
+      "paper": "#531623",
+      "paper2": "#3E0F1A",
+      "ink": "#FDFCF9",
+      "ink2": "#D9CCCF",
+      "terra": "#D3B061",
+      "terraDark": "#86662A",
+      "peach": "#E6CC89",
+      "white": "#6A1E2E",
+      "video": "#FFFDF8",
+      "onAccent": "#1F080C",
+      "pill": "#6A1E2E",
+      "bg": "#1F080C",
+      "gold": "#E8C77A",
+      "shadow": "15,4,7",
+      "scrim": "31,8,12"
+    },
+    "fonts": [
+      {
+        "family": "SerifIFB",
+        "file": "/Volumes/SSD/CIBO Acervo/fonte/_global/InstrumentSerif-Regular.ttf",
+        "weight": "400",
+        "style": "normal"
+      },
+      {
+        "family": "SerifIFB",
+        "file": "/Volumes/SSD/CIBO Acervo/fonte/_global/InstrumentSerif-Italic.ttf",
+        "weight": "400",
+        "style": "italic"
+      },
+      {
+        "family": "MontIFB",
+        "file": "/Volumes/SSD/CIBO Acervo/fonte/ifb/Montserrat-VF.ttf",
+        "weight": "100 900"
+      }
+    ],
+    "title": {
+      "family": "SerifIFB",
+      "weight": 400,
+      "upper": false,
+      "ls": "-0.01em",
+      "scale": 1.55,
+      "lh": 1.05,
+      "punch": 0.7
+    },
+    "caption": {
+      "family": "MontIFB",
+      "weight": 600,
+      "upper": false,
+      "ls": 0,
+      "scale": 0.86,
+      "hlAccent": false
+    },
+    "label": {
+      "family": "MontIFB",
+      "weight": 600
+    },
+    "accent": {
+      "italic": true,
+      "weight": 400
+    },
+    "mediaFilter": "saturate(0.92) contrast(1.03) brightness(0.98)",
+    "burnFilter": "sepia(0.55) saturate(1.6) hue-rotate(-25deg) brightness(1.02)",
+    "burnOpacity": 0.8,
+    "grain": 0.04,
+    "layout": {
+      "splitH": 640,
+      "camShift": 400,
+      "capSplitY": 0,
+      "capFullY": 1380,
+      "capMaxW": 900
+    },
+    "layoutH": {
+      "panelW": 1280,
+      "capSplitY": 992,
+      "capFullY": 960,
+      "capSize": 54,
+      "hookScale": 0.82
+    },
+    "motion": {
+      "perfil": "editorial",
+      "peso": [
+        400,
+        700
+      ]
+    }
+  },
+  "pares_extra": [
+    [
+      "gold",
+      "bg",
+      4.5,
+      "dourado claro sobre o fundo escuro"
+    ],
+    [
+      "terra",
+      "paper",
+      3.0,
+      "dourado sobre painel bordô (título grande)"
+    ],
+    [
+      "ink",
+      "pill",
+      4.5,
+      "texto na pílula"
+    ],
+    [
+      "onAccent",
+      "terra",
+      4.5,
+      "texto escuro no botão dourado"
+    ]
+  ],
+  "capa": {
+    "layout": "serif",
+    "footer": "INSTITUTO FERNANDA BEN"
+  },
+  "regras": [
+    "marca na tela: INSTITUTO FERNANDA BEN / SAÚDE INTEGRATIVA (caixa alta, dourado); campanha: Black da Saúde Integral do IFB",
+    "oferta não informada pelo editor: na tela só o que ela fala (30 de outubro, 9h da manhã, grupo prioritário, vantagens para os primeiros)",
+    "CTA falado: clique em saiba mais, cadastre-se e entre no grupo prioritário",
+    "fonte Sony 4K Rec.709 horizontal, tripé fixo: camera crop; cor fica no Resolve",
+    "sem logo em arquivo ainda: marca só em texto até o editor mandar o PNG",
+    "editor 26/10/2026: tela dividida 1/3 painel em cima, 2/3 ela embaixo (splitH 640); SEM pílulas/etiquetas (fila): 'repetitivo e com cara de IA'; título em serifa com destaque itálico dourado como a Andreia; sempre 9:16 + 16:9 (rNNh)",
+    "26/10/2026: painel a 640 de altura é desenhado em 940 e reduzido (0,68): título scale 1,55 no 9:16; o 16:9 usa fernanda-h.json (scale 1,08, como a Andreia)",
+    "27/10/2026: gancho/palavras-chave em tela cheia a 0.7 (title.punch) — editor: 'punchlines cobrindo a Fernanda, diminuir a fonte'"
+  ],
+  "sfx": {
+    "kit": "/Volumes/SSD/CIBO Acervo/sfx/_global/",
+    "modo": "variado",
+    "grupos": {
+      "layout": [
+        "whoosh-soft",
+        "Swoosh 01 - 02",
+        "slide-1"
+      ],
+      "burn": [
+        "whoosh-medium-1s",
+        "Swoosh 04 - 02"
+      ],
+      "brilho": [
+        "click-soft",
+        "tap",
+        "click-soft-2",
+        "click-mouse"
+      ],
+      "marca": [
+        "impact-soft-1",
+        "impact-soft-2"
+      ]
+    },
+    "db": {
+      "layout": -12,
+      "burn": -12,
+      "brilho": -16,
+      "marca": -12
+    },
+    "abertura": true,
+    "nota": "IFB 27/10/2026: editor pediu mais SFX no motion (so_trocas com whoosh suave ficou pouco)"
+  },
+  "qualidade": {
+    "limiar": 6,
+    "alvo_eventos_10s": [
+      1.5,
+      4.5
+    ],
+    "max_parado": 7,
+    "enfase": [
+      0.1,
+      0.35
+    ]
+  },
+  "variacao": {
+    "sfx": 0,
+    "burn": 2,
+    "movimento": 3,
+    "painel": 3
+  },
+  "movimento": {
+    "preset": "editorial"
+  },
+  "saida": {
+    "tipo": "fade",
+    "dur": 0.6
+  }
+}

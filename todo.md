@@ -30,3 +30,7 @@ Pendências de 12/10/2026 (detalhes em `skills/client-router/references/fontes-e
       Em seguida, `fila_davinci.py`/`resolve_render.py` montam o projeto, e `qa_resolve.py` + `qa_render.py` conferem.
       Estimativa: 1 script novo (~300 linhas) + 1 sessão de piloto com o editor. Migrar um cliente por sessão, com
       `tests/regressao.py check`, e perguntar ao editor antes de trocar o padrão.
+
+- [ ] reel-motion `so_capa` falha calado com `camera_davinci` (sem `camera.mov`) e a `fila_davinci` segue sem capa (Andreia 29/10/2026). Usar o quadro do bruto (`frame_file`) quando não houver camera.mov e parar a fila se a capa falhar.
+- [ ] reel-motion: `zoom` com bruto horizontal em timeline vertical escala 1,78× a mais (scaleToFit do Resolve). Corrigir `davinci.py transf()` ou compor o vertical antes automaticamente (Andreia/Vanessa 29/10/2026).
+- [ ] Generalizar o kit `reel-motion/scripts/timeline/` (tirar IFB/v7 de corta_trecho, poe_capa, organiza_pool; receber PROJ por argumento em vez de copiar para 04_work).

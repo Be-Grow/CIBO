@@ -4,6 +4,10 @@
 o editor confere no preview do Resolve. Não renderize nem exporte quadro/still pelo Resolve para conferir, e render final só
 quando ele pedir. Conferência minha fica fora do Resolve (folha de contato com os MOVs/PNGs sobre quadros do MP4).
 
+**Correção é na timeline, não em pacote novo (editor, 29/10/2026: "ajuste seria mais rápido na timeline e pacotes seriam apenas componentes únicos que precisam de mudança… o que eu quero fazer agora em diante").** Depois do primeiro pacote importado, todo ajuste (emenda, burn, SFX, capa, enquadramento, volume) é feito na timeline pela API; se uma camada muda, renderize só ela e troque o clipe (`ReplaceClip` ou nome novo). Kit e tabela: `reel-motion/scripts/timeline/README.md`. Volume: ganho fixo no remux do MP4 ou na faixa, nunca render do vídeo de novo.
+
+**Bruto horizontal em timeline vertical (depoimento de Zoom, 29/10/2026):** o Resolve aplica `scaleToFit` antes do Zoom do pacote, e o `zoom` do reel.json saiu 1,78× maior (sem blur, testa cortada). Componha o vertical antes (camada nítida 2:3 na largura toda + blur só em cima/baixo, filtro da `depoimento-vertical-blur`) e use o arquivo 1080×1920 como `src`, crop cx 540, sem `zoom`.
+
 **Capa tem 1 quadro só, sempre ("isso é lei", 21/10/2026).** MOV de 1 quadro entra como still de 5 s no `AppendToTimeline`
 (ignora `endFrame`): use uma fonte de 10 quadros da mesma imagem e `startFrame 0, endFrame 1`; confira `GetDuration() == 1`.
 

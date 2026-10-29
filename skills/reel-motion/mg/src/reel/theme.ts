@@ -14,7 +14,7 @@ type FontSpec = {family: string; file: string; weight?: string; style?: string};
 export type Theme = {
   colors?: Partial<typeof C>;
   fonts?: FontSpec[];
-  title?: {family?: string; weight?: number; upper?: boolean; ls?: number | string; scale?: number; lh?: number};   // lh = entrelinha; ls aceita '-0.015em'
+  title?: {family?: string; weight?: number; upper?: boolean; ls?: number | string; scale?: number; lh?: number; punch?: number};   // lh = entrelinha; punch = escala do gancho/palavras-chave em tela cheia; ls aceita '-0.015em'
   caption?: {family?: string; weight?: number; upper?: boolean; ls?: number; scale?: number};
   label?: {family?: string; weight?: number};
   accent?: {family?: string; italic?: boolean; weight?: number};

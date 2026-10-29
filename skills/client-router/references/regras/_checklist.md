@@ -24,6 +24,7 @@ Leia só este arquivo no começo do job; abra a fase atual quando chegar nela. D
 - XML do FCP7, render pela API, AAC 64 kb/s, `SetLUT` só da pasta do sistema, arquivo trocado no mesmo caminho fica em cache;
   render no Deliver H.264 limitado a 25.000 kb/s.
 - Lições da Andrea: FPS da fonte, nome único por pacote, nunca encadear ciclos de .drt, bins e cores.
+- **Correção na timeline pela API, render só da camada que muda; nunca pacote inteiro novo por ajuste** (29/10/2026).
 **Editoriais** — [editoriais.md](editoriais.md)
 - Fala limpa (`fala-limpa`); a voz de quem sopra a fala nunca entra; corte nunca no meio da palavra nem da frase.
 - Legenda fiel à fala, abaixo do queixo, pente-fino com modelo grande.

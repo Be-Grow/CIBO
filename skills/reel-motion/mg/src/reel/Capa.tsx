@@ -61,9 +61,10 @@ export const Capa: React.FC<CapaProps> = ({frame, l1, l2, accent, y = 170, shift
         <Img src={staticFile(frame)} style={{position: 'absolute', width: VW, height: VH, objectFit: 'cover', transform: `translateX(${shift}px)`,
           WebkitMaskImage: shift > 0 ? `linear-gradient(90deg, transparent 0px, black 220px)` : undefined}} />
         <AbsoluteFill style={{background: `linear-gradient(90deg, ${scr(0.85)} 0%, ${scr(0.55)} 38%, ${scr(0)} 62%)`}} />
-        <div style={{position: 'absolute', top: y, left: 100, width: 980, textAlign: 'left', color: C.video, ...tf, textShadow: '0 4px 24px rgba(0,0,0,0.45)'}}>
-          <div style={{fontSize: 118 * T.title.scale, lineHeight: 0.98}}>{l1}</div>
-          <div style={{fontSize: 140 * T.title.scale, lineHeight: 1.0}}>{l2} <span style={{...(T.accent.italic ? {fontStyle: 'italic'} : {fontWeight: T.accent.weight}), color: C.peach}}>{accent}</span></div>
+        <div style={{position: 'absolute', top: y, left: 100, width: 900, textAlign: 'left', color: C.video, ...tf, textShadow: '0 4px 24px rgba(0,0,0,0.45)'}}>
+          {/* escala do título limitada a 1: com title.scale do 16:9 (1,5) a manchete invadia a pessoa e o rodapé (IFB 27/10/2026) */}
+          <div style={{fontSize: 118 * Math.min(T.title.scale, 1), lineHeight: 0.98}}>{l1}</div>
+          <div style={{fontSize: 140 * Math.min(T.title.scale, 1), lineHeight: 1.0}}>{l2} <span style={{...(T.accent.italic ? {fontStyle: 'italic'} : {fontWeight: T.accent.weight}), color: C.peach}}>{accent}</span></div>
         </div>
         <div style={{position: 'absolute', bottom: 80, left: 104, fontFamily: `'${T.label.family}'`, fontWeight: T.label.weight, fontSize: 28,
           letterSpacing: 6, color: C.video, opacity: 0.85, textShadow: '0 2px 10px rgba(0,0,0,0.6)'}}>{footer}</div>
