@@ -6,11 +6,11 @@ import {C, T, Theme, applyTheme, scr} from './Reel';
 // Capa do reel com o tema do cliente.
 // layout "serif" (Priscilla): manchete no topo, destaque em itálico, rodapé com o nome.
 // layout "faixa" (João, thumbs do canal): manchete pesada em caixa alta, 2ª linha sobre faixa na cor de destaque, "COM FULANO" no secundário.
-export type CapaProps = {frame: string; l1: string; l2: string; accent: string; y?: number; shift?: number; footer?: string; sub?: string;
+export type CapaProps = {frame: string; l1: string; l1b?: string; l2: string; accent: string; y?: number; shift?: number; footer?: string; sub?: string;
   layout?: 'serif' | 'faixa'; logo?: string; logoW?: number; logoY?: number; theme?: Theme; bgFill?: 'cor' | 'blur'};
 const css = () => T.fonts.map((f) => `@font-face{font-family:'${f.family}';font-weight:${f.weight ?? 'normal'};font-style:${f.style ?? 'normal'};src:url('${staticFile(f.file)}');}`).join('\n');
 
-export const Capa: React.FC<CapaProps> = ({frame, l1, l2, accent, y = 170, shift = 0, footer = 'PRISCILLA DAHER', sub, layout = 'serif', logo, logoW = 440, logoY, theme, bgFill}) => {
+export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, shift = 0, footer = 'PRISCILLA DAHER', sub, layout = 'serif', logo, logoW = 440, logoY, theme, bgFill}) => {
   applyTheme(theme);
   const tf = {fontFamily: `'${T.title.family}'`, fontWeight: T.title.weight, textTransform: T.title.upper ? 'uppercase' : 'none', letterSpacing: T.title.ls} as React.CSSProperties;
   if (layout === 'faixa') {
@@ -84,6 +84,8 @@ export const Capa: React.FC<CapaProps> = ({frame, l1, l2, accent, y = 170, shift
       <AbsoluteFill style={{background: `linear-gradient(180deg, ${scr(0.78)} 0%, ${scr(0.45)} 26%, ${scr(0)} 44%)`}} />
       <div style={{position: 'absolute', top: y, left: 60, right: 60, textAlign: 'center', color: C.video, ...tf, textShadow: '0 4px 24px rgba(0,0,0,0.45)'}}>
         <div style={{fontSize: fitW(l1, 128 * T.title.scale), lineHeight: 0.98, whiteSpace: 'nowrap'}}>{l1}</div>
+        {/* l1b: 3ª linha opcional para copy longa (Andreia 02, 30/10/2026: "o título da segunda capa tá pequeno") */}
+        {l1b && <div style={{fontSize: fitW(l1b, 128 * T.title.scale), lineHeight: 0.98, whiteSpace: 'nowrap'}}>{l1b}</div>}
         <div style={{fontSize: fitW(`${l2} ${accent}`, 150 * T.title.scale), lineHeight: 1.0, whiteSpace: 'nowrap'}}>{l2} <span style={{...(T.accent.italic ? {fontStyle: 'italic'} : {fontWeight: T.accent.weight}), color: C.peach}}>{accent}</span></div>
       </div>
       <div style={{position: 'absolute', bottom: 120, left: 0, right: 0, textAlign: 'center', fontFamily: `'${T.label.family}'`, fontWeight: T.label.weight, fontSize: 26,
