@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-10-30 (/Volumes/SSD/Movies/Edição/Mídia/joao/ep 26): Nada — EP27 (Antônio Veras): edit aprovado sem ajustes; SEO no modelo e varredura de bastidor ok.
 - 2026-10-30 (/Volumes/SSD/Movies/Edição/Mídia/joao/ep 26): Demanda de thumb do Vai Lá e Faz sai sem subtítulo; só o título da thumb
 - 2026-10-27 (/Volumes/SSD/Movies/Edição/Mídia/joao/arrumarVideoLula r01): Nada, deixa assim (Lula Filho/Growth Leaders: legenda estilo Andreia na identidade GL, trilha Feel The Sunshine, áudio tratado pelo editor)
 - 2026-10-27 (/Volumes/SSD/Movies/Edição/Mídia/joao/arrumarVideoLula r01): Erro/retake do falante é sempre cortado (fica a versão completa); não deixar repetição no vídeo
