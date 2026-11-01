@@ -50,6 +50,11 @@ burn azul no props (`burns/filmburn_blue.mp4` em `04_work/public`, tema com `bur
 `crops` com `at: 0`. Confira por PNG (`ExportCurrentFrameAsStill`) antes de mostrar. Episódio no mesmo projeto: timeline com
 resolução própria 1920×1080 (`useCustomSettings`), senão vira vertical junto com os cortes.
 
+**Cortes saem do episódio EDITADO** (editor 01/11/2026: "é pra usar a versão editada pra pegar os cortes"; o MOV que ele exporta, ex.
+`ep 8(edit).mov`): `scripts/cortes_do_editado.py PROJ editado/<arq> r01 …` leva os segs para o tempo do editado (trecho que a cartilha
+tirou sai), parte cada trecho em toda troca de câmera (scdet) e dá a cada pedaço o pan do maior rosto; o Daniel tem dois ângulos e
+um pan só por trecho deixou ele na borda e a cadeira vazia. Confira por PNG a cada 3 s nos cortes que alternam falantes.
+
 ## Regras do cliente (correções do usuário e do Daniel)
 
 - **Tudo no DaVinci, nunca ffmpeg na entrega.** Episódio completo, cortes e versões longas são montados e renderizados no Resolve com o fluxo
