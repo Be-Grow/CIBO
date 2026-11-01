@@ -2,7 +2,7 @@
 """Encaixa pontas de trechos no silêncio entre palavras (transcrição do episódio com word_timestamps do mlx-whisper).
 
 Pontas marcadas pelo SRT caem no meio da palavra (EP 10, 01/11/2026: o checa_takes acusou quase todas). Cada início vai
-para logo antes da palavra mais próxima (folga até 0,12 s, nunca antes do fim da palavra anterior) e cada fim para logo
+para logo antes da palavra mais próxima (folga de 0,03 s — o editor atrasou as voltas de 0,12 s no EP 10 —, nunca antes do fim da palavra anterior) e cada fim para logo
 depois da palavra mais próxima (folga até 0,15 s, nunca depois do início da próxima). Mostra a palavra de cada ponta.
 
 uso: encaixa_palavras.py ep_words.json rNN/segs.json [...]            reescreve cada segs.json (guarda .bak)
@@ -17,7 +17,7 @@ W = sorted(({'w': w['word'].strip(), 's': w['start'], 'e': w['end']} for w in W)
 def ini(t):
     i = min(range(len(W)), key=lambda k: abs(W[k]['s'] - t))
     prev = W[i - 1]['e'] if i else 0
-    return round(max(W[i]['s'] - 0.12, (prev + W[i]['s']) / 2), 2), W[i]['w']
+    return round(max(W[i]['s'] - 0.03, prev), 2), W[i]['w']   # editor EP 10: volta 0,1–0,6 s antes pegava o fim do que saiu
 
 
 def fim(t):

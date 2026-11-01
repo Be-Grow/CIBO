@@ -37,6 +37,9 @@ não escolhem mais emendas.
    pelo sentido (`encaixa_palavras.py` só sugere; a palavra mais próxima no tempo deixou "e"/"eu"/"quando" sobrando).
    Depois, confira pelo ÁUDIO montado (6 s antes + 7 s depois de cada emenda, retranscrito com large-v3): o tempo de palavra
    do Whisper erra (EP 10, R12 comeu o "Yuli," que o texto dizia estar lá).
+   A volta entra no ataque da 1ª palavra, não antes (o editor atrasou 7 voltas em 0,1–0,6 s no EP 10). Depois que o
+   editor mexe na timeline do episódio, nunca reimporte (o script recusa sem `--refaz`); leia as bordas dele pela API e
+   atualize `remocoes.json`/`episodio_keeps.json`.
 
 ## Regras do cliente (correções do usuário e do Daniel)
 
