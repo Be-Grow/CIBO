@@ -64,6 +64,8 @@ def aplica(tl):
                 t = tipo(it, faixa); it.SetClipColor(CORES[t][0]); cont[t] = cont.get(t, 0) + 1
             if cont:
                 t = max(cont, key=cont.get); tl.SetTrackName(faixa, k, CORES[t][1]); feitos[t] = feitos.get(t, 0) + sum(cont.values())
+                if t == 'a_camera':   # áudio da câmera é só referência: ligado, a voz sai duplicada (~40 ms; Bombordo EP 10, 01/11/2026)
+                    tl.SetTrackEnable('audio', k, False)
     return feitos
 
 

@@ -15,6 +15,23 @@ Builds finished vertical cuts from a master video + SRT. Everything is driven by
 `job.json`; the scripts do transcription-free caption timing (reused from the SRT),
 silence-snapped trimming, caption rendering, audio sweetening and the cover.
 
+## Checklist de abertura (erros do EP 10, 01/11/2026 — leia antes de tocar no material)
+
+1. Cartilha do cliente: tire o trecho E o que depende dele (fala sem contexto, pergunta refeita); emendas por palavra e
+   conferidas pelo ÁUDIO montado; volta no ataque da 1ª palavra. Depois que o editor ajustar a timeline do episódio, nunca reimporte.
+2. Cortes saem do episódio EDITADO que o editor exporta (MOV do Resolve: remonte em MP4 só com v:0+a:0, `-dn -write_tmcd 0`).
+3. Montagem: `reel.py legenda|props|mix` + `fila_davinci.py` no MESMO projeto do episódio; nunca XML do FCP7, nunca
+   `formato: so_legenda`. Episódio com resolução própria 1920×1080 antes de importar os verticais.
+4. Enquadramento: `rastreio.py` -> `track` (pontas de cada plano na mediana) + `zoom: 1.7778`; enquanto o davinci.py não for
+   corrigido, grave o track com cx' = 960 + (cx−960)/1,7778 (a posição sai 1,78× no Resolve).
+5. Áudio: faixa "ÁUDIO câmera (ref.)" desligada (resolve_cores já desliga); voz/trilha de pacote refeito com nome NOVO
+   (o Media Pool reaproveita voz__rNN.wav antigo); remux com ganho fixo até −1,2 dBTP.
+6. Capa: PNG do `cover.py` desta skill no quadro 0 (`timeline/poe_capa.py`); a capa do motor (`capa.mjs`, layout faixa) falhou.
+7. QA no MP4 RENDERIZADO, nunca em still do Resolve (cache): rosto a cada 0,5 s (desvio do centro), voz por trecho contra a
+   fonte (sincronia), eco (voz duplicada), LUFS/pico, quadro 0 = capa. Só diga "pronto" com esses números.
+8. Entrega em pastas: 01 EPISÓDIO (MP4 + MP3), 02 CORTES (MP4 + CAPA PNG), 03 DESCRIÇÕES E SEO, 04 TRANSCRIÇÕES; capítulos do
+   SEO recalculados sobre a timeline final.
+
 ## Motor dos cortes: reel-motion (editor, 01/11/2026)
 
 "Mude o motor de bombordo e boreste para o mesmo da andreia e fernanda ... esse motor aqui erra muito nos cortes das falas."
