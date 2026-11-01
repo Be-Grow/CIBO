@@ -30,6 +30,11 @@ não escolhem mais emendas.
    `enquadra.py`, `componentes.py corteNN`, `cortes_xml.py`, `importa.py` → Resolve.
 5. Cartilha do cliente (trechos proibidos) vale para episódio e cortes: `07_manifests/remocoes.json`, que o
    `davinci_episodio.py` lê. Toda menção a política sai, inclusive brincadeira.
+6. **Emenda com contexto** (editor 01/11/2026: "não pode só cortar algo e deixar um pedaço sem contexto"): depois de
+   marcar a cartilha, leia cada emenda como ela soa (≈9 s antes ‖ 14 s depois, palavras de `ep_words.json`) e procure no
+   que ficou qualquer referência ao que saiu. Fala que depende do trecho removido sai junto (EP 10: "é muita venda" sem o
+   "final de ano"); pergunta refeita depois de interrupção perde a 1ª tentativa. Pontas sempre por palavra escolhida
+   pelo sentido (`encaixa_palavras.py` só sugere; a palavra mais próxima no tempo deixou "e"/"eu"/"quando" sobrando).
 
 ## Regras do cliente (correções do usuário e do Daniel)
 
