@@ -47,13 +47,16 @@ do davinci ... assim como os outros clientes"): `reel.py PROJ rNN legenda|props|
 burn azul no props (`burns/filmburn_blue.mp4` em `04_work/public`, tema com `burnFF: null`), sem `formato: so_legenda`
 (ele apaga os SFX). **Enquadramento e zoom no DaVinci:** bruto 16:9 em timeline 9:16 precisa de `"zoom": 1.7778` no reel.json
 (sem ele o motor deixa escala nativa e o Resolve mostra o quadro horizontal com barra preta; 3,16 estoura o rosto). Primeiro
-`crops` com `at: 0`. Confira por PNG (`ExportCurrentFrameAsStill`) antes de mostrar. Episódio no mesmo projeto: timeline com
+`crops` com `at: 0`. Conferência por folha fora do Resolve (nunca still do Resolve). Episódio no mesmo projeto: timeline com
 resolução própria 1920×1080 (`useCustomSettings`), senão vira vertical junto com os cortes.
 
 **Cortes saem do episódio EDITADO** (editor 01/11/2026: "é pra usar a versão editada pra pegar os cortes"; o MOV que ele exporta, ex.
 `ep 8(edit).mov`): `scripts/cortes_do_editado.py PROJ editado/<arq> r01 …` leva os segs para o tempo do editado (trecho que a cartilha
 tirou sai), parte cada trecho em toda troca de câmera (scdet) e dá a cada pedaço o pan do maior rosto; o Daniel tem dois ângulos e
-um pan só por trecho deixou ele na borda e a cadeira vazia. Confira por PNG a cada 3 s nos cortes que alternam falantes.
+um pan só por trecho deixou ele na borda e a cadeira vazia. **Enquadramento = etapa 2 do padrão CIBO:** `reel-motion/scripts/rastreio.py
+<editado> rNN/track.json --a A --b B` e `"track"` no reel.json (keyframes que seguem o rosto no DaVinci); trave as pontas de cada pedaço na
+mediana do plano (a suavização desliza entre Daniel e Iully). **Conferência fora do Resolve** (`regras/davinci.md`): folha com o recorte
+calculado sobre quadros da fonte; still do Resolve vem do cache e mentiu no EP 10 (pan −400/0/+400 deram o mesmo quadro).
 
 ## Regras do cliente (correções do usuário e do Daniel)
 
