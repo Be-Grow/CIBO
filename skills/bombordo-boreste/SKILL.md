@@ -35,6 +35,8 @@ não escolhem mais emendas.
    que ficou qualquer referência ao que saiu. Fala que depende do trecho removido sai junto (EP 10: "é muita venda" sem o
    "final de ano"); pergunta refeita depois de interrupção perde a 1ª tentativa. Pontas sempre por palavra escolhida
    pelo sentido (`encaixa_palavras.py` só sugere; a palavra mais próxima no tempo deixou "e"/"eu"/"quando" sobrando).
+   Depois, confira pelo ÁUDIO montado (6 s antes + 7 s depois de cada emenda, retranscrito com large-v3): o tempo de palavra
+   do Whisper erra (EP 10, R12 comeu o "Yuli," que o texto dizia estar lá).
 
 ## Regras do cliente (correções do usuário e do Daniel)
 
