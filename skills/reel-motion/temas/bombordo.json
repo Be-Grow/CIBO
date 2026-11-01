@@ -1,0 +1,91 @@
+{
+ "cliente": "Bombordo e Boreste (podcast do Daniel Pereira, @dalportos)",
+ "origem": "editor 01/11/2026: \"mude o motor de bombordo e boreste para o mesmo da andreia e fernanda, esse motor aqui erra muito nos cortes das falas\". O reel-motion faz trechos, fala (checa_takes, hesita, MFA) e revisão; a identidade continua a da skill bombordo-boreste: legenda kinetic Cal Sans com destaque de brilho azul #4F95FF (escolha do editor 01/11), burn azul, clique, punch-in Easy Ease, capa com convidado sorrindo, fade 0,42 s para preto. Ponte: bombordo-boreste/scripts/ponte_reel.py.",
+ "theme": {
+  "colors": {
+   "paper": "#0D1D35",
+   "paper2": "#142C4B",
+   "ink": "#F4FBFC",
+   "ink2": "#A9C3DE",
+   "terra": "#4F95FF",
+   "terraDark": "#2E598B",
+   "peach": "#4F95FF",
+   "white": "#1C3A62",
+   "video": "#FFFFFF",
+   "onAccent": "#0D1D35",
+   "pill": "#24497A",
+   "bg": "#000000",
+   "gold": "#D9B563"
+  },
+  "fonts": [
+   {
+    "family": "CalSansBB",
+    "file": "/Users/bruno/.claude/skills/bombordo-boreste/assets/CalSans-Regular.ttf",
+    "weight": "400"
+   }
+  ],
+  "title": {
+   "family": "CalSansBB",
+   "weight": 400,
+   "upper": true,
+   "ls": 0.5,
+   "scale": 0.62
+  },
+  "caption": {
+   "family": "CalSansBB",
+   "weight": 400,
+   "upper": true,
+   "ls": 0.5,
+   "scale": 0.8
+  },
+  "label": {
+   "family": "CalSansBB",
+   "weight": 400
+  },
+  "accent": {
+   "italic": false,
+   "weight": 900
+  },
+  "mediaFilter": "contrast(1.03) saturate(1.02)",
+  "burnFilter": "sepia(1) hue-rotate(175deg) saturate(2.4) brightness(0.95)",
+  "burnOpacity": 0.8,
+  "grain": 0.05,
+  "layout": {
+   "splitH": 768,
+   "camShift": 460,
+   "capSplitY": 1370,
+   "capFullY": 1300,
+   "capMaxW": 820,
+   "autoTags": true
+  }
+ },
+ "pares_extra": [
+  [
+   "gold",
+   "paper",
+   4.5,
+   "COM FULANO (secundário dourado)"
+  ],
+  [
+   "terra",
+   "paper2",
+   3.0,
+   "destaque no degradê"
+  ]
+ ],
+ "capa": {
+  "layout": "bombordo",
+  "nota": "capa sai do cover.py da skill bombordo-boreste (Cal Sans + logo Portos), não do Capa.tsx"
+ },
+ "regras": [
+  "sem painel de motion: tela cheia, legenda kinetic do Bombordo em camada com alfa",
+  "7 cortes por episódio no padrão; EP 10: 4 convidado + 3 Daniel (pedido do editor)",
+  "cartilha do cliente sai do episódio e dos cortes; toda menção a política sai (01/11/2026)",
+  "trilha −27 dB com ducking −6 dB sob a voz; fade 0,42 s para preto no fim"
+ ],
+ "saida": {
+  "tipo": "fade",
+  "dur": 0.42
+ },
+ "takes_min": -32
+}

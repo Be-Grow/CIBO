@@ -15,6 +15,22 @@ Builds finished vertical cuts from a master video + SRT. Everything is driven by
 `job.json`; the scripts do transcription-free caption timing (reused from the SRT),
 silence-snapped trimming, caption rendering, audio sweetening and the cover.
 
+## Motor dos cortes: reel-motion (editor, 01/11/2026)
+
+"Mude o motor de bombordo e boreste para o mesmo da andreia e fernanda ... esse motor aqui erra muito nos cortes das falas."
+Trechos e fala saem do `reel-motion` (tema `temas/bombordo.json`); a identidade continua a desta skill (legenda kinetic
+escolhida pelo editor em 01/11, burn azul, clique, punch-in, capa, fade 0,42 s). O `make_reels.py`/`refina.py` antigos
+não escolhem mais emendas.
+1. Por corte, `04_work/rNN/{reel.json,segs.json}` (segs em segundos do bruto; cold open = 1º trecho fora de ordem).
+   `src_48k.wav`/`src_16k.wav` extraídos uma vez do bruto e linkados em cada rNN (não rode `fonte` 7 vezes).
+2. `~/.venvs/audiotools/bin/python reel-motion/scripts/reel.py PROJ rNN voz` (checa_takes, Whisper, MFA) e `revisa`
+   (emenda no meio da palavra, hesitação, voz da equipe). Use o Python do venv: o python3 do sistema não tem numpy.
+3. `scripts/ponte_reel.py PROJ rNN corteNN --segment` → `cortes/corteNN/{edit.json, edit16k.wav, kinetic/}`.
+4. Camadas e XML com o kit do episódio (`04_work/cortes/{componentes,enquadra,cortes_xml,importa}.py`, copiado do EP 07):
+   `enquadra.py`, `componentes.py corteNN`, `cortes_xml.py`, `importa.py` → Resolve.
+5. Cartilha do cliente (trechos proibidos) vale para episódio e cortes: `07_manifests/remocoes.json`, que o
+   `davinci_episodio.py` lê. Toda menção a política sai, inclusive brincadeira.
+
 ## Regras do cliente (correções do usuário e do Daniel)
 
 - **Tudo no DaVinci, nunca ffmpeg na entrega.** Episódio completo, cortes e versões longas são montados e renderizados no Resolve com o fluxo
