@@ -41,6 +41,15 @@ não escolhem mais emendas.
    editor mexe na timeline do episódio, nunca reimporte (o script recusa sem `--refaz`); leia as bordas dele pela API e
    atualize `remocoes.json`/`episodio_keeps.json`.
 
+**Pacote DaVinci = fluxo da Andreia/Fernanda, nunca XML do FCP7** (editor 01/11/2026: "não é pra usar xml, é pra montar dentro
+do davinci ... assim como os outros clientes"): `reel.py PROJ rNN legenda|props|mix` e `fila_davinci.py PROJ "EP NN - Convidado"
+"BeGrow/Bombordo e Boreste" r01 …`, no MESMO projeto do episódio. Legenda do motor (tema `bombordo`), cliques em `sfx.json`,
+burn azul no props (`burns/filmburn_blue.mp4` em `04_work/public`, tema com `burnFF: null`), sem `formato: so_legenda`
+(ele apaga os SFX). **Enquadramento e zoom no DaVinci:** bruto 16:9 em timeline 9:16 precisa de `"zoom": 1.7778` no reel.json
+(sem ele o motor deixa escala nativa e o Resolve mostra o quadro horizontal com barra preta; 3,16 estoura o rosto). Primeiro
+`crops` com `at: 0`. Confira por PNG (`ExportCurrentFrameAsStill`) antes de mostrar. Episódio no mesmo projeto: timeline com
+resolução própria 1920×1080 (`useCustomSettings`), senão vira vertical junto com os cortes.
+
 ## Regras do cliente (correções do usuário e do Daniel)
 
 - **Tudo no DaVinci, nunca ffmpeg na entrega.** Episódio completo, cortes e versões longas são montados e renderizados no Resolve com o fluxo
