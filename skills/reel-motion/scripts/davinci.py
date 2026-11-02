@@ -31,7 +31,7 @@ if GROSSO:
 # versão horizontal 16:9 ("orient": "h", Andreia 19/10/2026): timeline 1920×1080, painel à esquerda, deslocamento da pessoa em x
 HZ = C.get('orient') == 'h'; VW, VH = (1920, 1080) if HZ else (1080, 1920)
 SFXDIR = '/Volumes/SSD/CIBO Acervo/sfx/_global/'
-FD = Fraction(1001, 30000)
+FD = Fraction(1, 30) if str(C.get('fps', '')) in ('30', '30.0') else Fraction(1001, 30000)   # "fps": 30 = timeline no fps da fonte editada (Bombordo EP 08, 01/11/2026: sem cópia 29,97)
 if GROSSO:                                                     # aula longa: timeline no fps da fonte, sem cópia 29,97 (João 21/10/2026:
     _s = Path(C['src']) if os.path.isabs(C['src']) else P / '01_sources' / C['src']   # "o Resolve consegue fazer isso sozinho")
     _r = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', str(_s)],
@@ -335,7 +335,7 @@ def fonte_2997(src):
     (mesmos segundos, 1 s de folga no fim, sem timecode), feita uma vez e reaproveitada por todos os reels da mesma fonte"""
     r = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', str(src)],
                        capture_output=True, text=True).stdout.strip()
-    if r == '30000/1001' or GROSSO:
+    if r == '30000/1001' or GROSSO or (FD == Fraction(1, 30) and r == '30/1'):
         return src
     dst = src.parent / '_2997' / (src.stem + '.mov') if src.parent.name != '_2997' else src
     if not dst.exists():

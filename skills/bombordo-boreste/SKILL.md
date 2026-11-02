@@ -20,6 +20,8 @@ silence-snapped trimming, caption rendering, audio sweetening and the cover.
 1. Cartilha do cliente: tire o trecho E o que depende dele (fala sem contexto, pergunta refeita); emendas por palavra e
    conferidas pelo ÁUDIO montado; volta no ataque da 1ª palavra. Depois que o editor ajustar a timeline do episódio, nunca reimporte.
 2. Cortes saem do episódio EDITADO que o editor exporta (MOV do Resolve: remonte em MP4 só com v:0+a:0, `-dn -write_tmcd 0`).
+   Ponha `"fps": 30` no reel.json quando o editado for 30 fps: a timeline dos cortes fica em 30 e o motor usa o arquivo direto,
+   sem a cópia 29,97 do episódio inteiro (70 min no EP 08; editor: "mas eu já tenho o arquivo dele na pasta", "ajusta pra fazer com 30fps").
 3. Montagem: `reel.py legenda|props|mix` + `fila_davinci.py` no MESMO projeto do episódio; nunca XML do FCP7, nunca
    `formato: so_legenda`. Episódio com resolução própria 1920×1080 antes de importar os verticais.
 4. Enquadramento: `rastreio.py` -> `track` (pontas de cada plano na mediana) + `zoom: 1.7778`; enquanto o davinci.py não for
