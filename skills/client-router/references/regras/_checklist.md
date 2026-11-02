@@ -42,3 +42,6 @@ Leia só este arquivo no começo do job; abra a fase atual quando chegar nela. D
 **Depois de uma correção** — [pos-correcao.md](pos-correcao.md)
 - A lição vai para a skill no mesmo turno; causa no motor = conserte o motor; código compartilhado entra como opção por chave e o outro cliente sai idêntico.
 - Suba para o CIBO (commit e push) no mesmo turno.
+
+**Pacote DaVinci (Bombordo EP 10/EP 08, 01/11/2026)** — [davinci.md](davinci.md), seção "Lições do Bombordo"
+- Cortes do episódio EDITADO; `fps` da fonte no reel.json; bruto 16:9 em 9:16 com `zoom` 1,7778 + track corrigido; A1 da câmera off; voz/trilha refeitas com nome novo; QA medido no MP4 renderizado, nunca still do Resolve.

@@ -133,3 +133,27 @@ Volta ao checklist: [`_checklist.md`](_checklist.md).
   da câmera com `RotationAngle 90` (o bruto do iPhone sai deitado sem ele). QA de sincronia por trecho: correlação do áudio do
   render com o áudio da câmera no mesmo quadro (atraso ≈ 0 ms, corr > 0,9).
 - **O DaVinci ignora o modo de mesclagem do FCPXML:** burn vai com alfa (reel-motion, 14/10/2026).
+
+## Lições do Bombordo EP 10 e EP 08 (01/11/2026) — valem para todo cliente no pacote DaVinci
+
+O editor achou cada uma na tela; nenhuma o checador da época pegava.
+- **Fonte dos cortes = episódio EDITADO** que o editor exporta (não o bruto). MOV do Resolve: remonte em MP4 com `-map 0:v:0 -map 0:a:0
+  -c copy -dn -write_tmcd 0 -map_metadata -1` (a trilha de timecode faz o ffprobe repetir a linha e o motor quebra).
+- **fps da fonte:** editado em 30 fps -> `"fps": 30` no reel.json (timeline em 30, arquivo direto). Sem isso o motor copia o episódio
+  inteiro para 29,97 em x264 CPU (70 min para 64 min). Cópia que for inevitável: `h264_videotoolbox -b:v 35M` (minutos).
+- **Bruto 16:9 em timeline 9:16:** `"zoom": 1.7778` (sem ele: quadro horizontal com barra preta; 3,16 estoura o rosto). Com `track`
+  o davinci.py aplica a posição 1,78× a mais (rosto vai para o lado oposto): grave o track com cx' = 960 + (cx−960)/1,7778 até o
+  motor ser corrigido. Pontas de cada plano na mediana (a suavização desliza entre pessoas na troca de câmera).
+- **Áudio da câmera (A1 "ÁUDIO câmera (ref.)") sempre desligado** (resolve_cores já faz): ligado, a voz sai duplicada ~40 ms.
+- **Media Pool junta arquivo de mesmo nome:** pacote refeito reaproveitou `voz__r04.wav` antigo (voz 1,5 s fora). ReplaceClip no item
+  da faixa para um arquivo de NOME NOVO; `ReplaceClip` no mesmo caminho fica em cache.
+- **Still do Resolve (`ExportCurrentFrameAsStill`) vem do cache e mente** (pan −400/0/+400 deram o mesmo quadro); folha simulada do
+  recorte também mentiu. **QA no MP4 RENDERIZADO:** rosto a cada 0,5 s (desvio do centro), voz por trecho contra a fonte (sincronia),
+  autocorrelação/eco (voz duplicada), LUFS e pico (remux com ganho fixo até −1,2 dBTP), quadro 0 = capa. Só diga "pronto" com esses números.
+- **Projeto com episódio horizontal + cortes verticais:** dê ao episódio resolução própria 1920×1080 (`useCustomSettings`) antes de
+  importar os verticais, senão ele vira 1080×1920 junto. Timeline que o editor ajustou nunca é reimportada; leia as bordas pela API.
+- **Emenda de episódio:** tire o trecho e o que depende dele; confira cada emenda pelo ÁUDIO montado (6 s + 7 s retranscritos); volta
+  no ataque da 1ª palavra (o editor atrasou 7 voltas em 0,1–0,6 s).
+- **Whisper com prompt longo pula o começo** (EP 08 r01: 26 s sem texto): confira se a 1ª palavra do `edit_mfa.json` está em ~0 s e o
+  texto inicial é o planejado; refaça sem prompt.
+- **SSD:** a fila para abaixo de 8 GB; apague MOV intermediário já remontado (confira as durações antes) e pacotes antigos.
