@@ -34,3 +34,5 @@ Pendências de 12/10/2026 (detalhes em `skills/client-router/references/fontes-e
 - [ ] reel-motion `so_capa` falha calado com `camera_davinci` (sem `camera.mov`) e a `fila_davinci` segue sem capa (Andreia 29/10/2026). Usar o quadro do bruto (`frame_file`) quando não houver camera.mov e parar a fila se a capa falhar.
 - [ ] reel-motion: `zoom` com bruto horizontal em timeline vertical escala 1,78× a mais (scaleToFit do Resolve). Corrigir `davinci.py transf()` ou compor o vertical antes automaticamente (Andreia/Vanessa 29/10/2026).
 - [ ] Generalizar o kit `reel-motion/scripts/timeline/` (tirar IFB/v7 de corta_trecho, poe_capa, organiza_pool; receber PROJ por argumento em vez de copiar para 04_work).
+- [ ] **`status.py` acusar render quebrado** (lição joao "ep 26", 04/11/2026): marcar reel sem MP4 em `06_deliverables`,
+      `.mov`/`.mp4` com menos de 1 MB e `04_work/_bundle/rNN` que sobrou. O r05 e o r06 ficaram sem entrega sem alerta.
