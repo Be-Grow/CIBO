@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-05 (growthLeadersStory r01): Capa com produto (vinho Almar): o rótulo e a taça têm que aparecer; degradê/texto por cima do rótulo deixou só o gargalo transparente e a garrafa pareceu de cachaça. Texto abaixo do rótulo, logo GL no topo.
 - 2026-11-05 (growthLeadersStory r01): Capa: gancho com o slogan do patrocinador ('Com Almar, a vida fica mais leve.') no estilo dos posts oficiais do GL: pílula dourada com o nome, linha leve branca + linha pesada dourada, data/local em caixa alta espaçada, logo GL e barra dourada. O layout faixa do motor ficou ruim (gancho fraco).
 - 2026-11-05 (growthLeadersStory r01): Capa: logo GL maior (720 px de largura em vez de 460); com 460 sobrava muito espaço vazio embaixo.
 - 2026-11-05 (growthLeadersStory r01): Nome do palestrante confirmado: Almistron Marinho (print do perfil). Pediu capa depois da entrega sem capa.
