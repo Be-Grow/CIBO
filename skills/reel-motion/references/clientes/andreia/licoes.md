@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-06 (cortesMesaRadionica): Nunca usar som de sino/campainha de hotel em nenhum corte (clear-bell-chime, bell-meditation; por segurança também chime/chime-sound). Editor já tinha pedido antes (06/11/2026: 'n usa mais esse som de sino em nenhum… eu ja havia pedido').
 - 2026-10-30 (corteBloco06 r01): Capa de corte: sempre no estilo padrão dela (layout serif do tema, título serifado com itálico dourado no alto). Cartão preto com borda dourada por cima da imagem ficou horrível (30/10/2026); a imagem escolhida (dedo levantado, olhando pra câmera) estava boa.
 - 2026-10-27 (videoa andreia tag black): Anúncios Black verticais: só o cartão preto com borda dourada pulsando (sem a foto), embaixo, um pouco acima do pé (Zoom 1,16, Tilt 124 pela API) — aprovado: 'tá ótimo'.
 - 2026-10-21 (demandaVideoEstiloPriscilla): Selo da logo fixo (vertical centro de baixo, 16:9 canto inferior direito) aprovado pelo editor, foi pra aprovação da cliente sem mudanças.

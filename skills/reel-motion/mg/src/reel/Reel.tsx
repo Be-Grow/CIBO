@@ -256,6 +256,8 @@ export const Reel: React.FC<ReelProps> = (props) => {
   const KH = Math.min(T.layoutH.panelW / 1080, VH / SPLIT);
   // invertida: o painel sobe invPad acima da borda (a interface do Instagram cobre a parte de baixo); a faixa extra é papel
   const PAD = inv ? (T.layout.invPad ?? 150) : 0;
+  const FE = !HZ && !inv ? Number((T.layout as any).feather ?? 0) : 0;
+  const MK = `linear-gradient(180deg, #000 0px, #000 ${H + PAD - FE}px, transparent ${H + PAD}px)`;
   const panelY = inv ? 1920 - H - PAD + (H + PAD) * (1 - sp) : -H * (1 - sp);
   const camY = inv ? -(T.layout.camUp ?? 300) * sp : T.layout.camShift * sp;
   const lead = (p: Panel) => (p.tr === 'burn' ? 0 : 0.12);
@@ -306,7 +308,9 @@ export const Reel: React.FC<ReelProps> = (props) => {
         <div style={{position: 'absolute', left: 0, top: 0, width: HZ ? PW : 1080, height: HZ ? VH : H + PAD,
           transform: HZ ? `translateX(${-PW * (1 - sp)}px)` : `translateY(${panelY}px)`, overflow: 'hidden',
           background: tudoP || L === 'painel_fundo' ? C.paper : 'transparent',
-          boxShadow: tudoP || L === 'painel_fundo' ? (HZ ? '18px 0 40px rgba(0,0,0,0.25)' : inv ? '0 -18px 40px rgba(0,0,0,0.25)' : '0 18px 40px rgba(0,0,0,0.25)') : 'none', filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
+          // layout.feather (px): divisão sem linha, o painel se dissolve na câmera (referência da Andreia, ClickUp 868mtnvbk, 06/11/2026)
+          ...(FE > 0 ? {WebkitMaskImage: MK, maskImage: MK} : {}),
+          boxShadow: FE > 0 ? 'none' : tudoP || L === 'painel_fundo' ? (HZ ?'18px 0 40px rgba(0,0,0,0.25)' : inv ? '0 -18px 40px rgba(0,0,0,0.25)' : '0 18px 40px rgba(0,0,0,0.25)') : 'none', filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
           {(tudoP || L === 'painel_fundo') && <Ambient t={t} w={HZ ? PW : 1080} h={HZ ? VH : H + PAD} />}
           {(tudoP || L === 'painel_fundo') && <Grain opacity={T.grain} />}
           {/* horizontal: o desenho 1080×940 do painel cabe inteiro na coluna da esquerda, centrado na altura */}
