@@ -120,8 +120,8 @@
     "16:9 em terços: painel nos 2/3 da esquerda (panelW 1280), ela centralizada no terço da direita pelo CORPO (editor, 19/10/2026); legenda da tela dividida no rodapé do painel"
   ],
   "sfx": {
-    "proibidos": ["clear-bell-chime", "bell-meditation", "chime", "chime-sound"],
-    "nota_proibidos": "sino/campainha de hotel reprovado duas vezes pelo editor (06/11/2026: 'n usa mais esse som de sino em nehum… eu ja havia pedido'). Variar com harpa, shimmer, tigelas (grave), wind-magic; só nas palavras-chave.",
+    "proibidos": ["bell-meditation", "chime", "chime-sound", "clear-bell-chime", "ethereal-riser", "glitter-tinkle", "harp-glissando-chimes", "harp-glissando-down", "magic-sparkle", "magic-spell", "magic-teleport-whoosh", "shimmer-glass", "singing-bowl-hit-agudo-36st", "sparkle", "twinkle-sparkle", "wind-magic"],
+    "nota_proibidos": "sino/campainha reprovado pelo editor (06/11) e sons 'alegres demais para o tema espiritual pesado' reprovados pela cliente (06/11/2026): só tigelas graves (singing-bowl-hit, singing-bowl-struck, tibetan-singing-bowl), 2–3 palavras-chave por vídeo.",
     "kit": "/Volumes/SSD/CIBO Acervo/sfx/andreia/wav/",
     "modo": "so_trocas",
     "trocas": [
