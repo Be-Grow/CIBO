@@ -6,7 +6,7 @@ Medido com `gancho-e-ritmo`: 8,3–9,4 (limiar do tema: 6). Nome na tela é **An
 | Dimensão | Aprovado assim | Reprova se |
 |---|---|---|
 | Gancho | frase-tese dela nos 3 s, em tela cheia com título serifado (ex.: "Diagnosticar a dor é só **metade** do caminho"); punch 8 % no gancho | abre com saudação ("Salve, criatura divina") sem a tese logo depois; nada muda na tela |
-| Ritmo | 3–4 mudanças de tela/10 s; tela dividida com painel trocando por burn; tigela tibetana grave só nas trocas (16 LUFS abaixo da voz); trilha calma, baixa | SFX em frase/legenda/item, whoosh repetido, trilha animada competindo com a voz, tela parada > 7 s |
+| Ritmo | 3–4 mudanças de tela/10 s; tela dividida com painel trocando por burn; SFX só nas palavras-chave, variados no kit dela (harpa, shimmer, tigelas graves, wind-magic; 16–18 LUFS abaixo da voz; editor 06/11/2026), **nunca sino/campainha** (tema sfx.proibidos); trilha calma, baixa | SFX em frase/legenda/item, whoosh repetido, trilha animada competindo com a voz, tela parada > 7 s |
 | Legibilidade | legenda Montserrat palavra a palavra, destaque dourado em 20–34 % das palavras, em expressões ("metade do caminho") | destaque em palavra vazia solta, bloco inteiro dourado, legenda sobre o painel |
 | Identidade | roxo profundo + dourado/âmbar + creme; títulos Cormorant Garamond com destaque itálico dourado; movimento suave (perfil editorial) | painel creme com texto violeta (não mostra o roxo), SFX genérico "feliz", animação dura |
 

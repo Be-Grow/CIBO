@@ -90,5 +90,10 @@ else:
     ev = out
 
 ev.sort(key=lambda e: e['t'])
+# sons proibidos pelo cliente (tema sfx.proibidos; Andreia: sinos/campainha, 06/11/2026) nunca saem, mesmo vindo de grupo
+PROIB = set(S.get('proibidos', []))
+ruim = [e['f'] for e in ev if Path(e['f']).stem in PROIB]
+if ruim:
+    sys.exit(f'SFX proibido pelo cliente: {sorted(set(ruim))} (tema sfx.proibidos)')
 json.dump(ev, open(W / 'sfx.json', 'w'), indent=1, ensure_ascii=False)
 print(len(ev), 'SFX;', len({e['f'] for e in ev}), 'sons diferentes;', S.get('modo', 'so_trocas'))

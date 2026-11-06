@@ -255,7 +255,11 @@ def transf(k, t):
         w = RW if HZ else RH * 9 / 16
         if not HZ and VW / w > 1:                                     # vertical sem zoom além da escala nativa (Andreia 19/10/2026:
             w = VW                                                    # "a cabeça ficou muito pequena… tira zoom e põe background com blur")
-        cx = min(max(cx, w / 2), RW - w / 2); sc0 = VW / w * C.get('zoom', 1)
+        # fonte horizontal em reel vertical com crops fixos: o Resolve mostrava o quadro com 1080 px de altura e faixa de fundo
+        # desfocado embaixo, diferente do camera.mov do Remotion (Andreia, cortesMesaRadionica 06/11/2026). Zoom padrão = RW/RH
+        # (1,7778 no 16:9, o mesmo da lição do Bombordo). Com rastreio (TRK) continua 1: a posição sai 1,78× (corrigir antes).
+        zdef = RW / RH if (not HZ and RW > RH and not TRK) else 1
+        cx = min(max(cx, w / 2), RW - w / 2); sc0 = VW / w * C.get('zoom', zdef)
         # "zoom"/"zoom_cy" no reel.json: recorte fixo feito no Resolve (aula do João 21/10/2026: 1,2245x em y 549 tira os logos
         # do palco, sem rastreio e sem mezanino renderizado)
         # zoom in/out (camera_moves do reel.json, Easy Ease em espaço log) centrado no rosto: o ponto do rosto fica parado

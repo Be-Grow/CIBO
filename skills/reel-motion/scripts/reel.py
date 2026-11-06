@@ -35,7 +35,11 @@ ENG = Path(__file__).resolve().parent.parent           # skill reel-motion
 P = Path(sys.argv[1]).resolve()
 WK = P / '04_work'; MG = ENG / 'mg'; SK = Path.home() / '.claude/skills'
 TMP = '/Volumes/SSD/CIBO/tmp'
-os.environ['TMPDIR'] = TMP
+# TMPDIR próprio por processo: o limpa_bundles apagava o bundle do Remotion de OUTRO reel rodando junto (capa do r03 quebrou com
+# ENOENT durante a fila do r02, Andreia cortesMesaRadionica 06/11/2026). Cada processo limpa só a sua pasta.
+TMPP = os.path.join(TMP, f'reel_{os.getpid()}'); os.makedirs(TMPP, exist_ok=True)
+os.environ['TMPDIR'] = TMPP
+import atexit as _ax; _ax.register(lambda: shutil.rmtree(TMPP, ignore_errors=True))
 AUDIOPY = str(Path.home() / '.venvs/audiotools/bin/python')
 R = sys.argv[2]; ETAPA = sys.argv[3]; ARGS = sys.argv[4:]; W = WK / R
 C = json.load(open(W / 'reel.json'))
@@ -407,7 +411,7 @@ def e_mix():
 def limpa_bundles():
     """o render do Remotion deixa uma cópia da pasta pública em TMP/remotion-webpack-bundle-*: é cópia, apaga (SSD lotou, 13/10/2026)"""
     import glob, shutil
-    for d in glob.glob(f'{TMP}/remotion-webpack-bundle-*'):
+    for d in glob.glob(f'{TMPP}/remotion-webpack-bundle-*'):
         shutil.rmtree(d, ignore_errors=True)
 
 
