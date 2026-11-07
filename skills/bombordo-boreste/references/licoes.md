@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-07 (/Volumes/SSD/Movies/Edição/Mídia/content/bombordo/EP 11 - Fernanda Fialho): Thumb: postura conta tanto quanto o sorriso (Daniel largado/ombro caído foi reprovado). Filtro por script: virado para o convidado + olhos nivelados + rosto alto no quadro (ereto); depois de 2 recusas, mande a folha numerada e deixe o editor escolher (EP 11 escolheu o 16, 53:09)
 - 2026-11-07 (/Volumes/SSD/Movies/Edição/Mídia/content/bombordo/EP 11 - Fernanda Fialho): Thumb: host e convidado sorrindo E olhando um para o outro (Daniel virado para a direita). Achar por YuNet (virada da cabeça) + risadas no áudio + folha densa a 0,25 s; largura da boca sozinha pega gente falando
 - 2026-11-07 (/Volumes/SSD/Movies/Edição/Mídia/content/bombordo/EP 11 - Fernanda Fialho): Thumbs: pessoas não podem ficar escuras; luz no nível das thumbs do designer (Drive): luz.py mede a pele (L* mediano ~176) e leva cada recorte ao alvo; cabeças com a mesma altura real (topo do cabelo ao queixo), não pela caixa do detector
 - 2026-11-07 (/Volumes/SSD/Movies/Edição/Mídia/content/bombordo/EP 11 - Fernanda Fialho): CORREÇÃO: 'toda menção a política sai' valeu SÓ para o EP 10 (pedido daquele episódio). Não é regra fixa do cliente: em episódio novo, política fica, salvo pedido do editor
