@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-07 (/Volumes/SSD/Movies/Edição/Mídia/content/bombordo/EP 11 - Fernanda Fialho): CORREÇÃO: 'toda menção a política sai' valeu SÓ para o EP 10 (pedido daquele episódio). Não é regra fixa do cliente: em episódio novo, política fica, salvo pedido do editor
 - 2026-11-07 (/Volumes/SSD/Movies/Edição/Mídia/content/bombordo/EP 11 - Fernanda Fialho r05): Enquadramento: scdet (t=10) perdeu a troca aberto->close; a mediana misturou os planos e tirou o Daniel do centro (r05 33 s). Use os rótulos de plano por segundo (planos.py) + scdet t=3 para achar cada troca, e a mediana só do trecho usado no corte
 - 2026-11-07 (/Volumes/SSD/Movies/Edição/Mídia/content/bombordo/EP 11 - Fernanda Fialho r04): Ponta encaixada no 'vale' de energia pegou cauda da palavra anterior ('-ária, nós fizemos') e cortou 'exponencial' (sem pausa até a próxima). Início no ataque da 1ª palavra; fim só onde há pausa real, senão estenda até a próxima pausa ('…dez vezes,')
 - 2026-11-07 (/Volumes/SSD/Movies/Edição/Mídia/content/bombordo/EP 11 - Fernanda Fialho r04): Cold open não pode cortar no meio da fala nem soar duplicado: termine na pontuação ('hidrovia.') e tire do corpo a mesma frase (r04 repetia 'O Brasil não tem quase nenhuma hidrovia, na verdade' cortado)
