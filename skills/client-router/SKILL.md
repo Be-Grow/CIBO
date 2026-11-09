@@ -15,6 +15,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Decisões de estilo, aprovação do mapa e do piloto | `briefing-criativo` |
 | Qualquer asset (burn, clique, SFX, trilha, fonte, logo, cartão, foto) | `acervo` — busque antes de perguntar; o que o editor apontar entra com `add` |
 | Pastas do projeto (início e fim) | `video-project-structure` |
+| Bruto grande no Drive (demanda com minutagem): baixar **só os trechos**, nunca o arquivo inteiro | `scripts/trecho_drive.py <link> --saida <proj>/01_sources --trecho "03=00:42:58-00:44:32" …` (proxy de Range fechado + `ffmpeg -c copy`, folga 5 s, confere áudio×vídeo; `--info` só mede) |
 | Bruto longo com bastidores/retakes | `limpeza-gravacao-bruta` |
 | Transcrição de aula/live longa | `transcricao-aulas` |
 | Escolha dos momentos (portão, começo/fim) | `podcast-reels` → "Escolha dos momentos" + `scripts/checa_cortes.py` |
