@@ -144,6 +144,8 @@ O editor achou cada uma na tela; nenhuma o checador da época pegava.
 - **Bruto 16:9 em timeline 9:16:** `"zoom": 1.7778` (sem ele: quadro horizontal com barra preta; 3,16 estoura o rosto). Com `track`
   o davinci.py aplica a posição 1,78× a mais (rosto vai para o lado oposto): grave o track com cx' = 960 + (cx−960)/1,7778 até o
   motor ser corrigido. Pontas de cada plano na mediana (a suavização desliza entre pessoas na troca de câmera).
+  **Vale também para `crops` fixos sem rastreio** (Fernanda SM Gabriel r03, 09/11/2026: "ELA N TA CENTRALIZADA" — Pan −213 no
+  Resolve com cx 1080; certo −120): grave `crops` com cx' = 960 + (cx−960)/1,7778, ou corrija o Pan dos clipes da câmera pela API.
 - **Áudio da câmera (A1 "ÁUDIO câmera (ref.)") sempre desligado** (resolve_cores já faz): ligado, a voz sai duplicada ~40 ms.
 - **Media Pool junta arquivo de mesmo nome:** pacote refeito reaproveitou `voz__r04.wav` antigo (voz 1,5 s fora). ReplaceClip no item
   da faixa para um arquivo de NOME NOVO; `ReplaceClip` no mesmo caminho fica em cache.
