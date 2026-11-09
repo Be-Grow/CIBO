@@ -155,7 +155,7 @@ def main():
         out = os.path.join(a.saida, f"{a.prefixo}_{nome}_{hms(ini)}.mp4")
         cmd = ["ffmpeg", "-nostdin", "-v", "error", "-y", "-ss", f"{s0:.3f}", "-i", local, "-t", f"{d:.3f}",
                "-map", "0:v:0", "-map", "0:a?", "-c", "copy", "-avoid_negative_ts", "make_zero",
-               "-movflags", "+faststart", out]
+               "-map_metadata", "-1", "-write_tmcd", "0", "-movflags", "+faststart", out]   # sem tmcd: o grupo Track Reference quebrava o ffprobe csv do reel.py
         r = subprocess.run(cmd, capture_output=True, text=True)
         dv, da = dur(out, "v:0"), dur(out, "a:0")
         ok = r.returncode == 0 and dv > d * 0.95 and abs(dv - da) < 0.5
