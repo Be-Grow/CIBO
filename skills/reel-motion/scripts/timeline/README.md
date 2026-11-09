@@ -23,6 +23,7 @@ Kit nascido na demanda da Fernanda (IFB Black, 27/10/2026). Os scripts acham o p
 | "Media Offline" por zoom sobreposto à tela dividida | `fx_sem_sobrepor.py` |
 | Deslocar movimentos do Fusion depois de tirar quadros | `move_fx.py` |
 | Trocar SFX no projeto aberto (ReplaceClip) | `troca_pop.py` |
+| Clipes de áudio na faixa errada (câmera/voz/SFX embaralhados): devolve cada um à sua faixa sem render | `arruma_audio.py "TIMELINE" [--dry]` (depois ligue A3/A4 e desligue A1) |
 | Capa (1 quadro, faixa CAPA no topo, quadro 0) | `poe_capa.py`, `capa_render.py` |
 | Organizar o Media Pool | `organiza_pool.py` |
 | Apagar uma timeline para reimportar (último recurso) | `troca_tl.py` |
