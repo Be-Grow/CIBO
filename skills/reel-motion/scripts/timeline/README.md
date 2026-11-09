@@ -15,7 +15,7 @@ Kit nascido na demanda da Fernanda (IFB Black, 27/10/2026). Os scripts acham o p
 
 | Ajuste | Script |
 |---|---|
-| Tirar um trecho [A,B) de uma timeline sem render (endFrame exclusivo) | `corta_trecho.py` (usa `fx_sem_sobrepor`) |
+| Tirar um trecho [A,B) de uma timeline sem render (endFrame exclusivo) | `corta_trecho.py` (usa `fx_sem_sobrepor`) — **NÃO USE: embaralha as faixas de áudio** (câmera/voz/SFX trocam de faixa depois da emenda; Fernanda SM Gabriel 09/11/2026, "ESSAS FAIXAS AQUI TUDO BAGUNÇADA"). Corte pequeno: refaça `segs` + `desloca` e remonte só aquele reel. |
 | Emendas: fim engolido / começo cortado / respiro < 0,22 s, pelo sinal | `audita_emendas.py` → `corrige_emendas.py` |
 | Trechos pelo sinal num vídeo de roteiro (silêncio ≥ 0,5 s) | `segs_sinal.py` |
 | Desliga o áudio da câmera, Pan medido, sincronia | `ajusta_resolve.py`, `desliga_a1.py` |
