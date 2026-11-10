@@ -23,8 +23,8 @@ HERE = Path(__file__).resolve().parent
 GOLDEN = HERE / "golden"
 SKILLS = Path(os.environ.get("CIBO_SKILLS", Path.home() / ".claude" / "skills"))
 WORK = Path(os.environ.get("CIBO_TEST_WORK", Path.home() / ".cache" / "cibo" / "regressao"))
-ENGINES = ["podcast-reels", "bombordo-boreste", "katia", "autismo-cast", "content-hub", "busca-stock", "busca-trilha"]
-CHECKS = {"busca-stock", "busca-trilha"}   # sem render: rodam com APIs simuladas e conferem o resultado (sem referência gravada)
+ENGINES = ["podcast-reels", "bombordo-boreste", "katia", "autismo-cast", "content-hub", "busca-stock", "busca-trilha", "reel-motion"]
+CHECKS = {"busca-stock", "busca-trilha", "reel-motion"}   # sem render: rodam com APIs simuladas e conferem o resultado (sem referência gravada)
 # chaves de clipe que exigem arquivos externos do cliente: fora do teste
 TIMEOUT = int(os.environ.get("CIBO_TEST_TIMEOUT", 240))   # macOS não tem `timeout`; travar vira erro
 DROP = {"broll", "letterings", "music", "impact_pulses", "long_moves", "cropx_timeline", "overlays", "cover_src"}
@@ -241,6 +241,67 @@ def teste_trilha() -> list[str]:
     return erros
 
 
+
+def teste_reel_motion():
+    """reel-motion sem câmera (10/11/2026): projeto sintético com motion.json declarativo → `props` (esquema + checa_props) →
+    `verifica` (layout medido no DOM) tem que dar OK; depois dois defeitos plantados têm que ser acusados pelo nome:
+    tempo obrigatório faltando (esquema) e texto que vaza do painel (medidor). Cobre os selos: `davinci` recusa sem eles.
+    Precisa do SSD (node_modules e temporários do motor moram lá); sem ele o teste diz que não rodou."""
+    if not Path("/Volumes/SSD/CIBO/reel-motion/node_modules").exists():
+        return ["SSD fora (/Volumes/SSD/CIBO/reel-motion/node_modules): reel-motion NÃO testado"]
+    proj = Path("/Volumes/SSD/CIBO/tmp/regressao_reel_motion"); shutil.rmtree(proj, ignore_errors=True)
+    W = proj / "04_work" / "t01"; W.mkdir(parents=True); (proj / "05_qa").mkdir()
+    reel = SKILLS / "reel-motion" / "scripts" / "reel.py"
+    palavras = "a marca tinha oitenta por cento do mercado e caiu para dezenove não foi a concorrência foi a categoria que mudou de formato de canal e de jeito de vender".split()
+    ws = [{"word": " " + w, "start": round(0.2 + i * 0.5, 2), "end": round(0.2 + i * 0.5 + 0.38, 2)} for i, w in enumerate(palavras * 2)]
+    json.dump({"segments": [{"words": ws}]}, open(W / "edit_mfa.json", "w"), ensure_ascii=False)
+    json.dump([[0.0, 30.0]], open(W / "segs.json", "w"))
+    json.dump({"name": "T 01 - TESTE DO MOTOR", "src": "nao_existe.mp4", "tema": "priscilla", "orient": "h", "camera_davinci": True}, open(W / "reel.json", "w"), ensure_ascii=False)
+    at = lambda i: ws[i]["start"]
+    motion = {"legenda": False, "duration": 30.0, "camX": 950,
+              "hook": {"s": 0.15, "e": 3.0, "l1": "a marca tinha", "l2": "", "accent": "80%", "l2At": at(3)},
+              "titles": [{"s": 21.0, "e": 24.0, "l1": "o que mudou", "l2": "", "accent": "foi o formato", "l2At": 22.0}],
+              "panels": [
+                  {"type": "strike", "s": 4.0, "e": 11.0, "a": "a concorrência", "strikeAt": at(12), "b": "foi a", "accent": "categoria", "accentAt": at(16),
+                   "tags": [["não foi a concorrência", at(10), "topo"], ["que mudou", at(18), "base", True], ["de formato", at(20), "base"]]},
+                  {"type": "checklist", "tr": "burn", "s": 11.0, "e": 19.5, "title": "mudou", "accent": "de tudo", "top": 300,
+                   "items": [{"text": "de formato", "at": at(23)}, {"text": "de canal", "at": at(25)}, {"text": "de jeito de vender", "at": at(28)}],
+                   "tags": [["a marca tinha", at(31), "base"], ["oitenta por cento", at(33), "base", True], ["do mercado", at(36), "base"], ["e caiu para dezenove", at(38), "base"]]}]}
+    sfx = [{"t": 0.12, "f": "whoosh-soft", "db": -15}]
+    env = {**os.environ, "CIBO_VERBOSO": "1"}
+    roda = lambda *et: sh([sys.executable, str(reel), str(proj), "t01", *et], env=env, timeout=TIMEOUT)
+
+    def grava(m):
+        json.dump(m, open(W / "motion.json", "w"), ensure_ascii=False)
+        # SFX em toda troca que o checa_props cobra (entrada/saída da tela dividida, burn, itens): o teste é de layout, não de som
+        ts = [4.0, 11.0, 19.5] + [x["at"] for p in m["panels"] for x in p.get("items", [])] + [p.get("strikeAt", 0) for p in m["panels"]] + [p.get("accentAt", 0) for p in m["panels"]]
+        json.dump(sfx + [{"t": round(t, 2), "f": "pop-1", "db": -20} for t in sorted(set(ts)) if t], open(W / "sfx.json", "w"))
+    erros = []
+    grava(motion)
+    # a lista de burns é asset do projeto: o teste usa uma mínima (o arquivo de vídeo não é aberto no layer verifica)
+    (proj / "04_work/public/burnsH").mkdir(parents=True); json.dump({"b01": {"peak": 0.4, "dur": 1.0}}, open(proj / "04_work/public/burnsH/burnsH.json", "w"))
+    r = roda("props")
+    if r.returncode:
+        return ["props do projeto bom falhou: " + (r.stdout + r.stderr).strip()[-400:]]
+    r = roda("verifica")
+    if r.returncode or "verifica OK" not in r.stdout:
+        erros.append("verifica do projeto bom não passou: " + (r.stdout + r.stderr).strip()[-500:])
+    r = roda("davinci")
+    if r.returncode == 0 or "faltam selos" not in (r.stdout + r.stderr):
+        erros.append("davinci deveria recusar sem os selos de cortes e áudio: " + (r.stdout + r.stderr).strip()[-300:])
+    ruim = json.loads(json.dumps(motion)); ruim["panels"][0].pop("strikeAt")
+    grava(ruim); r = roda("props")
+    if r.returncode == 0 or "falta o tempo `strikeAt`" not in (r.stdout + r.stderr):
+        erros.append("strike sem strikeAt não foi acusado pelo esquema: " + (r.stdout + r.stderr).strip()[-300:])
+    ruim = json.loads(json.dumps(motion)); ruim["panels"][1]["items"][2]["text"] = "de jeito de vender para todo mundo que compra pela internet hoje"
+    grava(ruim); r = roda("props"); r2 = roda("verifica")
+    if r2.returncode == 0 or "vaza do painel" not in r2.stdout:
+        erros.append("item comprido demais não foi acusado como 'vaza do painel': " + (r.stdout + r2.stdout + r2.stderr).strip()[-400:])
+    if not erros:
+        shutil.rmtree(proj, ignore_errors=True)
+    return erros
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("cmd", nargs="?", default="check", choices=["check", "record", "list"])
@@ -253,7 +314,7 @@ def main():
     falhas = 0
     for eng in a.engine or ENGINES:
         if eng in CHECKS:
-            t0 = time.time(); erros = teste_busca() if eng == "busca-stock" else teste_trilha()
+            t0 = time.time(); erros = {"busca-stock": teste_busca, "busca-trilha": teste_trilha, "reel-motion": teste_reel_motion}[eng]()
             print(f"{'OK   ' if not erros else 'FALHOU'}  {eng} ({time.time() - t0:.0f}s)" + "".join(f"\n       {e}" for e in erros))
             falhas += bool(erros)
             continue

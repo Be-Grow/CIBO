@@ -59,7 +59,8 @@ for p in pan:
         sz = g.get('size', 28); larg = len(str(g['text'])) * sz * 0.68 + sz * 1.8 + 22
         x = g['x'] if g.get('x') is not None else (1080 - larg) / 2
         return x, x + larg
-    for i1 in range(len(tg)):
+    # com autoTags o motor posiciona pela largura medida (e o `verifica` mede o resultado): a estimativa daqui não vale
+    for i1 in range(0 if not ((P.get('theme') or {}).get('layout') or {}).get('autoTags') else len(tg), len(tg)):
         for i2 in range(i1 + 1, len(tg)):
             a1, a2 = tg[i1], tg[i2]
             if abs(a1['y'] - a2['y']) < 44:
@@ -81,4 +82,8 @@ for g in P['split']:
         w=[x['word'].strip() for x in W if x['start']+0.05<t<x['end']-0.05]
         if w: err.append(f"{t:.2f} troca de layout no meio de '{w[0]}'")
         if not near(t,sfx,0.15): err.append(f"{t:.2f} troca de layout sem SFX")
+# esquema lido do panels.tsx (10/11/2026): tipo inexistente e tempo obrigatório faltando são erro; campo que o painel não lê é aviso
+import os as _os; sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__))); import esquema as _esq
+_er, _av = _esq.valida(P); err = _er + err
+for a in _av: print('aviso: ' + a)
 print('\n'.join(err) if err else 'OK: nenhuma pendência'); sys.exit(1 if err else 0)

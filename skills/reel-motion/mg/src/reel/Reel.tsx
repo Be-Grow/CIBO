@@ -59,6 +59,23 @@ const laneTags = (tags: any[]) => {
     const sz0 = row[0].size ?? 28, GAP = 18, MAXW = 1000;
     const wOf = (g: any, sz: number) => measureText({text: String(g.text).toUpperCase(), fontFamily: `'${T.label.family}'`, fontSize: sz,
       fontWeight: String(T.label.weight), letterSpacing: '2.2px'}).width + sz * 1.8;
+    // autoTags "quebra" (motion.json, 10/11/2026): linha que não cabe no tamanho pedido QUEBRA em mais linhas em vez de encolher
+    // até ficar ilegível; no topo do painel cresce para baixo, no resto cresce para cima (a última linha fica no y pedido)
+    if ((T.layout.autoTags as any) === 'quebra') {
+      const linhas: any[][] = [[]]; let larg = 0;
+      for (const g of row) {
+        const w = wOf(g, sz0);
+        if (linhas[linhas.length - 1].length && larg + GAP + w > MAXW) { linhas.push([]); larg = 0; }
+        larg += (linhas[linhas.length - 1].length ? GAP : 0) + w; linhas[linhas.length - 1].push(g);
+      }
+      const passo = sz0 * 2.3, y0 = row[0].y, sobe = y0 >= 470;
+      linhas.forEach((ln, k) => {
+        const ws2 = ln.map((g) => wOf(g, sz0)), tot2 = ws2.reduce((a, b) => a + b, 0) + GAP * (ln.length - 1);
+        let x2 = (1080 - tot2) / 2;
+        ln.forEach((g, q) => { out.push({...g, x: x2, y: sobe ? y0 - (linhas.length - 1 - k) * passo : y0 + k * passo, size: sz0}); x2 += ws2[q] + GAP; });
+      });
+      continue;
+    }
     let sz = sz0, ws = row.map((g) => wOf(g, sz)), tot = ws.reduce((a, b) => a + b, 0) + GAP * (row.length - 1);
     if (tot > MAXW) { sz = sz0 * MAXW / tot; ws = row.map((g) => wOf(g, sz)); tot = ws.reduce((a, b) => a + b, 0) + GAP * (row.length - 1); }
     let x = (1080 - tot) / 2;

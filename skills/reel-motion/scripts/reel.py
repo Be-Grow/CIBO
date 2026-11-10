@@ -30,6 +30,16 @@ if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client
     import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import json, os, re, shutil, subprocess, sys, time
 from pathlib import Path
+# ambiente fixo (10/11/2026): o python3 do Mac sem numpy deixava o checador de cortes mudo. Sem numpy/PIL neste Python, o
+# motor se reexecuta no venv dele; sem nenhum que sirva, para com a instrução em vez de seguir pela metade.
+try:
+    import numpy as _np, PIL as _pil   # noqa: F401
+except ImportError:
+    for _c in (str(Path.home() / '.venvs/audiotools/bin/python'), '/opt/homebrew/bin/python3.14', '/opt/homebrew/bin/python3.13', '/opt/homebrew/bin/python3.12'):
+        if os.path.exists(_c) and os.path.realpath(_c) != os.path.realpath(sys.executable) and subprocess.run([_c, '-c', 'import numpy, PIL'], capture_output=True).returncode == 0:
+            os.execv(_c, [_c] + sys.argv)
+    sys.exit('motor sem numpy/PIL em nenhum Python conhecido: crie o venv (python3 -m venv ~/.venvs/audiotools && ~/.venvs/audiotools/bin/pip install numpy pillow)')
+sys.path.insert(0, str(Path(__file__).resolve().parent)); import selos
 
 ENG = Path(__file__).resolve().parent.parent           # skill reel-motion
 P = Path(sys.argv[1]).resolve()
@@ -370,8 +380,11 @@ def e_camera():
 
 def e_props():
     out = PUB / R / 'props.json'; out.parent.mkdir(parents=True, exist_ok=True)
-    sh([sys.executable, str(W / 'props.py'), str(W), str(out)])
+    decl = (W / 'motion.json').exists()                       # motion.json declarativo tem precedência sobre o props.py à mão
+    sh([sys.executable, str(ENG / 'scripts/monta_props.py'), str(W), str(PUB / R), str(out), 'h' if HZ else 'v'] if decl else [sys.executable, str(W / 'props.py'), str(W), str(out)])
     pr = json.load(open(out)); pr['theme'] = fontes_tema()
+    if decl:
+        pr['theme']['layout'] = {**pr['theme'].get('layout', {}), 'autoTags': 'quebra'}
     # reel.json "layout"/"layoutH": ajuste do layout só deste reel (ex.: camShift pela altura do rosto na fonte; Andreia 19/10/2026)
     for k in ('layout', 'layoutH'):
         if C.get(k):
@@ -406,6 +419,7 @@ def e_mix():
     print(out.strip().splitlines()[-1])
     r = subprocess.run(['ffmpeg', '-i', str(W / 'mix.wav'), '-af', 'ebur128=peak=true', '-f', 'null', '-'], capture_output=True, text=True).stderr
     print(' '.join(l.strip() for l in r.splitlines()[-12:] if l.strip().startswith(('I:', 'Peak:'))))
+    selos.grava(W, 'audio', _entradas()['audio'], out.strip().splitlines()[-1][:80])
 
 
 def limpa_bundles():
@@ -456,7 +470,18 @@ def bundle_unico():
     global _BUNDLE
     if _BUNDLE is None:
         import atexit
-        dst = WK / '_bundle' / R; shutil.rmtree(dst, ignore_errors=True)
+        # um bundle POR PROCESSO (10/11/2026: o verifica rodado durante o pacote apagou o bundle do render em andamento);
+        # sobras de processo morto saem aqui
+        (WK / '_bundle').mkdir(exist_ok=True)
+        for d in (WK / '_bundle').iterdir():
+            pid = d.name.rsplit('_', 1)[-1]
+            try:
+                os.kill(int(pid), 0)
+            except (ValueError, ProcessLookupError):
+                shutil.rmtree(d, ignore_errors=True)
+            except PermissionError:
+                pass
+        dst = WK / '_bundle' / f'{R}_{os.getpid()}'
         sh(['npx', 'remotion', 'bundle', 'src/index.ts', f'--public-dir={pub_enxuta()}', f'--out-dir={dst}', '--log=error'], cwd=MG)
         _BUNDLE = dst; atexit.register(lambda: shutil.rmtree(dst, ignore_errors=True))
     return _BUNDLE
@@ -535,6 +560,35 @@ def e_capa():
 
 
 
+def _entradas():
+    mus = Path(str(C.get('music') or ''))
+    return {'cortes': [W / 'segs.json'], 'layout': [PUB / R / 'props.json'],
+            'audio': [W / 'segs.json', W / 'sfx.json'] + ([mus] if mus.name and mus.stat().st_size < 3e8 else []),
+            'pacote': [W / 'segs.json', W / 'sfx.json', PUB / R / 'props.json']}
+
+
+def e_cortes():
+    """portão dos cortes: checa_takes (voz da equipe, corte no meio da palavra) sobre o segs.json atual. Cada aviso tem que ser
+    resolvido no segs OU ouvido e assumido em reel.json "cortes_ouvidos": {"357.02-357.42": "respiro dela, fica"} (motivo
+    obrigatório: é a decisão registrada, não um jeito de calar o checador). Sem pendência = selo 'cortes'."""
+    selos.tira(W, 'cortes')
+    r = subprocess.run([sys.executable, str(ENG / 'scripts/checa_takes.py'), str(W / 'segs.json'), str(W / 'src_16k.wav'), '--min', str(C.get('takes_min', -25))], capture_output=True, text=True)
+    if 'Traceback' in (r.stderr or '') or r.returncode not in (0, 1):
+        print('!! O CHECADOR DE CORTES NÃO RODOU (os cortes NÃO foram conferidos): ' + (r.stderr.strip().splitlines() or ['?'])[-1] + f' — Python em uso: {sys.executable}', flush=True)
+        return 2
+    ouv = C.get('cortes_ouvidos') or {}
+    pend = [l for l in r.stdout.splitlines() if ('<--' in l or 'corte no' in l)]
+    abertas = [l for l in pend if not str(ouv.get(l.split()[0], '')).strip()]
+    for l in abertas:
+        print(l)
+    if abertas:
+        print(f'{len(abertas)} trecho(s) para ouvir ({len(pend) - len(abertas)} já assumido(s) em cortes_ouvidos): corrija o segs.json ou registre o motivo')
+        return 1
+    selos.grava(W, 'cortes', _entradas()['cortes'], f'{len(pend)} aviso(s) ouvido(s) e assumido(s)' if pend else 'sem aviso')
+    print(f"cortes OK: {len(r.stdout.splitlines()) - 1} trechos" + (f', {len(pend)} aviso(s) assumido(s) com motivo no reel.json' if pend else ''))
+    return 0
+
+
 def _props_id():
     import hashlib
     return hashlib.sha1((PUB / R / 'props.json').read_bytes()).hexdigest()
@@ -545,20 +599,24 @@ def e_verifica():
     checa_props): 1 quadro por painel/título/palavra-chave no layer 'verifica'; o Medidor mede o DOM e acusa o que não
     renderiza, vaza do painel/quadro, estoura a caixa ou fica sobreposto. ~1–2 min, sem câmera. Passou = grava o selo que a
     etapa davinci exige. Sobreposição intencional: "verifica_ignora": ["painel_03", "titulo_02:texto sobre elemento"] no reel.json."""
-    out = WK / 'tmp' / f'verifica_{R}'; selo = W / 'work' / 'verifica_ok.txt'; selo.parent.mkdir(exist_ok=True); selo.unlink(missing_ok=True)
+    out = WK / 'tmp' / f'verifica_{R}'; selos.tira(W, 'layout')
     r = subprocess.run(['node', 'verifica.mjs', str(bundle_unico()), str(PUB / R / 'props.json'), str(out), 'ReelH' if HZ else 'Reel'], cwd=MG, capture_output=True, text=True)
     if r.returncode or not (out / 'verifica.json').exists():
         print(r.stdout[-600:], r.stderr[-1500:]); sys.exit('verifica não rodou (erro acima): o portão NÃO passou')
     ign = set(C.get('verifica_ignora', []))
     res = json.load(open(out / 'verifica.json')); ruins = []
     for a in res:
+        if any(x['tipo'] == 'não renderiza' for x in a['achados']) and a.get('painel') is not None:   # diz o campo, não só o erro do Remotion
+            import esquema; pn = json.load(open(PUB / R / 'props.json'))['panels'][a['painel']]; eq = esquema.esquema().get(pn['type'], {})
+            falt = [c for c in eq.get('tempos', []) if c not in pn]
+            a['achados'].append({'tipo': 'tempos que este painel aceita e não vieram', 'texto': ', '.join(falt) or '—'})
         a['achados'] = [x for x in a['achados'] if a['id'] not in ign and f"{a['id']}:{x['tipo']}" not in ign]
         if a['achados']:
             ruins.append(a)
     folha = P / '05_qa' / f'{R}_verifica.jpg'; folha.unlink(missing_ok=True)
     tudo = os.environ.get('VERIFICA_TUDO') == '1'               # folha com TODOS os alvos (conferência visual única do motion, sem render)
     if not ruins:
-        selo.write_text(_props_id()); print(f'verifica OK: {len(res)} alvos (painéis, títulos, palavras-chave) sem vazamento nem sobreposição')
+        selos.grava(W, 'layout', _entradas()['layout'], f'{len(res)} alvos'); print(f'verifica OK: {len(res)} alvos (painéis, títulos, palavras-chave) sem vazamento nem sobreposição')
         if not tudo:
             return 0
     if ruins:
@@ -589,12 +647,7 @@ def e_verifica():
 def e_revisa():
     """todos os checadores num relatório só, antes do final (auditoria 14/10/2026: 5 erros do 05 passaram pela revisão visual).
     takes (equipe + cortes no meio da fala/palavra), hesitação, painéis/etiquetas, olhar nas pontas dos cortes."""
-    print('== cortes e vozes', flush=True)
-    r = subprocess.run([sys.executable, str(ENG / 'scripts/checa_takes.py'), str(W / 'segs.json'), str(W / 'src_16k.wav'), '--min', str(C.get('takes_min', -25))], stderr=subprocess.PIPE, text=True)
-    if 'Traceback' in (r.stderr or ''):                        # checador que quebra não pode parecer "sem aviso" (python3 sem numpy, 10/11/2026)
-        print('!! O CHECADOR DE CORTES NÃO RODOU (os cortes NÃO foram conferidos): ' + r.stderr.strip().splitlines()[-1] + f' — Python em uso: {sys.executable}', flush=True)
-    elif r.stderr:
-        print(r.stderr, end='')
+    print('== cortes e vozes', flush=True); e_cortes()
     if (W / 'voz16k.wav').exists():
         print('== hesitação', flush=True)
         r = subprocess.run([sys.executable, str(ENG / 'scripts/hesita.py'), str(W / 'voz16k.wav'), str(W / 'edit_mfa.json')], capture_output=True, text=True).stdout
@@ -730,10 +783,16 @@ def e_davinci():
     trecho de tempo: gráfico de cada painel, cada etiqueta, número da etapa, gancho, fundo do gancho, cada título.
     O davinci.py monta a timeline (bruto em takes com alça, voz por take, SFX, burns, capa).
     `davinci X…` re-renderiza só as camadas/elementos cujo nome contém X (ex.: davinci painel_2 tag_2)."""
-    if not C.get('grosso') and json.load(open(PUB / R / 'props.json')).get('panels') and os.environ.get('VERIFICA_OK') != '1':
-        selo = W / 'work' / 'verifica_ok.txt'       # sem o selo do portão para ESTE props.json, nada de render longo
-        if not selo.exists() or selo.read_text() != _props_id():
-            sys.exit(f'antes do pacote: reel.py PROJ {R} verifica (o props mudou ou o portão não passou). Liberar mesmo assim é decisão do editor: VERIFICA_OK=1')
+    # portões (10/11/2026): pacote só com os selos valendo para os arquivos de agora. Sem painel não há layout a conferir;
+    # aula no grosso segue livre. Liberar sem selo é decisão do editor: SELOS_OK=1 (VERIFICA_OK=1 continua valendo).
+    if not C.get('grosso') and os.environ.get('SELOS_OK') != '1' and os.environ.get('VERIFICA_OK') != '1':
+        ent = _entradas()
+        if not json.load(open(PUB / R / 'props.json')).get('panels'):
+            ent.pop('layout')
+        ent.pop('pacote'); falta = {n: e for n, e in selos.estado(W, ent).items() if not e.startswith('ok')}
+        if falta:
+            sys.exit('antes do pacote, faltam selos: ' + '; '.join(f"{n} ({e}) → reel.py PROJ {R} {selos.COMO[n]}" for n, e in falta.items())
+                     + '. "velho" = o arquivo mudou depois do selo. Liberar sem selo é decisão do editor: SELOS_OK=1')
     out = P / '07_davinci' / C['name']; cam = out / '_camadas'; (cam / 'el').mkdir(parents=True, exist_ok=True)
     if not (W / 'mix_pre.wav').exists() or not (W / 'musica.wav').exists():
         e_mix()
@@ -805,6 +864,7 @@ def e_davinci():
         print(f'{nome}: {time.time() - t0:.0f}s', flush=True)
     if '--so-el' not in ARGS:                                   # --so-el: só os elementos; não remonta o pacote (áudio já mexido no Resolve)
         sh([AUDIOPY, str(ENG / 'scripts/davinci.py'), str(P), R, str(out)])
+        selos.grava(W, 'pacote', _entradas()['pacote'], out.name)
 
 
 def e_final():
@@ -858,4 +918,4 @@ if ETAPA in PESADAS:   # trava: a mesma etapa nunca roda duas vezes no mesmo ree
     LK.write_text(str(os.getpid()))
     import atexit; atexit.register(lambda: LK.unlink(missing_ok=True))
 {'fix': lambda: edit_fix(json.load(open(W / 'edit_mfa.json'))['segments'][0]['words']), 'fonte': e_fonte, 'takes': e_takes, 'voz': e_voz, 'legenda': e_legenda, 'camera': e_camera, 'props': e_props, 'mix': e_mix,
- 'previa': e_previa, 'final': e_final, 'capa': e_capa, 'so_capa': lambda: faz_capa(C['capa']), 'pub': lambda: print(pub_enxuta()), 'camff': lambda: camera_ffmpeg(json.load(open(PUB / R / 'props.json')), Path(ARGS[0])), 'revisa': e_revisa, 'verifica': lambda: sys.exit(e_verifica()), 'davinci': e_davinci, 'entrega': lambda: entrega(W / 'video2.mp4'), 'audio': e_audio, 'trecho': lambda: e_trecho(*ARGS[:2])}[ETAPA]()
+ 'previa': e_previa, 'final': e_final, 'capa': e_capa, 'so_capa': lambda: faz_capa(C['capa']), 'pub': lambda: print(pub_enxuta()), 'camff': lambda: camera_ffmpeg(json.load(open(PUB / R / 'props.json')), Path(ARGS[0])), 'revisa': e_revisa, 'verifica': lambda: sys.exit(e_verifica()), 'cortes': lambda: sys.exit(e_cortes()), 'selos': lambda: print(' | '.join(f'{n}: {e}' for n, e in selos.estado(W, _entradas()).items())), 'davinci': e_davinci, 'entrega': lambda: entrega(W / 'video2.mp4'), 'audio': e_audio, 'trecho': lambda: e_trecho(*ARGS[:2])}[ETAPA]()

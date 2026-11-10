@@ -21,7 +21,7 @@ export type Theme = {
   mediaFilter?: string; burnFilter?: string; burnOpacity?: number; grain?: number;
   // splitH = altura do painel (940 = metade; 768 = 40/60); camShift = quanto a pessoa desce na tela dividida;
   // capSplitY = legenda da tela dividida sobre o vídeo nessa altura (senão fica no rodapé do painel); capMaxW = largura máxima (zona segura)
-  layout?: {splitH?: number; camShift?: number; capSplitY?: number; capFullY?: number; capMaxW?: number; autoTags?: boolean};
+  layout?: {splitH?: number; camShift?: number; capSplitY?: number; capFullY?: number; capMaxW?: number; autoTags?: boolean | 'quebra'};
   // versão horizontal 16:9 (composição ReelH, Andreia 19/10/2026): painel à esquerda com largura panelW, pessoa à direita;
   // capY = linha da legenda; capSize = corpo da legenda; hookScale = escala do gancho/títulos em relação ao vertical
   layoutH?: {panelW?: number; capSplitY?: number; capFullY?: number; capSize?: number; hookScale?: number};

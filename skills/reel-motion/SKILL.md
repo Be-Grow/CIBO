@@ -8,6 +8,24 @@ description: Motor PADRÃO de edição do CIBO — reels 9:16 e 16:9 de fala com
 Motor generalista configurado por tema de cliente (`temas/<cliente>.json`) + biblioteca de componentes Remotion.
 Nunca copie o motor para o projeto; nunca anime do zero o que a biblioteca já tem. Por que cada regra existe: `references/historico.md`.
 
+## Contrato do agente (10/11/2026) — o que o motor cobra sozinho
+
+O caminho de um job de fala é este, e cada passo grava um **selo** (impressão digital dos arquivos conferidos) em `rNN/work/selos.json`.
+A etapa seguinte recusa selo que falta ou ficou velho. **"Pronto" é o que `reel.py PROJ rNN selos` mostra, nunca a palavra do agente.**
+
+| Passo | Comando | Selo | Se reclamar |
+|---|---|---|---|
+| estado | `status.py PROJ` | mostra `cortes✓ layout✗ audio· pacote·` | ✗ = arquivo mudou depois do selo: refaça a etapa |
+| cortes | `reel.py PROJ rNN cortes` | `cortes` | corrija o `segs.json` ou registre a decisão em reel.json `"cortes_ouvidos": {"a-b": "motivo"}` |
+| motion | escreva `rNN/motion.json` (declarativo: ver cabeçalho de `scripts/monta_props.py`; `scripts/esquema.py` lista painéis e campos) → `props` → `verifica` | `layout` | a saída diz o alvo e o defeito; `VERIFICA_TUDO=1` dá a folha única com tudo |
+| som | `sfx.json` → `mix` | `audio` | — |
+| pacote | `davinci` (exige os três) → `fila_davinci.py` | `pacote` | liberar sem selo é decisão do editor (`SELOS_OK=1`) |
+
+- `motion.json` substitui o `props.py` à mão: sem coordenada de etiqueta (`"onde": "topo"|"base"`, a linha quebra sozinha), sem lista de burns, sem
+  tela dividida escrita (sai dos painéis), vídeo sem legenda com `"legenda": false`. `props.py` antigo continua funcionando.
+- O motor escolhe o próprio Python (venv com numpy/PIL) e cada processo tem o seu bundle: pode rodar `verifica` de outro reel durante um render.
+- Mudou o motor? `~/CIBO/tests/regressao.py check --engine reel-motion` (22 s, sem câmera) antes do push.
+
 ## Padrão de edição do CIBO (10 etapas)
 
 Todo job de fala sem skill própria segue esta receita. Cliente com skill própria mantém identidade e regras dele e entrega
