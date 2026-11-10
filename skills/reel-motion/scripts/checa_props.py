@@ -48,7 +48,7 @@ for p in pan:
         x = g.get('x'); y = g.get('y', 0)
         if x is not None and x + larg > 1050:
             err.append(f"{g['at']:.2f} etiqueta '{g['text']}' passa da borda direita (x {x} + ~{larg:.0f} px): use x ≤ {int(1040 - larg)}")
-        if not inv and y > 770:   # painel normal: legenda centrada em y≈862 (splitH−78); pílula de ~52 px abaixo de 770 encosta nela (09, 10)
+        if not inv and y > 770 and P.get('captions'):   # vídeo sem legenda (YouTube 16:9, 10/11/2026): a faixa de baixo é livre; quem cobre sobreposição é o `verifica`   # painel normal: legenda centrada em y≈862 (splitH−78); pílula de ~52 px abaixo de 770 encosta nela (09, 10)
             err.append(f"{g['at']:.2f} etiqueta '{g['text']}' em y {y}: fica sobre a legenda (use ≤ 770)")
         if inv and y > 690:
             err.append(f"{g['at']:.2f} etiqueta '{g['text']}' em y {y} no painel invertido: fica sob a interface do Instagram (use ≤ 690)")

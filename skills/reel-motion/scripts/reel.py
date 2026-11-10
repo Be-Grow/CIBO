@@ -535,10 +535,66 @@ def e_capa():
 
 
 
+def _props_id():
+    import hashlib
+    return hashlib.sha1((PUB / R / 'props.json').read_bytes()).hexdigest()
+
+
+def e_verifica():
+    """portão de layout (10/11/2026, YT 01 da Priscilla: 5 painéis que nem renderizavam e 8 com texto cortado passaram pelo
+    checa_props): 1 quadro por painel/título/palavra-chave no layer 'verifica'; o Medidor mede o DOM e acusa o que não
+    renderiza, vaza do painel/quadro, estoura a caixa ou fica sobreposto. ~1–2 min, sem câmera. Passou = grava o selo que a
+    etapa davinci exige. Sobreposição intencional: "verifica_ignora": ["painel_03", "titulo_02:texto sobre elemento"] no reel.json."""
+    out = WK / 'tmp' / f'verifica_{R}'; selo = W / 'work' / 'verifica_ok.txt'; selo.parent.mkdir(exist_ok=True); selo.unlink(missing_ok=True)
+    r = subprocess.run(['node', 'verifica.mjs', str(bundle_unico()), str(PUB / R / 'props.json'), str(out), 'ReelH' if HZ else 'Reel'], cwd=MG, capture_output=True, text=True)
+    if r.returncode or not (out / 'verifica.json').exists():
+        print(r.stdout[-600:], r.stderr[-1500:]); sys.exit('verifica não rodou (erro acima): o portão NÃO passou')
+    ign = set(C.get('verifica_ignora', []))
+    res = json.load(open(out / 'verifica.json')); ruins = []
+    for a in res:
+        a['achados'] = [x for x in a['achados'] if a['id'] not in ign and f"{a['id']}:{x['tipo']}" not in ign]
+        if a['achados']:
+            ruins.append(a)
+    folha = P / '05_qa' / f'{R}_verifica.jpg'; folha.unlink(missing_ok=True)
+    tudo = os.environ.get('VERIFICA_TUDO') == '1'               # folha com TODOS os alvos (conferência visual única do motion, sem render)
+    if not ruins:
+        selo.write_text(_props_id()); print(f'verifica OK: {len(res)} alvos (painéis, títulos, palavras-chave) sem vazamento nem sobreposição')
+        if not tudo:
+            return 0
+    if ruins:
+        print(f'verifica: {len(ruins)} de {len(res)} alvos com problema (id entre colchetes)')
+    for a in ruins:
+        print(f"  [{a['id']}] {a['nome']}")
+        vistos = []
+        for x in a['achados']:
+            l = f"      {x['tipo']}: {x['texto'][:70]}"
+            if l not in vistos:
+                vistos.append(l)
+        print('\n'.join(vistos[:4]) + (f'\n      (+{len(vistos) - 4})' if len(vistos) > 4 else ''))
+    try:                                                        # folha única com os quadros marcados (vermelho = texto, magenta = a outra peça)
+        from PIL import Image, ImageDraw
+        ims = [(a, Image.open(out / a['png']).convert('RGB')) for a in (res if tudo else ruins) if a.get('png')]
+        if ims:
+            cols = min((6 if HZ else 8) if tudo else (3 if HZ else 5), len(ims)); tw = (480 if HZ else 300) if tudo else (960 if HZ else 540); th = round(tw * VH / VW)
+            sheet = Image.new('RGB', (cols * tw, -(-len(ims) // cols) * (th + 34)), '#111')
+            for k, (a, im) in enumerate(ims):
+                x, y = (k % cols) * tw, (k // cols) * (th + 34)
+                sheet.paste(im.resize((tw, th)), (x, y + 34)); ImageDraw.Draw(sheet).text((x + 8, y + 10), a['nome'][:90], fill='#fff')
+            sheet.save(folha, quality=85); print(f'folha: {folha}')
+    except ImportError:
+        print('(sem PIL neste Python: folha não montada; os PNGs marcados estão em', out, ')')
+    return 1 if ruins else 0
+
+
 def e_revisa():
     """todos os checadores num relatório só, antes do final (auditoria 14/10/2026: 5 erros do 05 passaram pela revisão visual).
     takes (equipe + cortes no meio da fala/palavra), hesitação, painéis/etiquetas, olhar nas pontas dos cortes."""
-    print('== cortes e vozes', flush=True); subprocess.run([sys.executable, str(ENG / 'scripts/checa_takes.py'), str(W / 'segs.json'), str(W / 'src_16k.wav'), '--min', str(C.get('takes_min', -25))])
+    print('== cortes e vozes', flush=True)
+    r = subprocess.run([sys.executable, str(ENG / 'scripts/checa_takes.py'), str(W / 'segs.json'), str(W / 'src_16k.wav'), '--min', str(C.get('takes_min', -25))], stderr=subprocess.PIPE, text=True)
+    if 'Traceback' in (r.stderr or ''):                        # checador que quebra não pode parecer "sem aviso" (python3 sem numpy, 10/11/2026)
+        print('!! O CHECADOR DE CORTES NÃO RODOU (os cortes NÃO foram conferidos): ' + r.stderr.strip().splitlines()[-1] + f' — Python em uso: {sys.executable}', flush=True)
+    elif r.stderr:
+        print(r.stderr, end='')
     if (W / 'voz16k.wav').exists():
         print('== hesitação', flush=True)
         r = subprocess.run([sys.executable, str(ENG / 'scripts/hesita.py'), str(W / 'voz16k.wav'), str(W / 'edit_mfa.json')], capture_output=True, text=True).stdout
@@ -674,6 +730,10 @@ def e_davinci():
     trecho de tempo: gráfico de cada painel, cada etiqueta, número da etapa, gancho, fundo do gancho, cada título.
     O davinci.py monta a timeline (bruto em takes com alça, voz por take, SFX, burns, capa).
     `davinci X…` re-renderiza só as camadas/elementos cujo nome contém X (ex.: davinci painel_2 tag_2)."""
+    if not C.get('grosso') and json.load(open(PUB / R / 'props.json')).get('panels') and os.environ.get('VERIFICA_OK') != '1':
+        selo = W / 'work' / 'verifica_ok.txt'       # sem o selo do portão para ESTE props.json, nada de render longo
+        if not selo.exists() or selo.read_text() != _props_id():
+            sys.exit(f'antes do pacote: reel.py PROJ {R} verifica (o props mudou ou o portão não passou). Liberar mesmo assim é decisão do editor: VERIFICA_OK=1')
     out = P / '07_davinci' / C['name']; cam = out / '_camadas'; (cam / 'el').mkdir(parents=True, exist_ok=True)
     if not (W / 'mix_pre.wav').exists() or not (W / 'musica.wav').exists():
         e_mix()
@@ -682,7 +742,7 @@ def e_davinci():
     CF = 29.97                                                  # quadros da composição Reel (Root.tsx), não o fps da câmera
     N = int(round(pr['duration'] * CF)); q = lambda t: min(N - 1, max(0, int(round(t * CF))))
     jobs = [('camera', 'camera', None, None, None, ('--codec=prores', '--prores-profile=standard')),
-            ('legenda', 'legenda', None, None, None, alfa)] + ([('painel_fundo', 'painel_fundo', None, None, None, alfa)] if pr.get('panels') else [])
+            *([('legenda', 'legenda', None, None, None, alfa)] if pr.get('captions') else [])] + ([('painel_fundo', 'painel_fundo', None, None, None, alfa)] if pr.get('panels') else [])
     if pr.get('inserts'):
         jobs.append(('midia', 'midia', None, None, None, alfa))
     man = []
@@ -798,4 +858,4 @@ if ETAPA in PESADAS:   # trava: a mesma etapa nunca roda duas vezes no mesmo ree
     LK.write_text(str(os.getpid()))
     import atexit; atexit.register(lambda: LK.unlink(missing_ok=True))
 {'fix': lambda: edit_fix(json.load(open(W / 'edit_mfa.json'))['segments'][0]['words']), 'fonte': e_fonte, 'takes': e_takes, 'voz': e_voz, 'legenda': e_legenda, 'camera': e_camera, 'props': e_props, 'mix': e_mix,
- 'previa': e_previa, 'final': e_final, 'capa': e_capa, 'so_capa': lambda: faz_capa(C['capa']), 'pub': lambda: print(pub_enxuta()), 'camff': lambda: camera_ffmpeg(json.load(open(PUB / R / 'props.json')), Path(ARGS[0])), 'revisa': e_revisa, 'davinci': e_davinci, 'entrega': lambda: entrega(W / 'video2.mp4'), 'audio': e_audio, 'trecho': lambda: e_trecho(*ARGS[:2])}[ETAPA]()
+ 'previa': e_previa, 'final': e_final, 'capa': e_capa, 'so_capa': lambda: faz_capa(C['capa']), 'pub': lambda: print(pub_enxuta()), 'camff': lambda: camera_ffmpeg(json.load(open(PUB / R / 'props.json')), Path(ARGS[0])), 'revisa': e_revisa, 'verifica': lambda: sys.exit(e_verifica()), 'davinci': e_davinci, 'entrega': lambda: entrega(W / 'video2.mp4'), 'audio': e_audio, 'trecho': lambda: e_trecho(*ARGS[:2])}[ETAPA]()

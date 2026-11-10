@@ -56,3 +56,8 @@ Sony 4K 29,97, câmera deitada (rotate clock), Rec.709. Cada bruto de roteiro = 
   costurando). Gancho visual forte nos primeiros segundos.
 - **Corte comendo palavra** (07): `reel.py … revisa` antes de todo final, e ouvir cada aviso de corte.
 - **Trilha**: orgânicos podem ir sem; nunca acima da voz; BPM casado com o ritmo da fala (fala lenta, trilha calma).
+
+## YouTube 16:9 (YT 01, 11/2026)
+- Mesmo motor (`reel-motion`, tema `priscilla`), `"orient": "h"`, sem legenda, painel nos 2/3 da esquerda (`layoutH.panelW` 1280), câmera pelo DaVinci (`camera_davinci`). Job em `04_work/yNN/`.
+- Vídeo longo = muito texto por painel: `"layout": {"autoTags": true}` no reel.json e **`reel.py PROJ yNN verifica` até dar OK antes do pacote** (no YT 01, 8 de 28 painéis tinham texto cortado/sobreposto e os `strike` sem `line2At` nem renderizavam).
+- Timeline com rótulo comprido nas pontas: `"x0": 230, "x1": 850`. Sem legenda, a faixa de baixo do painel (y > 770) é livre para etiquetas.

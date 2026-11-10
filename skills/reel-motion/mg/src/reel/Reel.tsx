@@ -9,6 +9,7 @@ import {Fonts, VBlur, Grain, Pill, I, Ambient} from './primitives';
 import {PANELS} from './panels';
 export {C, T, applyTheme, sh, scr} from './theme';
 export type {Theme} from './theme';
+import {Medidor} from './Medidor';
 import {applyTheme, Theme, scr, setPart} from './theme';
 
 // Reel com tela dividida: pessoa embaixo, painel de motion em cima, ou pessoa em tela cheia.
@@ -52,7 +53,7 @@ const splitAmount = (t: number, split: Seg[]) => {
 // (inclusive as que ainda vão entrar), centradas, sem sobrepor e sem mudar de lugar quando uma nova aparece
 const laneTags = (tags: any[]) => {
   const rows: Record<string, any[]> = {};
-  tags.forEach((g) => { (rows[Math.round(g.y)] = rows[Math.round(g.y)] || []).push(g); });
+  tags.forEach((g, i) => { (rows[Math.round(g.y)] = rows[Math.round(g.y)] || []).push({...g, _i: i}); });
   const out: any[] = [];
   for (const row of Object.values(rows)) {
     const sz0 = row[0].size ?? 28, GAP = 18, MAXW = 1000;
@@ -63,7 +64,8 @@ const laneTags = (tags: any[]) => {
     let x = (1080 - tot) / 2;
     row.forEach((g, k) => { out.push({...g, x, size: sz}); x += ws[k] + GAP; });
   }
-  return out;
+  // devolve na ordem do props: o pacote DaVinci isola a etiqueta pelo índice (tag el=i:k) e o tempo de entrada vem do props[k]
+  return out.sort((a, b) => a._i - b._i);
 };
 
 // ---------- legenda ----------
@@ -247,8 +249,10 @@ export const Reel: React.FC<ReelProps> = (props) => {
   const camDX = HZ ? (PW + (VW - PW) / 2) - camX : 0;
   // trecho com inv: true = tela dividida invertida (ela em cima com o topo da cabeça cortado, painel embaixo; pedido da Priscilla, 13/10/2026)
   const spI = splitAmount(t, props.split.filter((g) => g.inv));
-  const sp = splitAmount(t, props.split);
-  const sp2 = splitAmount(t + 1 / fps, props.split);
+  // layer 'verifica' (portão de layout): painel parado no lugar com tudo dentro (fundo, peças, etiquetas) + títulos, sem câmera
+  const V = (props as any).layer === 'verifica';
+  const sp = V ? (props.panels.some((p) => t >= p.s - 0.12 && t < p.e + 0.2) ? 1 : 0) : splitAmount(t, props.split);
+  const sp2 = V ? sp : splitAmount(t + 1 / fps, props.split);
   const inv = !HZ && spI > 0.001;
   const vel = Math.abs(sp2 - sp) * fps;               // presença por segundo
   const blurPx = Math.min(vel * 22, 26);
@@ -275,11 +279,11 @@ export const Reel: React.FC<ReelProps> = (props) => {
   const on = (k: string) => !L || L === k;
   // elemento isolado (props.el): painel_fundo | painel el=i | tag el=i:k | step el=i | titulo el=hookbg|hook|t<k>|lower
   const E = String((props as any).el ?? '');
-  const tudoP = !L || L === 'paineis';
+  const tudoP = !L || L === 'paineis' || V;
   const pid = (p?: Panel) => (p ? String(props.panels.indexOf(p)) : '-');
-  const tit = (id: string) => on('titulos') || (L === 'titulo' && E === id);
+  const tit = (id: string) => on('titulos') || V || (L === 'titulo' && E === id);
   return (
-    <AbsoluteFill style={{background: !L || L === 'camera' ? C.bg : 'transparent'}}>
+    <AbsoluteFill data-vf-root="" style={{background: !L || L === 'camera' ? C.bg : V ? '#777' : 'transparent'}}>
       <Fonts />
       <VBlur id="vb" amount={blurPx} x={HZ} />
       {on('camera') && <AbsoluteFill style={{transform: HZ ? `translateX(${camDX * sp}px)` : `translateY(${camY}px)`, filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
@@ -305,7 +309,7 @@ export const Reel: React.FC<ReelProps> = (props) => {
         );
       })}
       {(tudoP || ['painel_fundo', 'painel', 'tag', 'step'].includes(L as string)) && sp > 0.001 && (
-        <div style={{position: 'absolute', left: 0, top: 0, width: HZ ? PW : 1080, height: HZ ? VH : H + PAD,
+        <div data-vf="painel" style={{position: 'absolute', left: 0, top: 0, width: HZ ? PW : 1080, height: HZ ? VH : H + PAD,
           transform: HZ ? `translateX(${-PW * (1 - sp)}px)` : `translateY(${panelY}px)`, overflow: 'hidden',
           background: tudoP || L === 'painel_fundo' ? C.paper : 'transparent',
           // layout.feather (px): divisão sem linha, o painel se dissolve na câmera (referência da Andreia, ClickUp 868mtnvbk, 06/11/2026)
@@ -360,6 +364,7 @@ export const Reel: React.FC<ReelProps> = (props) => {
       {tit('end') && props.endCard && <EndCard c={props.endCard} t={t} />}
       {on('camera') && <Grain opacity={0.035} />}
       {on('camera') && <AbsoluteFill style={{background: C.bg, opacity: endF * 0.85}} />}
+      {V && <Medidor />}
     </AbsoluteFill>
   );
 };

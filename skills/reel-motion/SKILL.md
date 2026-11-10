@@ -19,7 +19,7 @@ pelo mesmo pacote DaVinci. Referência viva: `andreia/demandaVideoEstiloPriscill
 | 2 | Fonte | girar/full range no reel.json (`rotate`, `full_range`); rastreio de rosto `rastreio.py` → `track`; fps qualquer (o `davinci.py` faz a cópia 29,97 sozinho) |
 | 3 | Trechos | roteiro fechado: `segs_auto.py` → fechar pela energia → `fala-limpa` (`hesita.py`, `checa_takes.py`); conversa: `takes.py` |
 | 4 | Legenda | etapa `legenda` (MFA) → `conserta_mfa.py rNN/` onde o MFA colapsou → `legenda-cruzada` |
-| 5 | Motion | `props.py` com painéis nascidos da fala (`references/catalogo.md`), `checa_props`, perfil do tema; `qa_paineis --video` |
+| 5 | Motion | `props.py` com painéis nascidos da fala (`references/catalogo.md`), `checa_props`, perfil do tema; **`reel.py PROJ rNN verifica` até dar OK** (portão de layout, ~15 s, sem câmera; a etapa `davinci` recusa sem ele) |
 | 6 | Som | trilha `talking-head-music` (prévia de 10 s no trecho real, 2–3 opções) e `sfx_tema.py rNN/ public/rNN/props.json temas/<tema>.json`, também com prévia antes do render |
 | 7 | Revisão | `revisa` (sem render). **Prévia é no Resolve, não no Remotion** (Andreia 19/10: "tem como fazer a prévia no davinci?"; João 21/10: noite perdida em prévia Remotion de aula): o piloto vai pelo passo 8 e o editor aprova lá. `previa` só se ele pedir MP4 |
 | 8 | Pacote + Resolve | **Sempre pela API, sem perguntar se ele prefere importar** (João 21/10): `fila_davinci.py PROJ "Projeto" "BeGrow/<Cliente>" r01 r01h …` = capa → pacote → projeto novo organizado → Fusion/cores → bins → `qa_resolve.py`. Antes, leia `client-router/references/regras/davinci.md` inteiro (lições da Andreia). Aula/vídeo longo: `"grosso": true` (bruto cortado + voz + trilha + legenda SRT, sem painel/rastreio/render) |
@@ -88,6 +88,14 @@ takes, MFA e capa).
 | `growth-leaders` | João Campos / Growth Leaders | marca própria do evento: nunca misture com `joao-campos`; saída seca |
 
 ## Revisão automática e fila
+- **`reel.py PROJ rNN verifica` = portão de layout (10/11/2026).** Renderiza 1 quadro por painel, título, palavra-chave, gancho e tarja
+  (layer `verifica`, sem câmera) e o `Medidor.tsx` mede o DOM: painel que não renderiza (campo faltando, ex.: `strike` sem `line2At`),
+  texto que vaza do painel/quadro, estoura a caixa, fica sobre outra peça, pílula sobre pílula, letra menor que 19 px, painel vazio.
+  Saída curta com o id de cada alvo + folha marcada `05_qa/rNN_verifica.jpg`; `VERIFICA_TUDO=1` monta a folha com todos os alvos
+  (a conferência visual do motion, uma folha só). Passou = selo do props atual; a etapa `davinci` não roda sem o selo
+  (`VERIFICA_OK=1` só por decisão do editor). Sobreposição intencional: `"verifica_ignora": ["painel_03:texto sobre elemento"]`.
+  **Nunca diga "motion pronto" só com o `checa_props`: ele confere tempo, não layout** (YT 01 da Priscilla: 5 painéis quebrados e
+  8 com texto cortado com "OK: nenhuma pendência"). Etiquetas: prefira `"layout": {"autoTags": true}` (largura medida) a x na mão.
 - `reel.py PROJ rNN revisa` junta checa_takes (voz da equipe, corte no meio da palavra por energia + fim de palavra do Whisper),
   hesita, checa_props (inclui etiqueta que ela não diz) e olhar nas pontas dos cortes. O `final` roda a revisa antes. ~15 s.
   Por último, a nota criativa do `gancho-e-ritmo` (gancho 3 s, tempo morto, densidade, variação, ênfase, final; limiar no
