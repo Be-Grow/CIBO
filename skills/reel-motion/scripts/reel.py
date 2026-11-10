@@ -496,8 +496,11 @@ def remotion(out, extra, props=None, codec=('--codec=h264',)):
     fr = [a for a in extra if a.startswith('--frames=')]
     dur = (lambda a, b: (int(b) - int(a)) / 29.97)(*fr[0][9:].split('-')) if fr else pr['duration']
     lim = max(360, int(dur * 12))
+    # 2 abas quando a página abre vídeo (RAM do Mac de 16 GB); camada com alfa não abre câmera: 5 abas (medido no M4, 10/11/2026:
+    # etiqueta de 145 quadros 6,1 s → 4,4 s; fundo 300 quadros 11,9 s → 10,4 s). REEL_ABAS força um valor.
+    abas = os.environ.get('REEL_ABAS') or (5 if any('image-format=png' in c for c in codec) and not pr.get('inserts') else 2)
     cmd = ['npx', 'remotion', 'render', str(ent), 'ReelH' if HZ else 'Reel', str(out), f'--props={props}', *codec,
-           '--muted', '--overwrite', '--log=error', '--timeout=180000', '--concurrency=2'] + extra   # 2 abas (RAM do Mac de 16 GB); 180 s por quadro com a máquina ocupada
+           '--muted', '--overwrite', '--log=error', '--timeout=180000', f'--concurrency={abas}'] + extra   # 180 s por quadro com a máquina ocupada
     mata_orfaos()
     for tentativa in (1, 2):
         print('$', ' '.join(map(str, cmd))[:160], f'(limite {lim}s)', flush=True)
