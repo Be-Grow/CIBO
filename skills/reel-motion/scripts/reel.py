@@ -621,7 +621,7 @@ def e_revisa():
     (W / 'work').mkdir(exist_ok=True)
     return subprocess.run([sys.executable, str(SK / 'gancho-e-ritmo/scripts/gancho_ritmo.py'), '--props', str(PUB / R / 'props.json'),
                            '--segs', str(W / 'segs.json'), '--sfx', str(W / 'sfx.json'), '--reel', str(W / 'reel.json'),
-                           '--tema', str(ENG / 'temas' / f"{C.get('tema', 'priscilla')}.json"), '--json', str(W / 'work' / 'gancho_ritmo.json')]).returncode
+                           '--tema', str(ENG / 'temas' / f"{C.get('tema', 'priscilla')}.json"), '--mfa', str(W / 'edit_mfa.json'), '--json', str(W / 'work' / 'gancho_ritmo.json')]).returncode
 
 
 # partes isoladas por tipo de painel (as chaves batem com <Pt k=…> no panels.tsx)

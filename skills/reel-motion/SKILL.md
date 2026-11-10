@@ -88,6 +88,7 @@ takes, MFA e capa).
 | `growth-leaders` | João Campos / Growth Leaders | marca própria do evento: nunca misture com `joao-campos`; saída seca |
 
 ## Revisão automática e fila
+- **Vídeo sem legenda é detectado sozinho** (`captions` vazio no props, ex.: YouTube 16:9): o pacote não renderiza a camada de legenda nem grava SRT, o `checa_props` libera a faixa de baixo do painel e o `gancho-e-ritmo` mede o ritmo pela fala (`--mfa`). Nada de arquivo-coringa de legenda no pacote.
 - **`reel.py PROJ rNN verifica` = portão de layout (10/11/2026).** Renderiza 1 quadro por painel, título, palavra-chave, gancho e tarja
   (layer `verifica`, sem câmera) e o `Medidor.tsx` mede o DOM: painel que não renderiza (campo faltando, ex.: `strike` sem `line2At`),
   texto que vaza do painel/quadro, estoura a caixa, fica sobre outra peça, pílula sobre pílula, letra menor que 19 px, painel vazio.

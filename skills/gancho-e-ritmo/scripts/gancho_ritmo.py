@@ -16,6 +16,7 @@ a = argparse.ArgumentParser()
 for k in ('props', 'segs', 'sfx', 'reel', 'tema', 'srt', 'json'):
     a.add_argument('--' + k)
 a.add_argument('--dur', type=float)
+a.add_argument('--mfa')
 A = a.parse_args()
 J = lambda f: json.load(open(f)) if f and Path(f).exists() else None
 
@@ -37,6 +38,19 @@ if A.srt:
         d = (e - s) / max(len(ws), 1)
         caps.append({'s': s, 'e': e, 'words': [{'t': w, 'hl': False, 's': s + i * d, 'e': s + (i + 1) * d} for i, w in enumerate(ws)]})
     P = {'captions': caps, 'duration': A.dur or (caps[-1]['e'] + 0.5 if caps else 0)}
+if not P.get('captions') and getattr(A, 'mfa', None) and Path(A.mfa).exists():
+    # vídeo SEM legenda (YouTube 16:9): o ritmo se mede pela fala; frases = palavras do MFA quebradas em pausa > 0,35 s ou 7 palavras
+    caps = []
+    for w in json.load(open(A.mfa))['segments'][0]['words']:
+        if not w.get('word', '').strip():
+            continue
+        x = {'t': w['word'].strip(), 'hl': False, 's': w['start'], 'e': w['end']}
+        if caps and x['s'] - caps[-1]['e'] <= 0.35 and len(caps[-1]['words']) < 7:
+            caps[-1]['words'].append(x); caps[-1]['e'] = x['e']
+        else:
+            caps.append({'s': x['s'], 'e': x['e'], 'words': [x]})
+    P['captions'] = caps
+    print('(vídeo sem legenda: ritmo medido pela fala do edit_mfa, não por blocos de legenda)')
 W = [w for c in P.get('captions', []) for w in c['words']]
 DUR = P.get('duration') or (W[-1]['e'] if W else 0)
 if not W:

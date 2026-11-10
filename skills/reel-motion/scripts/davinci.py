@@ -143,13 +143,14 @@ if CP: sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', CP, '-frames:v', '1
    '-c:v', 'prores_videotoolbox', '-profile:v', 'standard', OUT / U('capa.mov'))
 hms = lambda t: f'{int(t // 3600):02d}:{int(t % 3600 // 60):02d}:{int(t % 60):02d},{int(round(t % 1 * 1000)) % 1000:03d}'
 txt = lambda b: ' '.join(w['t'] for w in b['words'])
-open(OUT / 'legenda.srt', 'w').write(''.join(f"{i + 1}\n{hms(b['s'])} --> {hms(b['e'])}\n{txt(b)}\n\n" for i, b in enumerate(PR['captions'])))
+if PR.get('captions'):   # vídeo sem legenda: sem SRT vazio nem faixa de legenda no pacote
+    open(OUT / 'legenda.srt', 'w').write(''.join(f"{i + 1}\n{hms(b['s'])} --> {hms(b['e'])}\n{txt(b)}\n\n" for i, b in enumerate(PR['captions'])))
 # ---- camadas de vídeo em pedaços ----
 pan = PR.get('panels', [])
 fundos = [] if not (CAM / U('painel_fundo.mov')).exists() else pedacos(CAM / U('painel_fundo.mov'), [fr(p['s']) for p in pan],
                  lambda x, y: (lambda p: f"fundo {p['type']} {p.get('title', '')}" if p else 'fundo')(perto(pan, x, y)), 'paineis_fundo')
 cap = PR['captions']
-legenda = [] if not (CAM / U('legenda.mov')).exists() else pedacos(CAM / U('legenda.mov'), [fr(b['s']) for b in cap], lambda x, y: (lambda b: txt(b) if b else 'legenda')(perto(cap, x, y)), 'legenda')
+legenda = [] if not PR.get('captions') or not (CAM / U('legenda.mov')).exists() else pedacos(CAM / U('legenda.mov'), [fr(b['s']) for b in cap], lambda x, y: (lambda b: txt(b) if b else 'legenda')(perto(cap, x, y)), 'legenda')
 # elementos isolados (um arquivo cada, renderizado só no seu trecho): o clipe vai do 1º ao último quadro visível
 elem = {}
 for m in json.load(open(CAM / 'elementos.json')):
@@ -510,7 +511,8 @@ if GROSSO and PR.get('captions'):
                  f'<text><text-style ref="ts{i}">{tx.replace("&", "&amp;").replace("<", "&lt;")}</text-style></text>'
                  f'<text-style-def id="ts{i}"><text-style font="Montserrat" fontSize="{VH * 0.05:.0f}" fontFace="{_w}" fontColor="1 1 1 1" '
                  f'shadowColor="0 0 0 0.75" shadowOffset="3 315" shadowBlurRadius="6" alignment="center"/></text-style-def></title>')
-    (OUT / 'legenda.srt').rename(OUT / 'legenda_texto.srt')      # o SRT fica de referência, sem ir para a timeline
+    if (OUT / 'legenda.srt').exists():
+        (OUT / 'legenda.srt').rename(OUT / 'legenda_texto.srt')      # o SRT fica de referência, sem ir para a timeline
 xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fcpxml>
 <fcpxml version="1.10">
