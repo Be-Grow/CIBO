@@ -19,6 +19,21 @@ from pathlib import Path
 from xml.sax.saxutils import quoteattr
 import numpy as np, soundfile as sf
 
+def no_disco(p):
+    """caminho com os nomes EXATOS do disco (11/11/2026, YT 01 da Priscilla: pasta "Edição/Mídia" está em NFD no SSD e o projeto
+    veio digitado em NFC; o Resolve importou a timeline com os 238 clipes offline). Cada componente é trocado pelo nome real."""
+    import unicodedata as _u
+    p = Path(p).resolve(); out = Path(p.anchor)
+    for c in p.parts[1:]:
+        try:
+            real = next((n for n in os.listdir(out) if _u.normalize('NFC', n) == _u.normalize('NFC', c)), c)
+        except OSError:
+            real = c
+        out = out / real
+    return out
+
+
+
 P, R, OUT = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3]).resolve()
 W = P / '04_work' / R; PUB = P / '04_work' / 'public'; CAM = OUT / '_camadas'
 C = json.load(open(W / 'reel.json')); PR = json.load(open(PUB / R / 'props.json'))
@@ -191,7 +206,11 @@ EASE = bezier(0.33, 0, 0.67, 1)
 CROP = not (W / 'job.json').exists()
 if CROP:
     _src = Path(C['src']) if os.path.isabs(C['src']) else P / '01_sources' / C['src']
-    JOB = {'src': str(_src), 'rotate': C.get('rotate', ''), 'tc_drop': C.get('tc_drop', False), 'camera_moves': C.get('camera_moves', [])}
+    def _sony(f):   # XAVC da Sony em 29,97 grava timecode drop-frame e o ffprobe mostra ':' (YT 01 da Priscilla, 11/11/2026:
+        # sem o desconto o bruto caía 16 s adiante e a timeline entrava no Resolve toda offline). reel.json "tc_drop" força.
+        r = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format_tags=major_brand', '-of', 'csv=p=0', str(f)], capture_output=True, text=True).stdout
+        return 'XAVC' in r
+    JOB = {'src': str(_src), 'rotate': C.get('rotate', ''), 'tc_drop': C.get('tc_drop', _sony(_src)), 'camera_moves': C.get('camera_moves', [])}
     _iw, _ih = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', str(_src)],
                                        capture_output=True, text=True).stdout.strip().split(',')[:2])
     RW, RH = (_ih, _iw) if C.get('rotate') in ('clock', 'cclock') else (_iw, _ih)      # quadro já girado
@@ -368,7 +387,7 @@ def asset(f, video, audio, tc=0):
         ids[f] = f'a{len(ids) + 1}'
         assets.append(f'<asset id="{ids[f]}" name={quoteattr(f.name)} start="{tt(tc)}" duration="{tt(int(dur(f) / FD))}" hasVideo="{int(video)}" hasAudio="{int(audio)}"'
                       + (' format="r1"' if video else '') + (' audioSources="1" audioChannels="1" audioRate="48000"' if audio else '')
-                      + f'>\n  <media-rep kind="original-media" src={quoteattr(f.resolve().as_uri())}/>\n</asset>')
+                      + f'>\n  <media-rep kind="original-media" src={quoteattr(no_disco(f).as_uri())}/>\n</asset>')
     return ids[f]
 
 
