@@ -36,12 +36,15 @@ CORES = {
 def tipo(it, faixa):
     n = it.GetName() or ''; mpi = it.GetMediaPoolItem()
     fp = (mpi.GetClipProperty('File Path') if mpi else '') or ''
+    # bruto = fonte da câmera: em 01_sources OU qualquer mídia fora do pacote (bruto na raiz do projeto, YT 01 da Priscilla,
+    # 11/11/2026: o áudio da câmera entrou como SFX, ficou LIGADO e a voz ia sair duplicada)
+    bruto = '/01_sources/' in fp or (bool(fp) and '/07_davinci/' not in fp)
     if faixa == 'audio':
         return 'a_voz' if re.search(r'/voz(__[^/]*)?\.wav$', fp) else 'a_trilha' if fp.rsplit('/', 1)[-1].startswith('trilha') else 'a_sfx' if '/sfx/' in fp \
-            else 'a_camera' if '/01_sources/' in fp or not fp else 'a_sfx'
+            else 'a_camera' if bruto or not fp else 'a_sfx'
     if re.match(r'(punch|zoom) ', n): return 'mov_zoom'
     if n.startswith('tela dividida'): return 'mov_split'
-    if '/01_sources/' in fp or n.startswith('bruto'): return 'camera'
+    if bruto or n.startswith('bruto'): return 'camera'
     if 'fundo_desfocado' in fp: return 'fundo_cam'
     if re.search(r'/camera(__[^/]*)?\.mov$', fp) or n.startswith('câmera'): return 'cam_ref'
     if '/paineis_fundo/' in fp or '/painel_fundo' in fp: return 'painel_bg'

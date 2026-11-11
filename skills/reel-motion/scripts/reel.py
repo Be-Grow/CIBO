@@ -839,6 +839,9 @@ def e_davinci():
         a, b = q(kw['s'] - 0.2), q(kw['e'] + 0.6)
         jobs.append((f'titulo_k{k}', 'titulo', f'k{k}', a, b, alfa))
         man.append(dict(arq=f'el/titulo_k{k}.mov', a=a, grupo='titulo', nome=f"palavra-chave {kw.get('sub', '')} {kw.get('text', '')} {kw.get('accent', '')}".strip()))
+    for k, cc in enumerate(pr.get('cartoes') or []):           # cartão de número sobre a pessoa (YouTube leve): um arquivo cada
+        a, b = q(cc['s'] - 0.2), q(cc['e'] + 0.6)
+        jobs.append((f'titulo_c{k}', 'titulo', f'c{k}', a, b, alfa)); man.append(dict(arq=f'el/titulo_c{k}.mov', a=a, grupo='titulo', nome=f"cartão {cc.get('num', '')} {cc.get('label', '')}".strip()))
     if pr.get('endCard'):
         ec = pr['endCard']; a = q(ec['s'] - 0.1)
         jobs.append(('titulo_end', 'titulo', 'end', a, N - 1, alfa)); man.append(dict(arq='el/titulo_end.mov', a=a, grupo='titulo', nome=f"cartão final {ec.get('l1', '')}"))

@@ -62,7 +62,7 @@ for p in panels:
     for k in ('s', 'e'):
         p[k] = mp.get(p[k], p[k])
 props = {'camera': M.get('camera', f'{R}/camera.mov'), 'duration': round(DUR + M.get('tail', 0.8), 3), 'endFade': 0.9, 'captions': caps,
-         'split': split, 'panels': panels, **{k: M[k] for k in ('hook', 'titles', 'keywords', 'lower', 'endCard', 'camX', 'inserts') if M.get(k) is not None}}
+         'split': split, 'panels': panels, **{k: M[k] for k in ('hook', 'titles', 'keywords', 'lower', 'endCard', 'camX', 'inserts', 'cartoes') if M.get(k) is not None}}
 bt = [p['s'] for p in panels if p.get('tr') == 'burn']
 if bt:
     pasta = 'burnsH' if ORIENT == 'h' else 'burns'; lista = PUBR.parent / pasta / f'{pasta}.json'

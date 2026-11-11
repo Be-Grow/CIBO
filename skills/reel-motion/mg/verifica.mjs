@@ -17,6 +17,7 @@ const FPS = 29.97, alvos = [];
 if (base.hook) alvos.push({id: 'gancho', nome: 'gancho', t: Math.max(base.hook.s ?? 0, base.hook.e - 0.4)});
 (base.titles || []).forEach((h, k) => alvos.push({id: `titulo_${String(k).padStart(2, '0')}`, nome: `título ${k} "${h.l1} ${h.l2 || ''} ${h.accent || ''}" ${h.s.toFixed(1)} s`, t: Math.max(h.s, h.e - 0.4)}));
 (base.keywords || []).forEach((h, k) => alvos.push({id: `chave_${String(k).padStart(2, '0')}`, nome: `palavra-chave ${k} "${h.text} ${h.accent || ''}" ${h.s.toFixed(1)} s`, t: Math.max(h.s, h.e - 0.6)}));
+(base.cartoes || []).forEach((c, k) => alvos.push({id: `cartao_${String(k).padStart(2, '0')}`, nome: `cartão ${k} "${c.num}" ${c.s.toFixed(1)} s`, t: Math.max(c.s, c.e - 0.5)}));
 if (base.lower) alvos.push({id: 'tarja', nome: 'tarja', t: Math.min((base.lower.s ?? 0) + 1.5, (base.lower.e ?? base.duration) - 0.6)});
 if (base.endCard) alvos.push({id: 'cartao_final', nome: 'cartão final', t: base.duration - 0.3});
 

@@ -10,7 +10,7 @@ import {PANELS} from './panels';
 export {C, T, applyTheme, sh, scr} from './theme';
 export type {Theme} from './theme';
 import {Medidor} from './Medidor';
-import {applyTheme, Theme, scr, setPart} from './theme';
+import {applyTheme, Theme, scr, sh, setPart} from './theme';
 
 // Reel com tela dividida: pessoa embaixo, painel de motion em cima, ou pessoa em tela cheia.
 // Tudo em segundos do vídeo editado; a câmera (cortes, recorte) vem pronta em camera.mov.
@@ -200,6 +200,25 @@ const Lower: React.FC<{l: NonNullable<ReelProps['lower']>; t: number; sp: number
 const GOLD = 'linear-gradient(90deg, #F2A902 0%, #FFD575 100%)';
 const goldText = (): React.CSSProperties => ({backgroundImage: GOLD, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
   filter: 'drop-shadow(0 3px 14px rgba(0,8,30,0.55))'});
+// cartão de número sobre a pessoa em tela cheia (YouTube leve da Priscilla, 11/11/2026): um dado por vez, ao lado dela,
+// entra simples e sai. {s, e, num, from?, label?, numAt?, side?: 'left'|'right', y?}. Sem véu, sem tela dividida.
+const Cartao: React.FC<{c: any; t: number; hz?: boolean}> = ({c, t, hz}) => {
+  if (t < c.s - 0.1 || t > c.e + 0.4) return null;
+  const a = ramp(t, c.s, 0.45, OUT), out = ramp(t, c.e - 0.05, 0.3, EASE), n = ramp(t, c.numAt ?? c.s + 0.15, 0.4, OUT);
+  const lado = c.side === 'right' ? {right: hz ? 130 : 60} : {left: hz ? 130 : 60};
+  return (
+    <div style={{position: 'absolute', ...lado, top: c.y ?? (hz ? 0 : 220), bottom: hz && c.y === undefined ? 0 : undefined, display: 'flex', alignItems: 'center'}}>
+      <div style={{background: C.white, borderRadius: 26, padding: '30px 44px 34px', boxShadow: `0 18px 50px ${sh(0.28)}`, minWidth: 300,
+        opacity: a * (1 - out), transform: `translateY(${(1 - a) * 26 - out * 10}px) scale(${0.96 + 0.04 * a})`}}>
+        {/* com "from": o número antigo entra grande; na hora do novo ele encolhe, é riscado e o novo cresce no lugar */}
+        {c.from && <div style={{...fTitle(120 - 72 * n), lineHeight: 1.05, color: C.ink2, opacity: 1 - 0.3 * n, textDecoration: n > 0.5 ? 'line-through' : 'none', textDecorationColor: C.terra}}>{c.from}</div>}
+        <div style={{...fTitle(120), lineHeight: 1.0, color: C.terra, opacity: c.from ? n : 1, height: c.from ? 120 * n : undefined, overflow: 'hidden'}}>{c.num}</div>
+        {c.label && <div style={{...fLab(), fontSize: 24, letterSpacing: 3, textTransform: 'uppercase', color: C.ink2, marginTop: 12, maxWidth: 420, lineHeight: 1.3}}>{c.label}</div>}
+      </div>
+    </div>
+  );
+};
+
 const Keyword: React.FC<{k: Kw; t: number; hz?: boolean}> = ({k, t, hz}) => {
   if (t < k.s - 0.1 || t > k.e + 0.4) return null;
   const a = ramp(t, k.s, 0.38, OUT), b = ramp(t, k.s + 0.1, 0.42, OUT), rule = ramp(t, k.s + 0.22, 0.45, OUT), out = ramp(t, k.e - 0.05, 0.32, EASE);
@@ -370,6 +389,7 @@ export const Reel: React.FC<ReelProps> = (props) => {
       {(props.titles || []).map((h, k) => tit(`t${k}`) && <Hook key={k} h={h} t={t} hz={HZ} />)}
       {tit('lower') && props.lower && <Lower l={props.lower} t={t} sp={sp} hz={HZ} />}
       {(props.keywords || []).map((k, i) => tit(`k${i}`) && <Keyword key={`k${i}`} k={k} t={t} hz={HZ} />)}
+      {((props as any).cartoes || []).map((c: any, i: number) => tit(`c${i}`) && <Cartao key={`c${i}`} c={c} t={t} hz={HZ} />)}
       {on('legenda') && <Captions blocks={props.captions} t={t} sp={sp} inv={inv} hz={HZ} hide={(!!panel && panel.hideCapsFrom !== undefined && t >= panel.hideCapsFrom && t < panel.e) || (props.keywords || []).some((k) => k.hideCaps && t >= k.s && t < k.e + 0.2) || (!!props.endCard && t >= props.endCard.s)} />}
       {!L && (props.burns || []).map((b, k) => (
         <Sequence key={k} from={Math.round((b.t - b.peak) * fps)} durationInFrames={Math.round(b.dur * fps)} layout="none">
