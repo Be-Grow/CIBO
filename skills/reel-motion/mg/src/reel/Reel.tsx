@@ -211,7 +211,7 @@ const Cartao: React.FC<{c: any; t: number; hz?: boolean}> = ({c, t, hz}) => {
       <div style={{background: C.white, borderRadius: 26, padding: '30px 44px 34px', boxShadow: `0 18px 50px ${sh(0.28)}`, minWidth: 300,
         opacity: a * (1 - out), transform: `translateY(${(1 - a) * 26 - out * 10}px) scale(${0.96 + 0.04 * a})`}}>
         {/* logo da marca citada (c.img, pasta pública): sozinho ou acima do número */}
-        {c.img && <img src={staticFile(c.img)} style={{display: 'block', maxWidth: c.imgW ?? 300, maxHeight: c.imgH ?? 110, objectFit: 'contain', marginBottom: c.num ? 18 : 0}} />}
+        {c.img && <img src={staticFile(c.img)} style={{display: 'block', width: c.imgW, maxWidth: c.imgW ?? 300, maxHeight: c.imgH ?? 110, objectFit: 'contain', marginBottom: c.num ? 18 : 0}} />}
         {/* com "from": o número antigo entra grande; na hora do novo ele encolhe, é riscado e o novo cresce no lugar */}
         {c.from && <div style={{...fTitle(120 - 72 * n), lineHeight: 1.05, color: C.ink2, opacity: 1 - 0.3 * n, textDecoration: n > 0.5 ? 'line-through' : 'none', textDecorationColor: C.terra}}>{c.from}</div>}
         {c.num && <div style={{...fTitle(120), lineHeight: 1.22, marginBottom: -2, color: C.terra, opacity: c.from ? n : 1, height: c.from && n < 0.999 ? 146 * n : undefined, overflow: c.from && n < 0.999 ? 'hidden' : 'visible'}}>{c.num}</div>}
