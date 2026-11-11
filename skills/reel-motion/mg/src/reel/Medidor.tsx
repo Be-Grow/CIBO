@@ -64,6 +64,9 @@ const medir = (alvoPainel: boolean) => {
     // tamanho real da letra no quadro (fonte × escala do painel): abaixo de MIN px em 1080 ninguém lê (etiquetas espremidas numa linha só)
     const he = t.el as HTMLElement, esc = he.offsetHeight ? he.getBoundingClientRect().height / he.offsetHeight : 1;
     const px = parseFloat(getComputedStyle(he).fontSize) * esc;
+    // caixa que corta (overflow escondido) com entrelinha colada na letra: a perna do g/p/q/ç some ("30 g", YT 01 da Priscilla)
+    const cs = getComputedStyle(he), lh = parseFloat(cs.lineHeight) / parseFloat(cs.fontSize);
+    if (cs.overflow !== 'visible' && lh < 1.12 && /[gjpqyç,;]/.test(t.txt)) out.push({tipo: 'descendente cortado (entrelinha colada + overflow escondido)', texto: t.txt, r: arr(t.r)});
     if (px < MIN) out.push({tipo: `letra pequena demais (${px.toFixed(0)} px, mínimo ${MIN})`, texto: t.txt, r: arr(t.r)});
     const lim = t.dentro && pr ? {x: Math.max(pr.x, 0), y: Math.max(pr.y, 0), w: Math.min(pr.x + pr.w, VW) - Math.max(pr.x, 0), h: Math.min(pr.y + pr.h, VH) - Math.max(pr.y, 0)} : {x: 0, y: 0, w: VW, h: VH};
     if (t.r.x < lim.x + B || t.r.y < lim.y - F || t.r.x + t.r.w > lim.x + lim.w - B || t.r.y + t.r.h > lim.y + lim.h + F)

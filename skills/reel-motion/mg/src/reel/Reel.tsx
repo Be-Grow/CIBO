@@ -214,7 +214,7 @@ const Cartao: React.FC<{c: any; t: number; hz?: boolean}> = ({c, t, hz}) => {
         {c.img && <img src={staticFile(c.img)} style={{display: 'block', maxWidth: c.imgW ?? 300, maxHeight: c.imgH ?? 110, objectFit: 'contain', marginBottom: c.num ? 18 : 0}} />}
         {/* com "from": o número antigo entra grande; na hora do novo ele encolhe, é riscado e o novo cresce no lugar */}
         {c.from && <div style={{...fTitle(120 - 72 * n), lineHeight: 1.05, color: C.ink2, opacity: 1 - 0.3 * n, textDecoration: n > 0.5 ? 'line-through' : 'none', textDecorationColor: C.terra}}>{c.from}</div>}
-        {c.num && <div style={{...fTitle(120), lineHeight: 1.0, color: C.terra, opacity: c.from ? n : 1, height: c.from ? 120 * n : undefined, overflow: 'hidden'}}>{c.num}</div>}
+        {c.num && <div style={{...fTitle(120), lineHeight: 1.22, marginBottom: -2, color: C.terra, opacity: c.from ? n : 1, height: c.from && n < 0.999 ? 146 * n : undefined, overflow: c.from && n < 0.999 ? 'hidden' : 'visible'}}>{c.num}</div>}
         {c.label && <div style={{...fLab(), fontSize: 24, letterSpacing: 3, textTransform: 'uppercase', color: C.ink2, marginTop: 12, maxWidth: 420, lineHeight: 1.3}}>{c.label}</div>}
       </div>
     </div>
