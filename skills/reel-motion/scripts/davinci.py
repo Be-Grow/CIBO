@@ -154,6 +154,8 @@ BOP = (PR.get('theme') or {}).get('burnOpacity') or 0.85
 CP = P / '06_deliverables' / f"CAPA - {C['name']}.jpg"
 if not CP.exists():
     CP = next(P.glob(f"06_deliverables/CAPA - {R[1:]} -*"), None)
+if C.get('sem_capa'):                                        # vídeo de YouTube não leva capa no quadro 0 (Bruno, 11/11/2026); a thumb é outra peça
+    CP = None
 if CP: sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', CP, '-frames:v', '1', '-r', '30000/1001', '-vf', f'scale={VW}:{VH}',
    '-c:v', 'prores_videotoolbox', '-profile:v', 'standard', OUT / U('capa.mov'))
 hms = lambda t: f'{int(t // 3600):02d}:{int(t % 3600 // 60):02d}:{int(t % 60):02d},{int(round(t % 1 * 1000)) % 1000:03d}'
