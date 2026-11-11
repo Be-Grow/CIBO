@@ -129,3 +129,11 @@ Este repositório é o histórico de aprendizado do agente. Quando uma skill exi
 | Skill | O que faz |
 |---|---|
 | `relatorio-estrategia-social` | Relatório mensal de performance (Instagram, TikTok, YouTube) e estratégia do mês seguinte: inventário dos dados, diagnóstico por plataforma, leitura cruzada e funil (com pausa para aprovação), calendário pronto para produção, metas e testes — PDF + planilha do calendário. |
+
+## Windows / Codex / ChatGPT Work
+
+O n?cleo port?til usa Python 3.11+ e FFmpeg/FFprobe em Windows, macOS e Linux.
+Leia AGENTS.md e portable/README_WINDOWS.md; testes em tests/test_windows_portable.py.
+A skill skills/idea-completeness/SKILL.md define o contrato de an?lise de ideias,
+com interpreta??o sem?ntica externa/local (n?o embutida no CLI).
+As outras skills Mac/MLX/DaVinci n?o foram migradas integralmente.
