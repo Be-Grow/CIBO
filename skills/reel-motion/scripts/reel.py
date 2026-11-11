@@ -391,6 +391,8 @@ def e_props():
             pr['theme'][k] = {**pr['theme'].get(k, {}), **C[k]}
     # saída por cliente (editor 20/10/2026): tema "saida" {"tipo": "seco"|"fade", "dur": 0.9}; sem o bloco = seco (regra
     # transversal). reel.json "saida" sobrepõe só neste reel.
+    if TEMA.get('estilo') or C.get('estilo'):                # densidade do motion (clean × denso): lida pelo checa_props
+        pr['estilo'] = {**TEMA.get('estilo', {}), **C.get('estilo', {})}
     sd = {'tipo': 'seco', **TEMA.get('saida', {}), **C.get('saida', {})}
     pr['endFade'] = float(sd.get('dur', 0.9)) if sd['tipo'] == 'fade' else 0
     if C.get('formato') == 'so_legenda':

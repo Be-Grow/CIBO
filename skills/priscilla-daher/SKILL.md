@@ -61,3 +61,4 @@ Sony 4K 29,97, câmera deitada (rotate clock), Rec.709. Cada bruto de roteiro = 
 - Mesmo motor (`reel-motion`, tema `priscilla`), `"orient": "h"`, sem legenda, painel nos 2/3 da esquerda (`layoutH.panelW` 1280), câmera pelo DaVinci (`camera_davinci`). Job em `04_work/yNN/`.
 - Vídeo longo = muito texto por painel: `"layout": {"autoTags": true}` no reel.json e **`reel.py PROJ yNN verifica` até dar OK antes do pacote** (no YT 01, 8 de 28 painéis tinham texto cortado/sobreposto e os `strike` sem `line2At` nem renderizavam).
 - Timeline com rótulo comprido nas pontas: `"x0": 230, "x1": 850`. Sem legenda, a faixa de baixo do painel (y > 770) é livre para etiquetas.
+- **YouTube é clean (Bruno, 11/11/2026: "bem clean, nada exagerado"):** 1–2 etiquetas por painel, burn só na troca de bloco, som só onde a tela muda (sem clique por item). No reel.json: `"estilo": {"max_parado": 9, "burn_toda_troca": false}`. Modelo: `04_work/y01/props.py` (bloco ENXUTO) e `sfx_y01.py`.

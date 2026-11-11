@@ -10,6 +10,9 @@ import json,sys,re
 P=json.load(open(sys.argv[1])); W=[w for w in json.load(open(sys.argv[2]))['segments'][0]['words'] if w['word'].strip()!='%']
 S=json.load(open(sys.argv[3])) if len(sys.argv)>3 else []
 err=[]
+# estilo do reel/tema (11/11/2026, YouTube clean da Priscilla): {"max_parado": s sem nada entrar no painel (padrão 2,5, reels),
+# "burn_toda_troca": false = troca de painel pode ser deslize sem burn}. Vem de reel.json/tema "estilo" pelo reel.py props.
+EST=P.get('estilo') or {}
 near=lambda t,L,tol=0.08: any(abs(t-x)<tol for x in L)
 burns=[b['t'] for b in P.get('burns',[])]; sfx=[e['t'] for e in S]
 pan=P['panels']
@@ -22,7 +25,7 @@ def times(o):
         for v in o: yield from times(v)
 for a,b in zip(pan,pan[1:]):
     if abs(a['e']-b['s'])<0.05:
-        if b.get('tr')!='burn' or not near(b['s'],burns): err.append(f"{b['s']:.2f} troca {a['type']}→{b['type']} sem burn")
+        if EST.get('burn_toda_troca',True) and (b.get('tr')!='burn' or not near(b['s'],burns)): err.append(f"{b['s']:.2f} troca {a['type']}→{b['type']} sem burn")
         if not near(b['s'],sfx,0.15): err.append(f"{b['s']:.2f} troca sem SFX")
 for p in pan:
     end=[]
@@ -36,7 +39,7 @@ for p in pan:
     if p['type'] not in ('media','stat'):
         ev=sorted([p['s']]+[t for t in times(p) if p['s']<=t<=p['e']]+[t for t in burns if p['s']<=t<=p['e']])
         for x,y in zip(ev,ev[1:]+[p['e']]):
-            if y-x>2.5:
+            if y-x>EST.get('max_parado',2.5):
                 # sugere as palavras de conteúdo ditas no vazio (onde encaixar a etiqueta), para não reler a transcrição
                 sug=[f"{w['word'].strip(' ,.?!')}@{w['start']:.2f}" for w in W if x+0.6<w['start']<y-0.6 and len(w['word'].strip(' ,.?!'))>=5][:5]
                 err.append(f"{x:.2f}-{y:.2f} painel {p['type']} parado {y-x:.1f}s  → palavras: {' '.join(sug)}")
