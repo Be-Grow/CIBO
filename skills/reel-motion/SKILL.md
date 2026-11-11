@@ -106,6 +106,7 @@ takes, MFA e capa).
 | `growth-leaders` | João Campos / Growth Leaders | marca própria do evento: nunca misture com `joao-campos`; saída seca |
 
 ## Revisão automática e fila
+- **Câmera de YouTube nos cortes: `camera_cortes.py PROJ rNN`** (Bruno, 11/11/2026). Planeja um estado por take e grava `camera_moves` no reel.json (keyframes no bruto pelo `davinci`, sem render): `empurra` = zoom in lento que no corte volta seco, nunca zoom out; `fechado` = salto de +16% no corte, volta em outro; `aberto` = parado. Remendo < 2,5 s herda o estado anterior; troca no quadro exato do corte. `--ver` só mostra o plano; `--push`/`--salto` ajustam a dose.
 - **Vídeo sem legenda é detectado sozinho** (`captions` vazio no props, ex.: YouTube 16:9): o pacote não renderiza a camada de legenda nem grava SRT, o `checa_props` libera a faixa de baixo do painel e o `gancho-e-ritmo` mede o ritmo pela fala (`--mfa`). Nada de arquivo-coringa de legenda no pacote.
 - **`reel.py PROJ rNN verifica` = portão de layout (10/11/2026).** Renderiza 1 quadro por painel, título, palavra-chave, gancho e tarja
   (layer `verifica`, sem câmera) e o `Medidor.tsx` mede o DOM: painel que não renderiza (campo faltando, ex.: `strike` sem `line2At`),
