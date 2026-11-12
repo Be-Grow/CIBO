@@ -7,10 +7,11 @@ import {C, T, Theme, applyTheme, scr} from './Reel';
 // layout "serif" (Priscilla): manchete no topo, destaque em itálico, rodapé com o nome.
 // layout "faixa" (João, thumbs do canal): manchete pesada em caixa alta, 2ª linha sobre faixa na cor de destaque, "COM FULANO" no secundário.
 export type CapaProps = {frame: string; l1: string; l1b?: string; l2: string; accent: string; y?: number; shift?: number; footer?: string; sub?: string;
-  layout?: 'serif' | 'faixa'; logo?: string; logoW?: number; logoY?: number; theme?: Theme; bgFill?: 'cor' | 'blur'};
+  layout?: 'serif' | 'faixa'; logo?: string; logoW?: number; logoY?: number; theme?: Theme; bgFill?: 'cor' | 'blur';
+  grad?: 'topo' | 'base'};   // serif: degradê atrás do título; 'base' quando o título fica embaixo (Fernanda/Angélica 12/11/2026: "o degradê em cima cobre o rosto")
 const css = () => T.fonts.map((f) => `@font-face{font-family:'${f.family}';font-weight:${f.weight ?? 'normal'};font-style:${f.style ?? 'normal'};src:url('${staticFile(f.file)}');}`).join('\n');
 
-export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, shift = 0, footer = 'PRISCILLA DAHER', sub, layout = 'serif', logo, logoW = 440, logoY, theme, bgFill}) => {
+export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, shift = 0, footer = 'PRISCILLA DAHER', sub, layout = 'serif', logo, logoW = 440, logoY, theme, bgFill, grad = 'topo'}) => {
   applyTheme(theme);
   const tf = {fontFamily: `'${T.title.family}'`, fontWeight: T.title.weight, textTransform: T.title.upper ? 'uppercase' : 'none', letterSpacing: T.title.ls} as React.CSSProperties;
   if (layout === 'faixa') {
@@ -81,7 +82,8 @@ export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, 
       )}
       <Img src={staticFile(frame)} style={{position: 'absolute', width: 1080, height: 1920, objectFit: 'cover', transform: `translateY(${shift}px)`,
         WebkitMaskImage: shift > 0 ? `linear-gradient(180deg, transparent 0px, black 170px)` : undefined}} />
-      <AbsoluteFill style={{background: `linear-gradient(180deg, ${scr(0.78)} 0%, ${scr(0.45)} 26%, ${scr(0)} 44%)`}} />
+      <AbsoluteFill style={{background: grad === 'base' ? `linear-gradient(0deg, ${scr(0.8)} 0%, ${scr(0.5)} 28%, ${scr(0)} 50%)`
+        : `linear-gradient(180deg, ${scr(0.78)} 0%, ${scr(0.45)} 26%, ${scr(0)} 44%)`}} />
       <div style={{position: 'absolute', top: y, left: 60, right: 60, textAlign: 'center', color: C.video, ...tf, textShadow: '0 4px 24px rgba(0,0,0,0.45)'}}>
         <div style={{fontSize: fitW(l1, 128 * T.title.scale), lineHeight: 0.98, whiteSpace: 'nowrap'}}>{l1}</div>
         {/* l1b: 3ª linha opcional para copy longa (Andreia 02, 30/10/2026: "o título da segunda capa tá pequeno") */}
