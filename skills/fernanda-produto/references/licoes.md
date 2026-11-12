@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-12 (/Volumes/SSD/Movies/Edição/Mídia/fernandaBen/podcastCast06 r06): Corte 06: fim engoliu a última palavra ('errada') e faltou respiro no final; o editor quer ~3 s de imagem depois da última fala (sem a voz do entrevistador).
 - 2026-11-12 (/Volumes/SSD/Movies/Edição/Mídia/fernandaBen/podcastCast06): Lote 2 podcastCast06 (seleção 04 tratamento sem comprovação, 05 20 cápsulas, 06 fracassos; trechos 10 s de folga): editor aprovou a seleção sem mudanças ('gostei, manda bala').
 - 2026-11-09 (/Volumes/SSD/Movies/Edição/Mídia/fernandaBen/smGabrielCortes r03): Podcast SM Gabriel: voz do entrevistador SOBREPOSTA à da Fernanda escapou do classificador por timbre (37:08 'Ou você', 45:17 'Nada'); conferir de ouvido/sobreposição nas bordas de cada fala do entrevistador e cortar a palavra colada. Capa: Fernanda um pouco mais à direita no quadro (recorte deslocado).
 - 2026-11-04 (/Volumes/SSD/Movies/Edição/Mídia/fernandaBen/colocarNovoQrCode): Dois QRs antigos ao mesmo tempo (ex.: Mecanismos Bônus, dúvidas à esquerda + vaga na pós à direita): fica UM cartão novo, no lugar do QR de dúvidas, e o outro some com imagem limpa do fundo (quadro sem QR congelado + Crop na área do cartão + softness). Editor aprovou: 'ficou bem bom'. Só serve com câmera fixa e quadro limpo do mesmo plano.
