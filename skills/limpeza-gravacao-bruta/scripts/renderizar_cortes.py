@@ -56,7 +56,7 @@ if a.so_plano:
 punch = json.load(open(a.punch)) if a.punch else []
 W0, H0, fr = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v", "-show_entries",
                              "stream=width,height,r_frame_rate", "-of", "csv=p=0", a.original],
-                            capture_output=True, text=True).stdout.strip().split(",")[:3]
+                            capture_output=True, text=True).stdout.strip().splitlines()[0].split(",")[:3]  # 1ª linha: MP4 com stream group repete o stream (Angelica, 12/11)
 W0, H0 = int(W0), int(H0)
 # A troca de câmera medida é o PTS do primeiro quadro do plano novo; trim até esse tempo (arredondado para cima)
 # leva esse quadro com o zoom do plano anterior (frame solto, Katia 20:29). Recua as bordas meio quadro.
