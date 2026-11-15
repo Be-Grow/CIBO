@@ -5,7 +5,7 @@ description: Ponto de entrada de toda edição de vídeo do CIBO — identifica 
 
 # Client Router
 
-O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente — mesmo quando o motor por baixo é compartilhado. Duas skills de clientes distintos podem ter nascido do mesmo código (`bombordo-boreste`, `autismo-cast` e `podcast-reels` são o mesmo motor com defaults e assets próprios; `katia` é um fork de `podcast-reels`), mas isso não significa que os arquivos são intercambiáveis. Identidade de cliente é definida pelos assets, pela fonte, pela trilha e pelas regras editoriais daquele cliente específico, não pelo motor de render.
+O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente — mesmo quando o motor por baixo é compartilhado. Duas skills de clientes distintos podem ter nascido do mesmo código (`bombordo-boreste` e `podcast-reels` são o mesmo motor com defaults e assets próprios), mas isso não significa que os arquivos são intercambiáveis. Identidade de cliente é definida pelos assets, pela fonte, pela trilha e pelas regras editoriais daquele cliente específico, não pelo motor de render.
 
 ## Mapa de skills por etapa (use sem o usuário pedir)
 
@@ -42,9 +42,15 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Cor de fotos | `foto-evento-cor` |
 | SEO / thumb do episódio / demanda ClickUp | `seo-youtube-podcast` e, **logo em seguida e sempre**, `clickup-thumb-podcast` (SEO pronto = demanda criada; nunca esperar pedido) |
 
+## Um motor só (decisão do editor, 14/11/2026)
+
+O destino de todo cliente ativo é o `reel-motion` com tema próprio (`temas/<cliente>.json`): conserto no motor chega a todos.
+Bombordo e Content Hub migram **no próximo job real de cada um, um por sessão** (roteiro em `~/CIBO/todo.md`); até lá seguem na skill
+atual. Não crie skill-cópia de motor para cliente novo: tema + rubrica. Katia e Autismo Cast foram apagados (inativos; estão no histórico do git).
+
 ## Workflow
 
-1. **Identifique o cliente antes de tocar em qualquer material.** Use o que o usuário disse, o nome do podcast/marca citado no SRT, ou o nome da pasta do projeto. Se não houver sinal claro, **pergunte ao usuário** — nunca infira o cliente pela localização física de um arquivo compartilhado (ex.: a trilha da Katia vem do mesmo pool de música da Content Hub/SEBRAE, mas isso não faz o job ser da Content Hub — ver `references/client-registry.md`).
+1. **Identifique o cliente antes de tocar em qualquer material.** Use o que o usuário disse, o nome do podcast/marca citado no SRT, ou o nome da pasta do projeto. Se não houver sinal claro, **pergunte ao usuário** — nunca infira o cliente pela localização física de um arquivo compartilhado (ver `references/client-registry.md`).
 2. **Rode `scripts/detect_client.py "<pasta, marca ou trecho de SRT>"`**: imprime só a linha do cliente (skill, fonte, identidade, SFX, engine, fonte de verdade). Nunca leia o `references/client-registry.md` inteiro; abra-o só para editar a linha de um cliente.
 3. **Leia as lições e a rubrica do cliente antes de editar**: `python3 scripts/licao.py ler <cliente>` (lições do editor,
    mais novas primeiro, e o caminho da `rubrica.md`). Lição vale mais que o padrão do motor; se uma contradiz o brief, pergunte.

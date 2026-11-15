@@ -11,7 +11,6 @@ fixo=[('CLAUDE.md + memória',tk(H('~/.claude/CLAUDE.md'),*mem)),('descrições 
 F=sum(v for _,v in fixo)
 cen={'1 cliente novo (reel-motion)':['reel-motion/SKILL.md','briefing-criativo/SKILL.md','acervo/SKILL.md','fala-limpa/SKILL.md','talking-head-music/SKILL.md','lettering-motion/SKILL.md'],
      '2 Bombordo':['bombordo-boreste/SKILL.md','briefing-criativo/SKILL.md','acervo/SKILL.md','fala-limpa/SKILL.md','talking-head-music/SKILL.md'],
-     '3 Katia':['katia/SKILL.md','podcast-reels/SKILL.md','briefing-criativo/SKILL.md','fala-limpa/SKILL.md','talking-head-music/SKILL.md'],
      '4 só legenda':['caption-quality-gate/SKILL.md','legenda-cruzada/SKILL.md'],
      '5 correção pontual (reel-motion)':['reel-motion/SKILL.md']}
 out=['| Item | tokens (bytes/3,6) |','|---|---|']+[f'| {n} | {v:.1f}k |' for n,v in fixo]+[f'| **carga comum** | **{F:.1f}k** |','',

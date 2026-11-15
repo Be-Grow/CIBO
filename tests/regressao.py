@@ -23,7 +23,7 @@ HERE = Path(__file__).resolve().parent
 GOLDEN = HERE / "golden"
 SKILLS = Path(os.environ.get("CIBO_SKILLS", Path.home() / ".claude" / "skills"))
 WORK = Path(os.environ.get("CIBO_TEST_WORK", Path.home() / ".cache" / "cibo" / "regressao"))
-ENGINES = ["podcast-reels", "bombordo-boreste", "katia", "autismo-cast", "content-hub", "busca-stock", "busca-trilha", "reel-motion"]
+ENGINES = ["podcast-reels", "bombordo-boreste", "content-hub", "busca-stock", "busca-trilha", "reel-motion"]
 CHECKS = {"busca-stock", "busca-trilha", "reel-motion"}   # sem render: rodam com APIs simuladas e conferem o resultado (sem referência gravada)
 # chaves de clipe que exigem arquivos externos do cliente: fora do teste
 TIMEOUT = int(os.environ.get("CIBO_TEST_TIMEOUT", 240))   # macOS não tem `timeout`; travar vira erro

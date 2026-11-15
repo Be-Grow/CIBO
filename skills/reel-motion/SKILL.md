@@ -6,7 +6,7 @@ description: Motor PADRÃO de edição do CIBO — reels 9:16 e 16:9 de fala com
 # reel-motion — motor padrão de edição do CIBO
 
 Motor generalista configurado por tema de cliente (`temas/<cliente>.json`) + biblioteca de componentes Remotion.
-Nunca copie o motor para o projeto; nunca anime do zero o que a biblioteca já tem. Por que cada regra existe: `references/historico.md`.
+Nunca copie o motor para o projeto; fora do piloto, não anime do zero o que a biblioteca já tem. Por que cada regra existe: `references/historico.md`.
 
 ## Pedido do editor → como se faz aqui (leia antes de qualquer job; cada linha já foi cobrada 2 a 10 vezes)
 
@@ -18,12 +18,17 @@ Antes de escrever script em pasta de job, ache a linha. Se não tem linha, o scr
 | Selo, logo, cartão entrando e saindo | `fusion_kit.py entra-sai "TL" "FAIXA"` (escala→1, blur→0, opacidade) | animar em Remotion o que é um PNG parado |
 | Qualquer conversa com o Resolve | `import fusion_kit as K` (`K.resolve`, `K.abre_projeto`, `K.timeline`, `K.faixa`, `K.clipe_em`, `K.salva`); ver o que tem: `fusion_kit.py lista "TL"` | `dvr.scriptapp` à mão; `pm.SaveProject()` direto (trava no "Untitled Project") |
 | Corte de fala | `reel.py PROJ rNN cortes` e, se avisar borda em cima da voz, `bordas.py W --aplica` antes da legenda | fechar o corte no tempo do Whisper: a voz acaba depois |
-| Bruto 16:9 em reel 9:16 | `"zoom": 1.7778`; com `track` ou `crops`, cx' = 960 + (cx−960)/1,7778 (defeito aberto do motor, 1º do `~/CIBO/todo.md`) | deixar na escala 1 com barra/fundo desfocado sem o editor pedir |
+| Bruto 16:9 em reel 9:16, ou qualquer fonte de tamanho diferente da timeline | `"posicao_resolve": "auto"` no reel.json: o motor corrige a posição no Resolve e dá o zoom que enche o quadro (1,7778 no 16:9). `track` e `crops` em px reais da fonte. O `davinci` recusa sem a chave | a conta 1,7778 à mão em job novo (`"manual"` é só para job antigo que já gravou assim); escala 1 com barra sem o editor pedir |
 | Entrega e conferência | `fila_davinci.py` → projeto novo organizado → o editor confere no preview | ffmpeg na entrega; MP4 queimado; render ou still pelo Resolve para conferir |
 | Ajuste depois do primeiro pacote | na timeline pela API (`scripts/timeline/README.md`), render só da camada que muda | pacote novo, `rNN` novo, apagar timeline que o editor já mexeu |
 | Trilha e SFX | 2–3 opções com prévia de 10 s no trecho real, antes do pacote; kit e tom na rubrica do cliente | escolher e nivelar sem ouvir; o mesmo som em tudo |
 | Capa | quadro expressivo (olho aberto, nítido), um quadro diferente por corte, título fora do rosto, 1 quadro na timeline | primeiro quadro que aparecer; capas iguais no lote |
 | Arquivo refeito no pacote | nome novo + `ReplaceClip` | mesmo nome (o Media Pool devolve o antigo do cache) |
+
+**Motion sob medida no piloto (decisão do editor, 14/11/2026).** No primeiro reel de cada job o motion é feito para aquele vídeo: pode
+escrever painel/animação nova e olhar o quadro quantas vezes precisar, sem o limite de "uma folha por decisão". Aprovado o piloto, o que
+nasceu ali entra em `primitives.tsx`/`panels.tsx` como peça genérica do tema e o resto do lote sai da biblioteca. Fora do piloto vale a regra
+da biblioteca (não animar do zero o que já existe).
 
 **Fim de job:** script que você escreveu em `04_work/` é correção que o motor ainda não tem. Antes de fechar: suba ao motor o que serve
 para o próximo cliente, anote o resto em `~/CIBO/todo.md`, e rode `~/CIBO/tests/fusion_kit_teste.py` se mexeu em script do Resolve.

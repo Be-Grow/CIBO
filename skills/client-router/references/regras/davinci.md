@@ -134,6 +134,18 @@ Volta ao checklist: [`_checklist.md`](_checklist.md).
   render com o áudio da câmera no mesmo quadro (atraso ≈ 0 ms, corr > 0,9).
 - **O DaVinci ignora o modo de mesclagem do FCPXML:** burn vai com alfa (reel-motion, 14/10/2026).
 
+## Posição no Resolve: lei medida (14/11/2026, com render; `~/CIBO/tests/resolve_transform_teste.py`)
+
+- A **escala** do pacote sai certa: 1 px da fonte = 1 px da timeline (`adjust-conform none` é respeitado).
+- **Pan e Tilt andam na medida do arquivo da fonte**: deslocamento visto = Pan × largura do arquivo ÷ largura da timeline, e
+  Tilt × altura do arquivo ÷ altura da timeline. 1080p em 9:16: 1,78× em x e 0,56× em y; 720p: 1,19× e 0,38×; 4K em 16:9: 2× e 2×.
+  A API lê o Pan pedido (96) mesmo quando a imagem andou 170 px: ler de volta não prova posição, só o render prova.
+- O motor corrige com `"posicao_resolve": "auto"` no reel.json (obrigatório quando a fonte não tem o tamanho da timeline; `"manual"`
+  para job antigo que já gravou cx' = 960 + (cx−960)/1,7778 ou `track_dv.json`). As contas à mão das lições abaixo ficam só para esses.
+- Ao ajustar Pan/Tilt de um clipe pela API, use a mesma razão: Pan = px desejados × largura da timeline ÷ largura do arquivo.
+- Fonte girada (iPhone, `rotate`) segue a mesma lei com as medidas do arquivo, mas o motor não corrige: o layout dos temas foi
+  calibrado no olho em cima disso. Mexer só com piloto novo da Andrea/Priscilla.
+
 ## Lições do Bombordo EP 10 e EP 08 (01/11/2026) — valem para todo cliente no pacote DaVinci
 
 O editor achou cada uma na tela; nenhuma o checador da época pegava.

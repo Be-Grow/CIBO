@@ -209,6 +209,7 @@ def bezier(x1, y1, x2, y2):
 EASE = bezier(0.33, 0, 0.67, 1)
 # modo crop (fonte com recorte fixo ou que segue o rastreio do rosto, "track"): sem job.json do face track
 CROP = not (W / 'job.json').exists()
+POSX, POSY = 1.0, 1.0
 if CROP:
     _src = Path(C['src']) if os.path.isabs(C['src']) else P / '01_sources' / C['src']
     def _sony(f):   # XAVC da Sony em 29,97 grava timecode drop-frame e o ffprobe mostra ':' (YT 01 da Priscilla, 11/11/2026:
@@ -223,6 +224,19 @@ if CROP:
     # demais, 19/10/2026); na horizontal com clipe girado, VH/100 * RH/RW (medido no r01h)
     PU = VH / 100 * (RH / RW if C.get('rotate') in ('clock', 'cclock') and VW > VH else 1)
     TRK = json.load(open(P / '04_work' / C['track'])) if C.get('track') else None
+    # Posição no Resolve (medido com render em 14/11/2026, ~/CIBO/tests/resolve_transform_teste.py): a escala do pacote sai certa
+    # (1 px da fonte = 1 px da timeline), mas Pan/Tilt andam na medida da FONTE: deslocamento visto = Pan × largura do arquivo /
+    # largura da timeline (1080p em 9:16: 1,78×; 720p: 1,19×; 4K em 16:9: 2×) e Tilt × altura do arquivo / altura da timeline.
+    # Cobrado 6× (19/10 a 12/11) e contornado à mão em cada job (cx' = 960 + (cx−960)/1,7778). "posicao_resolve": "auto" corrige
+    # aqui; "manual" = job antigo que já gravou track/crops corrigidos à mão. Fonte girada fica como estava (layout calibrado).
+    POSX, POSY = 1.0, 1.0
+    if not C.get('rotate') and (_iw, _ih) != (VW, VH) and not GROSSO:
+        if C.get('posicao_resolve') not in ('auto', 'manual'):
+            sys.exit(f'PAREI: fonte {_iw}x{_ih} em timeline {VW}x{VH} e o reel.json não diz "posicao_resolve". Job novo: "auto" '
+                     '(o motor corrige a posição no Resolve; grave track/crops em px reais da fonte, sem a conta 1,7778). '
+                     'Job antigo que já gravou cx corrigido à mão ou track_dv.json: "manual".')
+        if C['posicao_resolve'] == 'auto':
+            POSX, POSY = VW / _iw, VH / _ih
     CRP = sorted(C.get('crops', [{'at': 0, 'cx': RW / 2}]), key=lambda c: c['at'])
 else:
     JOB = json.load(open(W / 'job.json'))
@@ -289,8 +303,13 @@ def transf(k, t):
         # fonte horizontal em reel vertical com crops fixos: o Resolve mostrava o quadro com 1080 px de altura e faixa de fundo
         # desfocado embaixo, diferente do camera.mov do Remotion (Andreia, cortesMesaRadionica 06/11/2026). Zoom padrão = RW/RH
         # (1,7778 no 16:9, o mesmo da lição do Bombordo). Com rastreio (TRK) continua 1: a posição sai 1,78× (corrigir antes).
-        zdef = RW / RH if (not HZ and RW > RH and not TRK) else 1
-        cx = min(max(cx, w / 2), RW - w / 2); sc0 = VW / w * C.get('zoom', zdef)
+        AUTO = POSX != 1.0 or POSY != 1.0 or C.get('posicao_resolve') == 'auto'
+        zdef = RW / RH if (not HZ and RW > RH and (AUTO or not TRK)) else 1
+        sc0 = VW / w * C.get('zoom', zdef)
+        if AUTO:                                                      # o rosto pode ir até onde a imagem ainda cobre o quadro
+            meio = VW / (2 * sc0); cx = min(max(cx, meio), RW - meio) if RW * sc0 >= VW else RW / 2
+        else:
+            cx = min(max(cx, w / 2), RW - w / 2)
         # "zoom"/"zoom_cy" no reel.json: recorte fixo feito no Resolve (aula do João 21/10/2026: 1,2245x em y 549 tira os logos
         # do palco, sem rastreio e sem mezanino renderizado)
         # zoom in/out (camera_moves do reel.json, Easy Ease em espaço log) centrado no rosto: o ponto do rosto fica parado
@@ -316,7 +335,7 @@ def transf(k, t):
             else:
                 shift = LAY['camShift']
             dy += -LAY['camUp'] * sp if spI > 0.001 else shift * sp
-        return dx / PU, -dy / PU, sc
+        return dx / PU * POSX, -dy / PU * POSY, sc
     fm = JOB['framings'][min(k, len(JOB['framings']) - 1)]
     if isinstance(fm, dict):                                    # enquadramento que acompanha o rosto: kx/ky = [[s no take, px]]
         u = t - TK0[k]; w, h = fm['w'], fm['h']
@@ -504,7 +523,7 @@ if FX:                                                        # movimentos.json:
         ON.update(z=z, s=s_); t = float(n * FD)
         k = next(i for i, tk in enumerate(takes) if tk[0] <= n < tk[1] or i == len(takes) - 1)
         x, y, sc = transf(k, t); ON.update(z=None, s=None)
-        return x * U, -y * U, sc
+        return x * U / POSX, -y * U / POSY, sc                  # Fusion quer px da timeline: desfaz a correção do Pan/Tilt
     MV = []
     for i, m in enumerate(JOB.get('camera_moves') or []):
         t0, t1 = float(m['t']), float(m['until'])

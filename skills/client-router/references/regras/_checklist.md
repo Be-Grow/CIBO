@@ -20,7 +20,7 @@ Leia só este arquivo no começo do job; abra a fase atual quando chegar nela. D
 - Pergunte o que o editor quis dizer antes de investigar.
 **DaVinci** — [davinci.md](davinci.md)
 - **Vai pro Resolve pela API (`fila_davinci.py`) sem perguntar; prévia e aprovação do piloto também no Resolve, nunca prévia longa no Remotion.** Abra `davinci.md` inteiro antes do pacote: as lições da Andreia valem para todo cliente (João 21/10/2026: "eu preciso ficar te ensinando novamente").
-- Pacote DaVinci é o padrão (exceções temporárias em MP4, sem adaptador job.json→pacote: Content Hub, podcast-reels genérico; Katia e Autismo inativos); projeto NOVO para validar.
+- Pacote DaVinci é o padrão (exceções temporárias em MP4, sem adaptador job.json→pacote: Content Hub, podcast-reels genérico); projeto NOVO para validar.
 - XML do FCP7, render pela API, AAC 64 kb/s, `SetLUT` só da pasta do sistema, arquivo trocado no mesmo caminho fica em cache;
   render no Deliver H.264 limitado a 25.000 kb/s.
 - Lições da Andrea: FPS da fonte, nome único por pacote, nunca encadear ciclos de .drt, bins e cores.

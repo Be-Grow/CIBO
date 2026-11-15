@@ -48,9 +48,11 @@ Pendências de 12/10/2026 (detalhes em `skills/client-router/references/fontes-e
 Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Feito no dia: `fusion_kit.py`, `bordas.py`, trava do
 "Untitled Project" no `resolve_render.py`, `so_capa` só com `capa`, recusa de `camera_moves` sem `camera_fusion`, teste `tests/fusion_kit_teste.py`.
 
-- [ ] **davinci.py `transf()`: fonte que não é 1 px = 1 px da timeline** (cobrado 6×: 19/10, 30/10, 01/11, 06/11, 09/11, 12/11). O Resolve encaixa a
-      fonte pela largura; Zoom = (VH/RH)/(VW/RW) e posição dividida pelo mesmo excesso, com `track`, com `crops` e em 720p (`joao/blueTreeCortes`:
-      zoom 1,18519 + `track_dv.json`). Hoje é contorno à mão em cada job. Validar com clipe de teste no Resolve, no molde de `tests/fusion_kit_teste.py`.
+- [x] **Posição no Resolve** (cobrado 6×): lei medida com render e corrigida no `davinci.py` (`"posicao_resolve": "auto"`), 14/11/2026.
+      Falta: fonte girada (layout calibrado em cima do erro; só com piloto novo) e o caminho `job.json` da Priscilla 4K.
+- [ ] **Migrar Bombordo e Content Hub para o `reel-motion`** (decisão do editor 14/11/2026): no próximo job real de cada um, um por sessão.
+      Tema `temas/<cliente>.json` + rubrica; levar como opção do motor o que é só deles (Bombordo: legenda cinética, chamada, `impact_pulses`;
+      Content Hub: letterings, B-roll). Depois do job aprovado, apagar a skill-cópia. Substitui a pendência de 12/10 "motor único = podcast-reels".
 - [ ] **`bordas.py` como trava** (corte em cima da voz, cobrado 10×): hoje é aviso no `reel.py cortes`. Depois de 2 jobs medindo falso alarme,
       virar pendência do selo `cortes`. Levar o mesmo conferidor aos motores de podcast (`podcast-reels`, `bombordo-boreste`).
 - [ ] **Trocar `dvr.scriptapp` por `fusion_kit` nos scripts do motor** (`resolve_*.py`, `scripts/timeline/*.py`, `qa_resolve.py`): uma conexão, uma trava de
