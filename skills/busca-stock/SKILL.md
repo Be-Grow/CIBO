@@ -56,6 +56,6 @@ PY=~/.claude/skills/busca-stock/.venv/bin/python; BS=~/.claude/skills/busca-stoc
 - A API do Pixabay tem relevância fraca em query longa (traz trem, folhas, campo): por isso a folha + nota, nunca o
   primeiro resultado.
 - A página do Pexels lista vídeos relacionados: o snippet filtra pelo id; a duração é conferida no ffprobe da prévia.
-- Teste: `~/CIBO/tests/regressao.py check --engine busca-stock` (respostas simuladas com `CIBO_BUSCA_MOCK`, acervo
+- Teste: `/Volumes/SSD/CIBO/repo/tests/regressao.py check --engine busca-stock` (respostas simuladas com `CIBO_BUSCA_MOCK`, acervo
   isolado com `CIBO_ACERVO_CONF`).
 - `scripts/rede.py` é compartilhado com a `busca-trilha`.

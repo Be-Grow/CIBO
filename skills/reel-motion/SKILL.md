@@ -31,7 +31,7 @@ nasceu ali entra em `primitives.tsx`/`panels.tsx` como peça genérica do tema e
 da biblioteca (não animar do zero o que já existe).
 
 **Fim de job:** script que você escreveu em `04_work/` é correção que o motor ainda não tem. Antes de fechar: suba ao motor o que serve
-para o próximo cliente, anote o resto em `~/CIBO/todo.md`, e rode `~/CIBO/tests/fusion_kit_teste.py` se mexeu em script do Resolve.
+para o próximo cliente, anote o resto em `/Volumes/SSD/CIBO/repo/todo.md`, e rode `/Volumes/SSD/CIBO/repo/tests/fusion_kit_teste.py` se mexeu em script do Resolve.
 (Em 14/11/2026 havia 170 scripts em pastas de job, 57 refazendo a conexão com o Resolve, e a biblioteca de Fusion da Andrea só existia lá.)
 
 ## Contrato do agente (10/11/2026) — o que o motor cobra sozinho
@@ -50,7 +50,7 @@ A etapa seguinte recusa selo que falta ou ficou velho. **"Pronto" é o que `reel
 - `motion.json` substitui o `props.py` à mão: sem coordenada de etiqueta (`"onde": "topo"|"base"`, a linha quebra sozinha), sem lista de burns, sem
   tela dividida escrita (sai dos painéis), vídeo sem legenda com `"legenda": false`. `props.py` antigo continua funcionando.
 - O motor escolhe o próprio Python (venv com numpy/PIL) e cada processo tem o seu bundle: pode rodar `verifica` de outro reel durante um render.
-- Mudou o motor? `~/CIBO/tests/regressao.py check --engine reel-motion` (22 s, sem câmera) antes do push.
+- Mudou o motor? `/Volumes/SSD/CIBO/repo/tests/regressao.py check --engine reel-motion` (22 s, sem câmera) antes do push.
 
 ## Padrão de edição do CIBO (10 etapas)
 

@@ -1,156 +1,176 @@
 {
-  "cliente": "Andrea Francomano — espiritualidade aplicada (radiestesia, radiônica, apometria), lançamento Black das Blacks",
-  "origem": "paleta escolhida pelo editor no briefing (19/10/2026): creme + violeta-escuro + dourado/âmbar; títulos em serifa (Cormorant Garamond, destaque itálico dourado), legenda Montserrat (padrão do cliente); 19/10/2026 editor: identidade é roxo + dourado → painel roxo profundo, texto creme, destaque dourado",
-  "theme": {
-    "colors": {
-      "paper": "#2A1642",
-      "paper2": "#36205A",
-      "ink": "#F7F0E6",
-      "ink2": "#CDBBE4",
-      "terra": "#E2B55A",
-      "terraDark": "#6A3EA6",
-      "peach": "#F1C76E",
-      "white": "#43286B",
-      "video": "#FFFDF8",
-      "onAccent": "#2A1642",
-      "pill": "#4E3180",
-      "bg": "#140A22",
-      "gold": "#E2B55A",
-      "shadow": "8,3,18",
-      "scrim": "20,10,34"
-    },
-    "fonts": [
-      {
-        "family": "CormA",
-        "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/CormorantGaramond-VF.ttf",
-        "weight": "300 700",
-        "style": "normal"
-      },
-      {
-        "family": "CormA",
-        "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/CormorantGaramond-Italic-VF.ttf",
-        "weight": "300 700",
-        "style": "italic"
-      },
-      {
-        "family": "MontA",
-        "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/Montserrat-VF.ttf",
-        "weight": "100 900"
-      }
-    ],
-    "title": {
-      "family": "CormA",
-      "weight": 600,
-      "upper": false,
-      "ls": "-0.015em",
-      "scale": 1.08,
-      "lh": 1.1
-    },
-    "caption": {
-      "family": "MontA",
-      "weight": 600,
-      "upper": false,
-      "ls": 0,
-      "scale": 0.86,
-      "hlAccent": false
-    },
-    "label": {
-      "family": "MontA",
-      "weight": 600
-    },
-    "accent": {
-      "italic": true,
-      "weight": 600
-    },
-    "mediaFilter": "saturate(0.9) contrast(1.03) brightness(0.98)",
-    "burnFilter": "sepia(0.6) saturate(1.8) hue-rotate(-10deg) brightness(1.05)",
-    "burnOpacity": 0.82,
-    "grain": 0.05,
-    "layout": {
-      "splitH": 940,
-      "camShift": 560,
-      "capSplitY": 0,
-      "capFullY": 1380,
-      "capMaxW": 900
-    },
-    "layoutH": {
-      "panelW": 1280,
-      "capSplitY": 992,
-      "capFullY": 960,
-      "capSize": 54,
-      "hookScale": 0.82
-    },
-    "motion": {
-      "perfil": "editorial",
-      "peso": [
-        400,
-        750
-      ]
-    }
+ "cliente": "Andrea Francomano — espiritualidade aplicada (radiestesia, radiônica, apometria), lançamento Black das Blacks",
+ "origem": "paleta escolhida pelo editor no briefing (19/10/2026): creme + violeta-escuro + dourado/âmbar; títulos em serifa (Cormorant Garamond, destaque itálico dourado), legenda Montserrat (padrão do cliente); 19/10/2026 editor: identidade é roxo + dourado → painel roxo profundo, texto creme, destaque dourado",
+ "theme": {
+  "colors": {
+   "paper": "#2A1642",
+   "paper2": "#36205A",
+   "ink": "#F7F0E6",
+   "ink2": "#CDBBE4",
+   "terra": "#E2B55A",
+   "terraDark": "#6A3EA6",
+   "peach": "#F1C76E",
+   "white": "#43286B",
+   "video": "#FFFDF8",
+   "onAccent": "#2A1642",
+   "pill": "#4E3180",
+   "bg": "#140A22",
+   "gold": "#E2B55A",
+   "shadow": "8,3,18",
+   "scrim": "20,10,34"
   },
-  "pares_extra": [
-    [
-      "gold",
-      "bg",
-      4.5,
-      "dourado sobre o fundo escuro"
-    ],
-    [
-      "terra",
-      "white",
-      3.0,
-      "dourado sobre card roxo"
-    ],
-    [
-      "ink",
-      "pill",
-      4.5,
-      "texto na pílula"
-    ]
+  "fonts": [
+   {
+    "family": "CormA",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/CormorantGaramond-VF.ttf",
+    "weight": "300 700",
+    "style": "normal"
+   },
+   {
+    "family": "CormA",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/CormorantGaramond-Italic-VF.ttf",
+    "weight": "300 700",
+    "style": "italic"
+   },
+   {
+    "family": "MontA",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/andreia/Montserrat-VF.ttf",
+    "weight": "100 900"
+   }
   ],
-  "capa": {
-    "layout": "serif",
-    "footer": "ANDREIA FRANCOMANO"
+  "title": {
+   "family": "CormA",
+   "weight": 600,
+   "upper": false,
+   "ls": "-0.015em",
+   "scale": 1.08,
+   "lh": 1.1
   },
-  "regras": [
-    "toda versão existe em 9:16 (reel) e 16:9 (ReelH, lado a lado: painel à esquerda, ela à direita)",
-    "fonte gravada deitada: rotate cclock; HEVC do iPhone em full range (full_range: true)",
-    "CTA final: Black das Blacks, lista VIP (grafia aprovada pelo editor)",
-    "referências em tela: banco livre (Pexels/Pixabay) validado pelo sentido da fala",
-    "16:9 em terços: painel nos 2/3 da esquerda (panelW 1280), ela centralizada no terço da direita pelo CORPO (editor, 19/10/2026); legenda da tela dividida no rodapé do painel"
+  "caption": {
+   "family": "MontA",
+   "weight": 600,
+   "upper": false,
+   "ls": 0,
+   "scale": 0.86,
+   "hlAccent": false
+  },
+  "label": {
+   "family": "MontA",
+   "weight": 600
+  },
+  "accent": {
+   "italic": true,
+   "weight": 600
+  },
+  "mediaFilter": "saturate(0.9) contrast(1.03) brightness(0.98)",
+  "burnFilter": "sepia(0.6) saturate(1.8) hue-rotate(-10deg) brightness(1.05)",
+  "burnOpacity": 0.82,
+  "grain": 0.05,
+  "layout": {
+   "splitH": 940,
+   "camShift": 560,
+   "capSplitY": 0,
+   "capFullY": 1380,
+   "capMaxW": 900
+  },
+  "layoutH": {
+   "panelW": 1280,
+   "capSplitY": 992,
+   "capFullY": 960,
+   "capSize": 54,
+   "hookScale": 0.82
+  },
+  "motion": {
+   "perfil": "editorial",
+   "peso": [
+    400,
+    750
+   ]
+  }
+ },
+ "pares_extra": [
+  [
+   "gold",
+   "bg",
+   4.5,
+   "dourado sobre o fundo escuro"
   ],
-  "sfx": {
-    "proibidos": ["bell-meditation", "chime", "chime-sound", "clear-bell-chime", "ethereal-riser", "glitter-tinkle", "harp-glissando-chimes", "harp-glissando-down", "magic-sparkle", "magic-spell", "magic-teleport-whoosh", "shimmer-glass", "singing-bowl-hit-agudo-36st", "sparkle", "twinkle-sparkle", "wind-magic"],
-    "nota_proibidos": "sino/campainha reprovado pelo editor (06/11) e sons 'alegres demais para o tema espiritual pesado' reprovados pela cliente (06/11/2026): só tigelas graves (singing-bowl-hit, singing-bowl-struck, tibetan-singing-bowl), 2–3 palavras-chave por vídeo.",
-    "kit": "/Volumes/SSD/CIBO Acervo/sfx/andreia/wav/",
-    "modo": "so_trocas",
-    "trocas": [
-      "tibetan-singing-bowl"
-    ],
-    "lufs_abaixo_voz": 16,
-    "abertura": true,
-    "nota": "final aprovado 20/10/2026: tigela grave só nas trocas de painel; a aguda (singing-bowl-hit-agudo-36st) soou 'feliz demais'; nada em frase/legenda"
-  },
-  "qualidade": {
-    "limiar": 6,
-    "alvo_eventos_10s": [
-      1.5,
-      4.5
-    ],
-    "max_parado": 7,
-    "enfase": [
-      0.1,
-      0.35
-    ]
-  },
-  "variacao": {
-    "sfx": 0,
-    "burn": 2,
-    "movimento": 3,
-    "painel": 3
-  },
-  "movimento": {
-    "preset": "editorial"
-  },
-  "saida": {"tipo": "fade", "dur": 0.9}
+  [
+   "terra",
+   "white",
+   3.0,
+   "dourado sobre card roxo"
+  ],
+  [
+   "ink",
+   "pill",
+   4.5,
+   "texto na pílula"
+  ]
+ ],
+ "capa": {
+  "layout": "serif",
+  "footer": "ANDREIA FRANCOMANO"
+ },
+ "regras": [
+  "toda versão existe em 9:16 (reel) e 16:9 (ReelH, lado a lado: painel à esquerda, ela à direita)",
+  "fonte gravada deitada: rotate cclock; HEVC do iPhone em full range (full_range: true)",
+  "CTA final: Black das Blacks, lista VIP (grafia aprovada pelo editor)",
+  "referências em tela: banco livre (Pexels/Pixabay) validado pelo sentido da fala",
+  "16:9 em terços: painel nos 2/3 da esquerda (panelW 1280), ela centralizada no terço da direita pelo CORPO (editor, 19/10/2026); legenda da tela dividida no rodapé do painel"
+ ],
+ "sfx": {
+  "kit": "/Volumes/SSD/CIBO Acervo/sfx/andreia/wav/",
+  "modo": "so_trocas",
+  "trocas": [
+   "tibetan-singing-bowl"
+  ],
+  "lufs_abaixo_voz": 16,
+  "abertura": true,
+  "nota": "final aprovado 20/10/2026: tigela grave só nas trocas de painel; a aguda (singing-bowl-hit-agudo-36st) soou 'feliz demais'; nada em frase/legenda",
+  "proibidos": [
+   "bell-meditation",
+   "chime",
+   "chime-sound",
+   "clear-bell-chime",
+   "ethereal-riser",
+   "glitter-tinkle",
+   "harp-glissando-chimes",
+   "harp-glissando-down",
+   "magic-sparkle",
+   "magic-spell",
+   "magic-teleport-whoosh",
+   "shimmer-glass",
+   "singing-bowl-hit-agudo-36st",
+   "sparkle",
+   "twinkle-sparkle",
+   "wind-magic"
+  ],
+  "nota_proibidos": "sino/campainha reprovado pelo editor (06/11) e sons 'alegres demais para o tema espiritual pesado' reprovados pela cliente (06/11/2026): só tigelas graves (singing-bowl-hit, singing-bowl-struck, tibetan-singing-bowl), 2–3 palavras-chave por vídeo."
+ },
+ "qualidade": {
+  "limiar": 6,
+  "alvo_eventos_10s": [
+   1.5,
+   4.5
+  ],
+  "max_parado": 7,
+  "enfase": [
+   0.1,
+   0.35
+  ]
+ },
+ "variacao": {
+  "sfx": 0,
+  "burn": 2,
+  "movimento": 3,
+  "painel": 3
+ },
+ "movimento": {
+  "preset": "editorial"
+ },
+ "saida": {
+  "tipo": "fade",
+  "dur": 0.9
+ }
 }

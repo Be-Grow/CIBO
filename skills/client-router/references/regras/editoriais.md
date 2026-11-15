@@ -51,7 +51,7 @@
   bloquear o vídeo por Content ID no YouTube: avise se o destino incluir YouTube.
 - **Loudness por ganho fixo medido**, nunca `loudnorm` dinâmico no mix ou na voz: ele
   levanta a trilha nas pausas até ficar mais alta que a voz. (Dr. Energia)
-- **Clique (SFX de ênfase): sempre os dois sons do usuário**, `/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav` e `~/CIBO/skills/fernanda-produto/assets/camera_click.mp3`, alternados. Nunca o clique sintetizado ("click ridículo", 12/10/2026). Já é o padrão do `clicks.py` da podcast-reels.
+- **Clique (SFX de ênfase): sempre os dois sons do usuário**, `/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav` e `/Volumes/SSD/CIBO/repo/skills/fernanda-produto/assets/camera_click.mp3`, alternados. Nunca o clique sintetizado ("click ridículo", 12/10/2026). Já é o padrão do `clicks.py` da podcast-reels.
 - **SFX só onde há mudança visual real** (entrada, saída e troca de referência), nunca no
   burn de abertura ou fechamento. Música e SFX em faixas separadas no arquivo editável.
   (Fernanda)

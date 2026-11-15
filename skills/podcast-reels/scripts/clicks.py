@@ -33,7 +33,7 @@ def _acervo(i,fallback):
     except Exception: pass
     return fallback
 DEFAULT_CLICKS=(_acervo('sfx-click-lens','/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav')+'|'+
-                _acervo('sfx-camera-click','/Users/bruno/CIBO/skills/fernanda-produto/assets/camera_click.mp3'))
+                _acervo('sfx-camera-click','/Volumes/SSD/CIBO/repo/skills/fernanda-produto/assets/camera_click.mp3'))
 def _load(fp):
     raw=subprocess.run(f'ffmpeg -v error -i "{fp}" -f s16le -ar {SR} -ac 1 -',
                        shell=True,capture_output=True).stdout

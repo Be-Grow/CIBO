@@ -2,7 +2,7 @@
 """Teste de fumaça do Resolve + Fusion pela API (reel-motion/scripts/fusion_kit.py), ~30 s, com o Resolve aberto.
 Cria "CIBO testes/TESTE fusion_kit", monta 2 clipes (um aparado), aplica zoom com motion blur nos dois, entrada/saída num
 terceiro, confere as curvas lidas de volta e o comp gravado, apaga o projeto e devolve o que estava aberto.
-Rode depois de mexer em qualquer script que fala com o Resolve:  python3 ~/CIBO/tests/fusion_kit_teste.py"""
+Rode depois de mexer em qualquer script que fala com o Resolve:  python3 /Volumes/SSD/CIBO/repo/tests/fusion_kit_teste.py"""
 import subprocess, sys
 from pathlib import Path
 sys.path.insert(0, str(Path.home() / '.claude/skills/reel-motion/scripts'))

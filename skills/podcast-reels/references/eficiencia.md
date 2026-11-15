@@ -14,4 +14,4 @@ Movido do SKILL.md em 20/10/2026 (carregar sob demanda). Conteúdo preservado se
   melhores. Calibrado com as capas do João: as 6 aprovadas acima das 3 reprovadas.
 - Som: `audio_qa.py` (clique sobre fala ou alto, trilha sumindo ou alta, emenda cortando
   palavra, última palavra engolida), uma linha por corte.
-- Antes de subir mudança de motor para o CIBO: `python3 ~/CIBO/tests/regressao.py check`.
+- Antes de subir mudança de motor para o CIBO: `python3 /Volumes/SSD/CIBO/repo/tests/regressao.py check`.

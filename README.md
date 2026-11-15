@@ -12,6 +12,13 @@ O nome vem de *BLAME!* (Tsutomu Nihei): Cibo é uma inteligência que sobrevive 
 3. Rode `python3 ~/.claude/skills/video-render-optimizer/scripts/hw_profile.py env` (perfil de
    hardware: encoder escolhido por benchmark). O teste do encoder roda sozinho a cada 10 renders.
 
+## Onde a CIBO mora (14/11/2026)
+
+Tudo no SSD, numa cópia só: repositório em `/Volumes/SSD/CIBO/repo`, apoio (MFA, miniforge, node_modules, tmp) em `/Volumes/SSD/CIBO/`,
+assets em `/Volumes/SSD/CIBO Acervo`. O Claude Code só procura skills pessoais em `~/.claude/skills`, então cada entrada lá é um ponteiro
+para `repo/skills/<nome>` (forma prevista na documentação). Máquina nova: clone o repo no SSD e rode
+`for s in /Volumes/SSD/CIBO/repo/skills/*/; do ln -s "$s" ~/.claude/skills/$(basename "$s"); done`.
+
 ## Dependências pesadas no SSD
 
 O MFA (alinhamento forçado de palavras, `fala-limpa/scripts/alinha_mfa.py`) mora em

@@ -103,7 +103,7 @@ A API funciona
   camadas + XML validados num projeto novo, render final com o editor (`reel-motion/scripts/fila_davinci.py` nos clientes do
   reel-motion; fluxo DaVinci do Bombordo). **Exceções temporárias, padrão atual MP4:** Katia, Autismo Cast, Content Hub e
   `podcast-reels` genérico, pelo caminho `podcast-reels/references/render-ffmpeg-legado.md`, até existir o adaptador
-  `job.json` → pacote (`~/CIBO/todo.md`; piloto Content Hub; Katia e Autismo Cast estão inativos e ficam fora). Fora delas, ffmpeg só para análise e prévia; MP4 queimado só se o editor pedir.
+  `job.json` → pacote (`/Volumes/SSD/CIBO/repo/todo.md`; piloto Content Hub; Katia e Autismo Cast estão inativos e ficam fora). Fora delas, ffmpeg só para análise e prévia; MP4 queimado só se o editor pedir.
   Premiere Pro só se pedirem. Texto anterior da regra:
   > - **Pacote DaVinci é a entrega padrão** (substitui a regra de 12/10 "só gerar se pedirem"): camadas + XML
   >   validados num projeto novo, render final com o editor; ver "DaVinci Resolve pela API". Premiere Pro só
@@ -134,7 +134,7 @@ Volta ao checklist: [`_checklist.md`](_checklist.md).
   render com o áudio da câmera no mesmo quadro (atraso ≈ 0 ms, corr > 0,9).
 - **O DaVinci ignora o modo de mesclagem do FCPXML:** burn vai com alfa (reel-motion, 14/10/2026).
 
-## Posição no Resolve: lei medida (14/11/2026, com render; `~/CIBO/tests/resolve_transform_teste.py`)
+## Posição no Resolve: lei medida (14/11/2026, com render; `/Volumes/SSD/CIBO/repo/tests/resolve_transform_teste.py`)
 
 - A **escala** do pacote sai certa: 1 px da fonte = 1 px da timeline (`adjust-conform none` é respeitado).
 - **Pan e Tilt andam na medida do arquivo da fonte**: deslocamento visto = Pan × largura do arquivo ÷ largura da timeline, e

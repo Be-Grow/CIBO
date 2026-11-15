@@ -7,7 +7,7 @@ Movido do SKILL.md em 20/10/2026 (carregar sob demanda). Conteúdo preservado se
 Recuperado do `resolve_logo.py` da Andrea (21/10/2026), que só existia na pasta do job. Dois caminhos, os dois valem:
 - **Clipe de ajuste por movimento** (`camera_fusion` + `resolve_fx.py`, abaixo): o do pacote; precisa do .drt porque a API não cria clipe de ajuste.
 - **Comp no próprio clipe** (`fusion_kit.py`): para ajuste na timeline, selo, logo, cartão. Sem .drt.
-Medido no teste (`~/CIBO/tests/fusion_kit_teste.py`):
+Medido no teste (`/Volumes/SSD/CIBO/repo/tests/fusion_kit_teste.py`):
 - `AddFusionComp` sozinho não persiste nem renderiza: exportar e reimportar o comp (`K.fixa`).
 - O quadro 0 do comp é o primeiro quadro do clipe na timeline, mesmo com a fonte aparada.
 - `GlobalIn` do MediaIn1 = −(aparo da fonte): 0 no clipe inteiro, −60 no que entra no quadro 60. Só é defeito em clipe de ajuste

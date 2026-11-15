@@ -45,7 +45,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 ## Um motor só (decisão do editor, 14/11/2026)
 
 O destino de todo cliente ativo é o `reel-motion` com tema próprio (`temas/<cliente>.json`): conserto no motor chega a todos.
-Bombordo e Content Hub migram **no próximo job real de cada um, um por sessão** (roteiro em `~/CIBO/todo.md`); até lá seguem na skill
+Bombordo e Content Hub migram **no próximo job real de cada um, um por sessão** (roteiro em `/Volumes/SSD/CIBO/repo/todo.md`); até lá seguem na skill
 atual. Não crie skill-cópia de motor para cliente novo: tema + rubrica. Katia e Autismo Cast foram apagados (inativos; estão no histórico do git).
 
 ## Workflow
@@ -58,13 +58,14 @@ atual. Não crie skill-cópia de motor para cliente novo: tema + rubrica. Katia 
 5. **Delegue todo o trabalho à skill do cliente identificado.** Não copie fonte, logo, filmburn, SFX, `client-content-bible.md` ou convenção de capa de um cliente para o job de outro, mesmo que os arquivos estejam acessíveis no mesmo volume ou pasta compartilhada.
 6. **Se o material não pertencer a nenhum cliente com skill própria:** use o motor padrão `reel-motion` (fluxo da Andreia, editor 20/10/2026: "gostaria que fosse o padrão de edição da CIBO") com um tema novo `temas/<cliente>.json` montado no briefing; `podcast-reels` só se o editor pedir aquele estilo (Cal Sans, clique, burn azul). Cliente recorrente ganha skill própria (passo 6) que usa o motor por baixo. Nunca force os assets/identidade de um cliente existente num material que não é dele.
 7. **Ao nascer um cliente novo**, crie a skill seguindo a estrutura das demais (`SKILL.md`, `scripts/`, `references/client-content-bible.md`, `references/asset-source-catalog.md`, `assets/` com fonte/logo/SFX próprios) e adicione uma linha em `references/client-registry.md`. Use `video-project-structure` para auditar a organização de pastas do projeto desse cliente.
-8. **Correção do editor só está feita depois do commit e push no `~/CIBO`** (20/10/2026: "eu pedi pra gravar lá, como não
-   gravou"). Editar só `~/.claude/skills` não basta: copie para `~/CIBO/skills`, confira o diff, commit e push no mesmo turno,
-   sem levar arquivos em teste de outra sessão.
+8. **A CIBO mora no SSD, numa cópia só (editor, 14/11/2026: "a cibo deve ficar no meu ssd").** O repositório é `/Volumes/SSD/CIBO/repo`
+   e cada skill em `~/.claude/skills/<nome>` é só o ponteiro que o Claude Code exige para a pasta `repo/skills/<nome>`. Editou a skill = editou
+   o repositório: não existe mais cópia para sincronizar. **Correção do editor só está feita depois do commit e push** no mesmo turno
+   (20/10/2026: "eu pedi pra gravar lá, como não gravou"), sem levar arquivos em teste de outra sessão. Nada da CIBO no disco interno.
 9. **Regras transversais (valem para todo cliente): leia só `references/regras/_checklist.md`** e abra o arquivo da fase
    atual (`regras/antes|durante|davinci|editoriais|entrega|pos-correcao.md`) quando chegar nela. Em resumo: procure a skill e o asset antes de fazer; `fala-limpa` em todo corte de fala; legenda fiel à fala e abaixo do queixo; um crop por plano de câmera; todo corte com trilha; nomes `NN - HEADLINE` e `CAPA - …`; uma versão por vídeo; transcrição sempre com tempo; não dizer que está bom sem olhar; abrir a pasta no fim; correção do usuário vira atualização da skill (e do CIBO) no mesmo turno.
 10. **Antes de entregar**, confirme que nome de pasta, capa, fonte, música e legendas não vazaram identidade de outro cliente — isso vale mesmo dentro de um único job com múltiplos convidados ou formatos.
 11. **Depois de cada entrega, faça UMA pergunta: "O que você mudaria?"** Só essa, sem lista de opções, uma vez por entrega.
     Grave a resposta com `python3 scripts/licao.py add <cliente> "<resposta>" --projeto <pasta> [--reel rNN]` e leve ao
-    `~/CIBO` no mesmo turno. "Nada" também é resposta (grave). Se a resposta for correção de skill, ela também vai para o
+    `/Volumes/SSD/CIBO/repo` no mesmo turno. "Nada" também é resposta (grave). Se a resposta for correção de skill, ela também vai para o
     `feedback.py add` e para a skill. Lição repetida em dois jobs sobe para a `rubrica.md` do cliente.

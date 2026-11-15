@@ -3,7 +3,7 @@
 - **Toda correção do editor vai para o registro** (`client-router/scripts/feedback.py add
   --cliente --categoria --texto --acao`), além de virar atualização de skill. `feedback.py
   resumo` mostra onde o CIBO mais erra.
-- **Mudança em motor de corte só sobe para o CIBO com `~/CIBO/tests/regressao.py check`
+- **Mudança em motor de corte só sobe para o CIBO com `/Volumes/SSD/CIBO/repo/tests/regressao.py check`
   passando.** Diferença intencional: grave de novo com `record` e explique no commit.
 
 - **Economia de tokens** (fluxo longo de várias edições precisa ser sustentável, 12/10/2026):

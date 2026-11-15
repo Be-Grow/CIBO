@@ -1,4 +1,4 @@
-"""Conta única da posição no Resolve (medida em 14/11/2026, ~/CIBO/tests/resolve_transform_teste.py --corr):
+"""Conta única da posição no Resolve (medida em 14/11/2026, /Volumes/SSD/CIBO/repo/tests/resolve_transform_teste.py --corr):
 Pan/Tilt do clipe andam na medida do ARQUIVO da fonte, não da timeline. O davinci.py aplica a mesma razão (POSX, POSY)."""
 
 

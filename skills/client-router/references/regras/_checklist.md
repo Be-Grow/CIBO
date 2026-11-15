@@ -42,7 +42,7 @@ Leia só este arquivo no começo do job; abra a fase atual quando chegar nela. D
 **Depois de uma correção** — [pos-correcao.md](pos-correcao.md)
 - A lição vai para a skill no mesmo turno; causa no motor = conserte o motor; código compartilhado entra como opção por chave e o outro cliente sai idêntico.
 - Suba para o CIBO (commit e push) no mesmo turno.
-- **Script escrito em pasta de job é correção que o motor não recebeu** (14/11/2026: a mesma trava do Resolve foi consertada em um script em 20/10 e voltou em outro em 14/11). Antes de fechar o job: o que serve ao próximo cliente vai para `scripts/` do motor; o resto, para `~/CIBO/todo.md`. Material já colhido: `~/CIBO/colheita/`.
+- **Script escrito em pasta de job é correção que o motor não recebeu** (14/11/2026: a mesma trava do Resolve foi consertada em um script em 20/10 e voltou em outro em 14/11). Antes de fechar o job: o que serve ao próximo cliente vai para `scripts/` do motor; o resto, para `/Volumes/SSD/CIBO/repo/todo.md`. Material já colhido: `/Volumes/SSD/CIBO/repo/colheita/`.
 - **Correção que se repete vira trava no código, não mais um parágrafo** (selo, portão ou recusa com a instrução na mensagem). Tabela das mais repetidas: topo da `reel-motion/SKILL.md`.
 
 **Pacote DaVinci (Bombordo EP 10/EP 08, 01/11/2026)** — [davinci.md](davinci.md), seção "Lições do Bombordo"

@@ -43,7 +43,7 @@ elif a[0] == 'add':
     onde = ' '.join(x for x in (ex.get('--projeto', ''), ex.get('--reel', '')) if x)
     linha = f"- {time.strftime('%Y-%m-%d')}{f' ({onde})' if onde else ''}: {txt}\n"
     L.write_text('\n\n'.join(cab) + '\n\n' + linha + (corpo[0] if corpo else ''))
-    print('gravado em', L, '— leve ao ~/CIBO (commit e push) no mesmo turno')
+    print('gravado em', L, '— leve ao /Volumes/SSD/CIBO/repo (commit e push) no mesmo turno')
 else:
     R = D / 'rubrica.md'
     if R.exists():

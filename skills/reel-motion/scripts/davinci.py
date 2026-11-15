@@ -224,7 +224,7 @@ if CROP:
     # demais, 19/10/2026); na horizontal com clipe girado, VH/100 * RH/RW (medido no r01h)
     PU = VH / 100 * (RH / RW if C.get('rotate') in ('clock', 'cclock') and VW > VH else 1)
     TRK = json.load(open(P / '04_work' / C['track'])) if C.get('track') else None
-    # Posição no Resolve (medido com render em 14/11/2026, ~/CIBO/tests/resolve_transform_teste.py): a escala do pacote sai certa
+    # Posição no Resolve (medido com render em 14/11/2026, /Volumes/SSD/CIBO/repo/tests/resolve_transform_teste.py): a escala do pacote sai certa
     # (1 px da fonte = 1 px da timeline), mas Pan/Tilt andam na medida da FONTE: deslocamento visto = Pan × largura do arquivo /
     # largura da timeline (1080p em 9:16: 1,78×; 720p: 1,19×; 4K em 16:9: 2×) e Tilt × altura do arquivo / altura da timeline.
     # Cobrado 6× (19/10 a 12/11) e contornado à mão em cada job (cx' = 960 + (cx−960)/1,7778). "posicao_resolve": "auto" corrige

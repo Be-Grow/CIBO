@@ -8,7 +8,7 @@
 - **Código compartilhado entre clientes** (motor da Fernanda usado pela Malu; `face_crop.py`
   do Bombordo usado pelo Dr. Energia): mudança entra como opção por chave no job, e o outro
   cliente precisa sair idêntico (`framemd5` num trecho de 5 s, ou checksum da pasta).
-- **Suba para o CIBO** (`~/CIBO`, `git@github.com:Be-Grow/CIBO.git`): copie a skill,
+- **Suba para o CIBO** (`/Volumes/SSD/CIBO/repo`, `git@github.com:Be-Grow/CIBO.git`): copie a skill,
   confira o diff, atualize o README se a skill for nova, commit e push. Nada vai para
   `~/.codex/skills`.
 

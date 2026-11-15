@@ -43,4 +43,4 @@ PY=~/.claude/skills/busca-trilha/.venv/bin/python; BT=~/.claude/skills/busca-tri
 
 - Rede (curl, cache de 24 h, nova tentativa em 429/5xx, modo simulado) vem de `busca-stock/scripts/rede.py`; as medidas
   de `talking-head-music/scripts/analyze_music.py`.
-- Teste: `~/CIBO/tests/regressao.py check --engine busca-trilha`.
+- Teste: `/Volumes/SSD/CIBO/repo/tests/regressao.py check --engine busca-trilha`.

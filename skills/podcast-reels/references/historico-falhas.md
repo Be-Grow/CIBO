@@ -264,7 +264,7 @@ Padrão de movimento aprovado pelo usuário ("esse zoom ficou muito bom"). Vale 
     Campos, 12/10/2026). O clique sintético/`click.wav` em toda palavra de ênfase, somado ao
     `voice_af` (que aplica +10 dB depois da mistura com os cliques), soou estranho e alto. O
     usuário aprovou o `camera_click.mp3` dele (4 batidas; mora em
-    `~/CIBO/skills/fernanda-produto/assets/`, uso no João autorizado) **baixo** nas falas. Opções
+    `/Volumes/SSD/CIBO/repo/skills/fernanda-produto/assets/`, uso no João autorizado) **baixo** nas falas. Opções
     novas no `clicks.py`, desligadas por padrão: `CLICK_VARIANTS=1` separa as batidas do
     arquivo e alterna; `CLICK_MIN_GAP=2.5` evita rajada. Como o `voice_af` vem depois, ajuste
     `CLICK_GAIN` para o pico do clique ficar ~-20 dBFS no arquivo final, e meça. Nunca clique
