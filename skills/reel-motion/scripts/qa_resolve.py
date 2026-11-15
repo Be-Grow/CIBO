@@ -32,7 +32,7 @@ def audita(t):
         v = [it.GetProperty(p) for it in bruto]
         if len(set(map(str, v))) > 1:
             prob.append(f'bruto com {p} diferente entre os trechos: {v}')
-    g = [int(it.GetFusionCompByIndex(1).FindTool('MediaIn1').GetInput('GlobalIn')) for _, it in itens(t) if it.GetFusionCompCount()]
+    g = [int(it.GetFusionCompByIndex(1).FindTool('MediaIn1').GetInput('GlobalIn')) for _, it in itens(t) if it.GetFusionCompCount() and not it.GetMediaPoolItem()]   # só clipe de ajuste: em clipe com mídia o GlobalIn é −(aparo da fonte), ver fusion_kit.py
     if any(g):
         prob.append(f'GlobalIn do Fusion {sorted(set(g))} (render vai falhar; refaça com resolve_refaz_de_backup.py)')
     return prob

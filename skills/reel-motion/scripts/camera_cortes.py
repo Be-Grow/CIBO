@@ -51,6 +51,6 @@ from collections import Counter
 print(f'{len(takes)} takes:', dict(Counter(plano)), '| sequência:', ' '.join(p[0].upper() for p in plano))
 if A.ver:
     sys.exit(0)
-c = json.load(open(W / 'reel.json')); c['camera_moves'] = mv; c['camera_davinci'] = True
+c = json.load(open(W / 'reel.json')); c['camera_moves'] = mv; c['camera_davinci'] = True; c.setdefault('camera_fusion', False)   # câmera por corte = keyframe seco no bruto, escolha registrada
 json.dump(c, open(W / 'reel.json', 'w'), ensure_ascii=False, indent=1)
 print(f'gravado em reel.json: {len(mv)} movimentos (empurra +{A.push:.0%} por ~12 s, salto +{A.salto:.0%}); depois: reel.py PROJ {A.reel} davinci')

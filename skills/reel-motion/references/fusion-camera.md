@@ -2,6 +2,19 @@
 
 Movido do SKILL.md em 20/10/2026 (carregar sob demanda). Conteúdo preservado sem cortes.
 
+## Fusion direto no clipe: `scripts/fusion_kit.py` (14/11/2026, testado no Resolve 20.2.3)
+
+Recuperado do `resolve_logo.py` da Andrea (21/10/2026), que só existia na pasta do job. Dois caminhos, os dois valem:
+- **Clipe de ajuste por movimento** (`camera_fusion` + `resolve_fx.py`, abaixo): o do pacote; precisa do .drt porque a API não cria clipe de ajuste.
+- **Comp no próprio clipe** (`fusion_kit.py`): para ajuste na timeline, selo, logo, cartão. Sem .drt.
+Medido no teste (`~/CIBO/tests/fusion_kit_teste.py`):
+- `AddFusionComp` sozinho não persiste nem renderiza: exportar e reimportar o comp (`K.fixa`).
+- O quadro 0 do comp é o primeiro quadro do clipe na timeline, mesmo com a fonte aparada.
+- `GlobalIn` do MediaIn1 = −(aparo da fonte): 0 no clipe inteiro, −60 no que entra no quadro 60. Só é defeito em clipe de ajuste
+  (sem mídia) ou se mudar no exportar/importar. O `qa_resolve.py` agora só cobra 0 nos clipes de ajuste.
+- `AddModifier` cria um keyframe no quadro 0 com o valor atual; não atrapalha.
+- Motion blur do Transform: `MotionBlur 1`, `Quality 10`, `ShutterAngle 360`. Alças do `SetKeyFrames` relativas ao keyframe.
+
 ## Movimentos de câmera no Fusion (Andreia, 19/10/2026)
 - `"camera_fusion": true` no reel.json: o bruto vai só com o enquadramento base; cada punch/zoom e cada troca de tela dividida
   vira um clipe de ajuste com Transform do Fusion (Motion Blur, Quality 10, Shutter 360°), keyframes de Size/Center.

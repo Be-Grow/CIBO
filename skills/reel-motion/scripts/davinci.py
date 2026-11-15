@@ -185,7 +185,10 @@ S = json.load(open(W / 'segs.json')); S = S.get('segs', S) if isinstance(S, dict
 takes, acc = [], 0.0
 for a, b in S:
     takes.append((fr(acc), fr(acc + b - a), a, b)); acc += b - a
-takes[-1] = (takes[-1][0], D, *takes[-1][2:])                # o último take segura até o fim (rabo do fade)
+if not C.get('cauda_preto'):                                  # "cauda_preto": câmera acaba com a voz e o rabo fica preto sob o burn
+    takes[-1] = (takes[-1][0], D, *takes[-1][2:])            # o último take segura até o fim (rabo do fade)
+# (Bombordo EP 09, 05/11/2026: o fade do tema não chega ao Resolve; o take esticado mostrava 0,6 s de fala muda depois da última
+#  palavra — editor: "o encerramento tá bugado")
 
 
 # ---- câmera a partir do BRUTO (o editor estende o take para corrigir corte; 14/10/2026) ----
@@ -232,6 +235,12 @@ ramp = lambda t, a, d: EASE((t - a) / d)
 # para dentro do transform do Fusion com shutter angle e blur, uma camada de clip de ajuste por zoom ou movimento"):
 # com "camera_fusion" no reel.json o bruto leva só o enquadramento base; ON escolhe quais movimentos entram na conta
 FX = bool(C.get('camera_fusion'))
+# Zoom/punch é no Fusion, com motion blur: o editor ensinou em 19/10/2026 e cobrou de novo em 09/11 e 12/11 porque a chave
+# era opcional e ninguém ligava. Agora a escolha é obrigatória quando há movimento: sem ela o pacote não sai.
+if (JOB.get('camera_moves') or []) and 'camera_fusion' not in C:
+    sys.exit('PAREI: este reel tem camera_moves e o reel.json não diz como fazê-los. Ponha "camera_fusion": true '
+             '(padrão do CIBO: clipe de ajuste com Transform do Fusion, motion blur, shutter 360°; a fila roda o resolve_fx.py) '
+             'ou "camera_fusion": false só se o editor pediu keyframe seco no bruto (câmera por corte de YouTube, camera_cortes.py).')
 ON = {'z': None, 's': None}                                     # None = todos; set() = nenhum
 
 

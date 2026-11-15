@@ -591,6 +591,12 @@ def e_cortes():
         return 1
     selos.grava(W, 'cortes', _entradas()['cortes'], f'{len(pend)} aviso(s) ouvido(s) e assumido(s)' if pend else 'sem aviso')
     print(f"cortes OK: {len(r.stdout.splitlines()) - 1} trechos" + (f', {len(pend)} aviso(s) assumido(s) com motivo no reel.json' if pend else ''))
+    # borda pelo som (bordas.py, 14/11/2026): aviso, não trava — fim de palavra do Whisper acaba antes da voz
+    b = subprocess.run([sys.executable, str(ENG / 'scripts/bordas.py'), str(W)], capture_output=True, text=True)
+    bl = [l for l in b.stdout.splitlines() if 'corte no som' in l]
+    if bl:
+        print(f'!! {len(bl)} borda(s) em cima da voz (a correção mais repetida do editor). Ouça ou rode: bordas.py {W} --aplica')
+        for l in bl[:6]: print('   ' + l[:150])
     return 0
 
 

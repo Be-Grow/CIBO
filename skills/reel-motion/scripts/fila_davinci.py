@@ -38,7 +38,8 @@ for R in REELS:
         diz(f'PAREI antes de {R}: só {livre:.0f} GB livres no SSD'); break
     t0 = time.time(); nome = json.load(open(P / '04_work' / R / 'reel.json'))['name']; pac = P / '07_davinci' / nome
     diz(f'== {R} {time.strftime("%H:%M")} ({livre:.0f} GB livres)')
-    if not any(json.load(open(P / '04_work' / R / 'reel.json')).get(k) for k in ('grosso', 'sem_capa')):   # aula no grosso: sem capa (Remotion)
+    _c = json.load(open(P / '04_work' / R / 'reel.json'))
+    if _c.get('capa') and not any(_c.get(k) for k in ('grosso', 'sem_capa')):   # sem "capa" no reel.json (capa feita à parte) não roda: quebrava e podia sobrescrever (GL 05/11, João 14/11/2026)
         roda([PY, S / 'reel.py', P, R, 'so_capa'], 900)
     c, out = roda([PY, S / 'reel.py', P, R, 'davinci'], 7200)
     diz('   ' + next((l for l in reversed(out) if 'pacote DaVinci' in l or 'rror' in l), f'saída {c}')[:160])

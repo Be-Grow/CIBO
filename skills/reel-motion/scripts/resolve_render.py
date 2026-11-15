@@ -26,7 +26,11 @@ def caminho_do(nome):                       # pasta (lista) onde o projeto abert
             pm.GotoParentFolder()
     pm.GotoRootFolder(); return busca([])
 
-pm.SaveProject(); cam_ant = caminho_do(ant) if ant else None
+# "Untitled Project" aberto (Resolve recém-aberto): SaveProject abre o diálogo de nome e prende a API (20/10 e 14/11/2026,
+# "isso sempre acontece na cibo"). Só salva projeto com nome, e não tenta devolver o Untitled no fim.
+if ant and ant.startswith('Untitled Project'): ant = None
+if ant: pm.SaveProject()
+cam_ant = caminho_do(ant) if ant else None
 try:
     pm.GotoRootFolder()
     for f in [x for x in PASTA.split('/') if x]:

@@ -8,6 +8,27 @@ description: Motor PADRÃO de edição do CIBO — reels 9:16 e 16:9 de fala com
 Motor generalista configurado por tema de cliente (`temas/<cliente>.json`) + biblioteca de componentes Remotion.
 Nunca copie o motor para o projeto; nunca anime do zero o que a biblioteca já tem. Por que cada regra existe: `references/historico.md`.
 
+## Pedido do editor → como se faz aqui (leia antes de qualquer job; cada linha já foi cobrada 2 a 10 vezes)
+
+Antes de escrever script em pasta de job, ache a linha. Se não tem linha, o script novo nasce em `scripts/` do motor, não no job.
+
+| O editor pede / o job precisa | Faça assim | Nunca |
+|---|---|---|
+| Zoom in/out, punch, movimento de câmera | **No Fusion, com motion blur (shutter 360°)**: `"camera_fusion": true` no reel.json (a fila roda o `resolve_fx.py`); ajuste pontual na timeline: `fusion_kit.py zoom "TL" "CÂMERA bruto" T0 T1 1.10`. O `davinci` recusa `camera_moves` sem essa chave | renderizar `camera.mov` para ter zoom; keyframe seco sem o editor pedir |
+| Selo, logo, cartão entrando e saindo | `fusion_kit.py entra-sai "TL" "FAIXA"` (escala→1, blur→0, opacidade) | animar em Remotion o que é um PNG parado |
+| Qualquer conversa com o Resolve | `import fusion_kit as K` (`K.resolve`, `K.abre_projeto`, `K.timeline`, `K.faixa`, `K.clipe_em`, `K.salva`); ver o que tem: `fusion_kit.py lista "TL"` | `dvr.scriptapp` à mão; `pm.SaveProject()` direto (trava no "Untitled Project") |
+| Corte de fala | `reel.py PROJ rNN cortes` e, se avisar borda em cima da voz, `bordas.py W --aplica` antes da legenda | fechar o corte no tempo do Whisper: a voz acaba depois |
+| Bruto 16:9 em reel 9:16 | `"zoom": 1.7778`; com `track` ou `crops`, cx' = 960 + (cx−960)/1,7778 (defeito aberto do motor, 1º do `~/CIBO/todo.md`) | deixar na escala 1 com barra/fundo desfocado sem o editor pedir |
+| Entrega e conferência | `fila_davinci.py` → projeto novo organizado → o editor confere no preview | ffmpeg na entrega; MP4 queimado; render ou still pelo Resolve para conferir |
+| Ajuste depois do primeiro pacote | na timeline pela API (`scripts/timeline/README.md`), render só da camada que muda | pacote novo, `rNN` novo, apagar timeline que o editor já mexeu |
+| Trilha e SFX | 2–3 opções com prévia de 10 s no trecho real, antes do pacote; kit e tom na rubrica do cliente | escolher e nivelar sem ouvir; o mesmo som em tudo |
+| Capa | quadro expressivo (olho aberto, nítido), um quadro diferente por corte, título fora do rosto, 1 quadro na timeline | primeiro quadro que aparecer; capas iguais no lote |
+| Arquivo refeito no pacote | nome novo + `ReplaceClip` | mesmo nome (o Media Pool devolve o antigo do cache) |
+
+**Fim de job:** script que você escreveu em `04_work/` é correção que o motor ainda não tem. Antes de fechar: suba ao motor o que serve
+para o próximo cliente, anote o resto em `~/CIBO/todo.md`, e rode `~/CIBO/tests/fusion_kit_teste.py` se mexeu em script do Resolve.
+(Em 14/11/2026 havia 170 scripts em pastas de job, 57 refazendo a conexão com o Resolve, e a biblioteca de Fusion da Andrea só existia lá.)
+
 ## Contrato do agente (10/11/2026) — o que o motor cobra sozinho
 
 O caminho de um job de fala é este, e cada passo grava um **selo** (impressão digital dos arquivos conferidos) em `rNN/work/selos.json`.
