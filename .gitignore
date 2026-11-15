@@ -8,3 +8,9 @@ __pycache__/
 
 # symlink para o SSD (reel-motion/mg/node_modules)
 node_modules
+
+# material bruto colhido dos jobs (fica só local, decisão do editor 14/11/2026)
+colheita/
+# cópias de segurança e ambientes das skills
+*.bak
+*.bak-*
