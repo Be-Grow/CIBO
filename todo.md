@@ -79,3 +79,9 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 - render_tls.py (Angélica) usado de novo no episódio: vira script do motor.
 - Burns nas trocas (Fernanda): transicoes.py (Angélica) e burns_timeline.py (Elza) viram etapa do motor para corte sem painel; hoje o pacote só leva burn de painel.
 - cibo-auto helium: a extensão Claude (claude-in-chrome) cria a PRÓPRIA janela/aba no space ativo, não usa a janela que o cibo-auto abriu no space da automação (editor 16/11: 'tu foi abrir o helium lá em outro space'). Depois de tabs_context(createIfEmpty), mover a janela nova com yabai para o space da automação; ideal: cibo-auto mover qualquer janela Helium nova da sessão.
+
+- 16/11/2026 (Podcast Sabrina): TRAVA pedida — `reel.py capa` deve recusar sem print/frame do editor (correção repetida: "eu ja deixei isso claro mil vezes"). capa_cand.py gira por padrão (--rot clock), errado para master 16:9 de podcast.
+- 16/11/2026 (Podcast Sabrina): timeline de EPISÓDIO criada no projeto dos cortes nasce 1080x1920 (padrão do projeto) — editor: "pq a timeline ficou vertical pro clipe horizontal?". Script de timeline de episódio (podcastSabrina/04_work/scripts/ep_timeline.py) precisa SetSetting useCustomSettings + 1920x1080; idem rascunho do Text+ no resolve_insta (Elza). Levar ep_timeline + resolve_insta + burns_timeline + crops_planos + punch_sfx para o motor.
+- 16/11/2026 (Podcast Sabrina): fila_davinci troca a timeline atual a cada corte e "fecha" a do episódio que o editor está vendo ("pq vc fechou a timeline do meu podcast inteiro"): ao fim da fila, reabrir todas as timelines do projeto com a do episódio na frente.
+- 16/11/2026: resolve_insta.py: AppendToTimeline do composto recém-criado falha na mesma execução; endFrame deve ser dur-1; repetir depois funciona.
+- 16/11/2026: gancho-e-ritmo não vê o "tail" do motion.json (acusa 0 s depois da última palavra) nem os destaques *…* do blocos_manual (0%).
