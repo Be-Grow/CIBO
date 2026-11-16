@@ -13,7 +13,7 @@ ap.add_argument('--a', type=float, default=0); ap.add_argument('--b', type=float
 A = ap.parse_args()
 rot = {'cclock': 'transpose=2,', 'clock': 'transpose=1,'}.get(A.rotate, '')
 iw, ih = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', A.src],
-                                 capture_output=True, text=True).stdout.strip().split(',')[:2])
+                                 capture_output=True, text=True).stdout.split()[0].split(',')[:2])
 if rot:
     iw, ih = ih, iw
 s = 960 / iw; W, H = 960, round(ih * s / 2) * 2

@@ -269,7 +269,7 @@ def e_camera_raw():
     for i, ((a, b), v) in enumerate(zip(S, VM)):
         src = v['src']
         iw, ih = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', src],
-                                         capture_output=True, text=True).stdout.strip().split(','))
+                                         capture_output=True, text=True).stdout.split()[0].split(','))
         h = ih; w = round(h * 9 / 16); cx = v.get('cx', C.get('raw_cx', iw / 2)); x0 = min(max(round(cx - w / 2), 0), iw - w)
         args += ['-ss', f'{a + v["off"]:.4f}', '-t', f'{b - a:.4f}', '-i', src]
         f += f'[{i}:v]setpts=PTS-STARTPTS,fps={FPS},crop={w}:{h}:{x0}:0,scale=1080:1920:flags=lanczos,unsharp=5:5:{C.get("sharpen", 0.5)},setsar=1,trim=duration={b - a:.4f}[v{i}];'
@@ -286,7 +286,7 @@ def e_camera_crop():
     src = fonte_path()
     cr = sorted(C['crops'], key=lambda c: c['at'])
     iw, ih = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', str(src)],
-                                     capture_output=True, text=True).stdout.strip().split(',')[:2])   # HEVC do iPhone imprime vírgula a mais
+                                     capture_output=True, text=True).stdout.split()[0].split(',')[:2])   # HEVC do iPhone imprime vírgula a mais
     # "rotate": "cclock"/"clock" = gravação deitada no arquivo (Andreia: 16:9 salvo como 1080×1920); cx/cy valem no quadro já girado
     rot = {'cclock': 'transpose=2,', 'clock': 'transpose=1,'}.get(C.get('rotate'), '')
     if rot:

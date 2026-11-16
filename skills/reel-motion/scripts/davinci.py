@@ -218,7 +218,7 @@ if CROP:
         return 'XAVC' in r
     JOB = {'src': str(_src), 'rotate': C.get('rotate', ''), 'tc_drop': C.get('tc_drop', _sony(_src)), 'camera_moves': C.get('camera_moves', [])}
     _iw, _ih = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', str(_src)],
-                                       capture_output=True, text=True).stdout.strip().split(',')[:2])
+                                       capture_output=True, text=True).stdout.split()[0].split(',')[:2])
     RW, RH = (_ih, _iw) if C.get('rotate') in ('clock', 'cclock') else (_iw, _ih)      # quadro já girado
     # unidade do position no Resolve: VH/100 px na timeline vertical (no r01 da Andreia, com RH/RW a câmera desceu 2,1×
     # demais, 19/10/2026); na horizontal com clipe girado, VH/100 * RH/RW (medido no r01h)
