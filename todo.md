@@ -78,3 +78,4 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 - Subir para o motor: 04_work/scripts/crops_planos.py (crops por plano em master multicâmera, YuNet) e punch_sfx.py (padrão Angélica: punch nos destaques + SFX do kit).
 - render_tls.py (Angélica) usado de novo no episódio: vira script do motor.
 - Burns nas trocas (Fernanda): transicoes.py (Angélica) e burns_timeline.py (Elza) viram etapa do motor para corte sem painel; hoje o pacote só leva burn de painel.
+- cibo-auto helium: a extensão Claude (claude-in-chrome) cria a PRÓPRIA janela/aba no space ativo, não usa a janela que o cibo-auto abriu no space da automação (editor 16/11: 'tu foi abrir o helium lá em outro space'). Depois de tabs_context(createIfEmpty), mover a janela nova com yabai para o space da automação; ideal: cibo-auto mover qualquer janela Helium nova da sessão.
