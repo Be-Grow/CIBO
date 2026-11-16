@@ -77,3 +77,4 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 - reel.py tem o whisper-large-v3-mlx fixo: avisar (e oferecer o turbo) quando o modelo não está no Mac, em vez de baixar 3 GB calado.
 - Subir para o motor: 04_work/scripts/crops_planos.py (crops por plano em master multicâmera, YuNet) e punch_sfx.py (padrão Angélica: punch nos destaques + SFX do kit).
 - render_tls.py (Angélica) usado de novo no episódio: vira script do motor.
+- Burns nas trocas (Fernanda): transicoes.py (Angélica) e burns_timeline.py (Elza) viram etapa do motor para corte sem painel; hoje o pacote só leva burn de painel.

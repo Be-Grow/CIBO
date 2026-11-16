@@ -14,6 +14,7 @@ mesmo pique" desses dois e "salva essas configs na CIBO". Vale para todo podcast
 | Movimento | Angélica (mais recente, referência): `punch` a cada ~6–8 s, `in` 0,5 s, segura ~3,85 s, `amount` alternando 0,10 / 0,07. Inge: `camera_cortes.py` (empurra 0,07 + fechado 0,16). Nada de zoom out |
 | Motion | **nenhum painel**: `motion.json` = `{"legenda": true, "panels": [], "tail": 3.3}` ("n precisa colocar motion, cortes simples") |
 | Legenda | sim, com destaque (MFA + `legenda-cruzada`) |
+| Burns | **burn em cada troca de câmera/emenda** (editor 16/11/2026, Podcast ELZA: "senti falta de um burning… não entendi pq não foram adicionados nas transições"): os 4 burns da Angélica (`podcastAngelica/04_work/public/burns`, do filmburn-pack do acervo) tingidos pelo tema, opacidade 0,8, pico na troca, whoosh −12 dB 0,3 s antes. Antes do pacote: `transicoes.py` (Angélica); em timeline já mexida: `podcastElza/04_work/scripts/burns_timeline.py` |
 | SFX | kit do acervo `_global` (whoosh-medium-1s, Swoosh 01/04, slide-1, whoosh-short) ~0,1 s antes de cada punch, −12/−16 dB alternando; nunca o mesmo som 3× seguidas |
 | Trilha | uma diferente por corte, do acervo (`_global`): Upbeat Travel Event, Lofi Tea, Lofi Lobby, Piano Reflections, Inspiring Orchestral; escolha delegada à IA |
 | Fim | ~3,3 s de imagem depois da última fala (`"tail": 3.3`), sem a voz do entrevistador (lição 12/11) |
