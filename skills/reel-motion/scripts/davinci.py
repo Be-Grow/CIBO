@@ -50,7 +50,7 @@ FD = Fraction(1, 30) if str(C.get('fps', '')) in ('30', '30.0') else Fraction(10
 if GROSSO:                                                     # aula longa: timeline no fps da fonte, sem cópia 29,97 (João 21/10/2026:
     _s = Path(C['src']) if os.path.isabs(C['src']) else P / '01_sources' / C['src']   # "o Resolve consegue fazer isso sozinho")
     _r = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', str(_s)],
-                        capture_output=True, text=True).stdout.strip()
+                        capture_output=True, text=True).stdout.split()[0]   # ffprobe 8 repete a linha com stream group
     FD = 1 / Fraction(_r)
 fr = lambda t: max(0, round(t / FD))                       # segundos → quadros
 tt = lambda n: f'{n * FD.numerator}/{FD.denominator}s' if n else '0s'         # quadros → tempo FCPXML
@@ -388,7 +388,7 @@ def fonte_2997(src):
     a cada 1000, o áudio atrasa e o último take passa do fim do arquivo (Media Offline). Cópia por TEMPO em 01_sources/_2997/
     (mesmos segundos, 1 s de folga no fim, sem timecode), feita uma vez e reaproveitada por todos os reels da mesma fonte"""
     r = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', str(src)],
-                       capture_output=True, text=True).stdout.strip()
+                       capture_output=True, text=True).stdout.split()[0]   # ffprobe 8 repete a linha com stream group (Podcast ELZA: convertia o bruto 30p inteiro à toa)
     if r == '30000/1001' or GROSSO or (FD == Fraction(1, 30) and r == '30/1'):
         return src
     dst = src.parent / '_2997' / (src.stem + '.mov') if src.parent.name != '_2997' else src

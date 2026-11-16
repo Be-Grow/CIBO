@@ -71,3 +71,9 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 - [ ] **Limpeza de episódio longo no Resolve** (Angélica 12/11, "nesses podcasts maiores vc sempre faz cagada"): os 13 scripts de
       `…/podcastAngelica/04_work/limpeza_episodio/04_work/` (turnos, planos, monta_cortes, conserta_ep, itens_tl) são o fluxo que funcionou; levar para a `limpeza-gravacao-bruta`.
 - [ ] **Troca de QR/cartão em aula** (`…/fernandaBen/colocarNovoQrCode/04_work/scripts/`, 33 scripts): fluxo inteiro só existe no job; virar skill ou seção da `fernanda-produto`.
+
+## 16/11/2026 — Podcast ELZA (fernandaBen/podcastElza)
+- ffprobe 8 repete a linha de `stream=` quando o arquivo tem stream group (master do Drive): corrigido no reel-motion (width/height e r_frame_rate; antes convertia o bruto 30p inteiro para 29,97 à toa). Falta revisar: content-hub/cover.py, limpeza-gravacao-bruta/renderizar_cortes.py, podcast-reels/cover.py e burn_end.py, vinheta-marca/{autoteste,entrega,clipes}.py.
+- reel.py tem o whisper-large-v3-mlx fixo: avisar (e oferecer o turbo) quando o modelo não está no Mac, em vez de baixar 3 GB calado.
+- Subir para o motor: 04_work/scripts/crops_planos.py (crops por plano em master multicâmera, YuNet) e punch_sfx.py (padrão Angélica: punch nos destaques + SFX do kit).
+- render_tls.py (Angélica) usado de novo no episódio: vira script do motor.
