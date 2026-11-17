@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-17 (cortesLiveFimDoMundo): Capa: nome no rodapé (ANDREA FRANCOMANO) quase não aparecia sobre a imagem; sombra forte em camadas (tema capa.footerSombra: true).
 - 2026-11-17 (cortesLiveFimDoMundo): Capa: título longo (headline da Laryssa) numa linha só encolhe a fonte ('tá muito pequena', 17/11/2026). Quebrar em 3 linhas com l1/l1b/l2+accent (~16–20 letras por linha) para a fonte ficar no tamanho cheio. Já tinha sido pedido em 30/10 ('o título da segunda capa tá pequeno').
 - 2026-11-13 (cortesLivePorteira): Capa: não copiar o 'shift' (descida da imagem) de outro job. Em fonte de live/horizontal recortada ela já fica baixa no quadro: shift 440 deixou ela 'tão pra baixo' (editor, 13/11/2026); com shift 70 o rosto fica no centro e o título logo acima da cabeça. Medir a posição da cabeça no quadro antes de definir o shift.
 - 2026-11-13 (cortesLivePorteira): Capa: editor trocou os quadros que a IA escolheu (boca fechada, olhando pra câmera) por quadros dela no meio da fala, com expressão: gesto com as mãos (r01) e sorrindo (r02). Preferir quadro expressivo a quadro neutro.
