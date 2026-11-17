@@ -6,12 +6,14 @@ import {C, T, Theme, applyTheme, scr} from './Reel';
 // Capa do reel com o tema do cliente.
 // layout "serif" (Priscilla): manchete no topo, destaque em itálico, rodapé com o nome.
 // layout "faixa" (João, thumbs do canal): manchete pesada em caixa alta, 2ª linha sobre faixa na cor de destaque, "COM FULANO" no secundário.
-export type CapaProps = {frame: string; l1: string; l1b?: string; l2: string; accent: string; y?: number; shift?: number; footer?: string; sub?: string;
+export type CapaProps = {frame: string; l1: string; l1b?: string; l2: string; accent: string; y?: number; shift?: number; footer?: string; footerSombra?: boolean; sub?: string;
   layout?: 'serif' | 'faixa'; logo?: string; logoW?: number; logoY?: number; theme?: Theme; bgFill?: 'cor' | 'blur';
   grad?: 'topo' | 'base'};   // serif: degradê atrás do título; 'base' quando o título fica embaixo (Fernanda/Angélica 12/11/2026: "o degradê em cima cobre o rosto")
 const css = () => T.fonts.map((f) => `@font-face{font-family:'${f.family}';font-weight:${f.weight ?? 'normal'};font-style:${f.style ?? 'normal'};src:url('${staticFile(f.file)}');}`).join('\n');
 
-export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, shift = 0, footer = 'PRISCILLA DAHER', sub, layout = 'serif', logo, logoW = 440, logoY, theme, bgFill, grad = 'topo'}) => {
+// sombra forte do nome no rodapé (footerSombra no tema)
+const SOMBRA_FORTE = '0 2px 4px rgba(0,0,0,0.95), 0 0 16px rgba(0,0,0,0.9), 0 0 34px rgba(0,0,0,0.7)';
+export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, shift = 0, footer = 'PRISCILLA DAHER', sub, layout = 'serif', logo, logoW = 440, logoY, theme, bgFill, grad = 'topo', footerSombra = false}) => {
   applyTheme(theme);
   const tf = {fontFamily: `'${T.title.family}'`, fontWeight: T.title.weight, textTransform: T.title.upper ? 'uppercase' : 'none', letterSpacing: T.title.ls} as React.CSSProperties;
   if (layout === 'faixa') {
@@ -68,7 +70,9 @@ export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, 
           <div style={{fontSize: 140 * Math.min(T.title.scale, 1), lineHeight: 1.0}}>{l2} <span style={{...(T.accent.italic ? {fontStyle: 'italic'} : {fontWeight: T.accent.weight}), color: C.peach}}>{accent}</span></div>
         </div>
         <div style={{position: 'absolute', bottom: 80, left: 104, fontFamily: `'${T.label.family}'`, fontWeight: T.label.weight, fontSize: 28,
-          letterSpacing: 6, color: C.video, opacity: 0.85, textShadow: '0 2px 10px rgba(0,0,0,0.6)'}}>{footer}</div>
+          letterSpacing: 6, color: C.video, opacity: footerSombra ? 1 : 0.85,
+        // footerSombra (Andreia 17/11/2026: "coloca uma sombra atrás do nome… quase não dá pra ver"): sombra forte em camadas
+        textShadow: footerSombra ? SOMBRA_FORTE : '0 2px 10px rgba(0,0,0,0.6)'}}>{footer}</div>
       </AbsoluteFill>
     );
   }
@@ -91,7 +95,7 @@ export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, 
         <div style={{fontSize: fitW(`${l2} ${accent}`, 150 * T.title.scale), lineHeight: 1.0, whiteSpace: 'nowrap'}}>{l2} <span style={{...(T.accent.italic ? {fontStyle: 'italic'} : {fontWeight: T.accent.weight}), color: C.peach}}>{accent}</span></div>
       </div>
       <div style={{position: 'absolute', bottom: 120, left: 0, right: 0, textAlign: 'center', fontFamily: `'${T.label.family}'`, fontWeight: T.label.weight, fontSize: 26,
-        letterSpacing: 6, color: C.video, opacity: 0.85, textShadow: '0 2px 10px rgba(0,0,0,0.6)'}}>{footer}</div>
+        letterSpacing: 6, color: C.video, opacity: footerSombra ? 1 : 0.85, textShadow: footerSombra ? SOMBRA_FORTE : '0 2px 10px rgba(0,0,0,0.6)'}}>{footer}</div>
     </AbsoluteFill>
   );
 };

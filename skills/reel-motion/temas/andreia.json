@@ -110,7 +110,8 @@
  ],
  "capa": {
   "layout": "serif",
-  "footer": "ANDREIA FRANCOMANO"
+  "footer": "ANDREIA FRANCOMANO",
+  "footerSombra": true
  },
  "regras": [
   "toda versão existe em 9:16 (reel) e 16:9 (ReelH, lado a lado: painel à esquerda, ela à direita)",
