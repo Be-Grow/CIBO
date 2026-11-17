@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-16 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y03): YouTube: clique das palavras-chave = cliques do áudio do film burn (acervo priscilla-daher click-filmburn-a..d, alternando), não pop nem click lens (Bruno, 16/11/2026)
 - 2026-11-16 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y03): YouTube: palavra-chave com clique profissional (click lens), não pop-2 (Bruno, 16/11/2026)
 - 2026-11-11 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y01): Cartão tem que dizer o número como ela fala ('8 de 10', não '80%'); logo de marca a partir do SVG com margem (PNG aparado corta a borda). Depois que o editor mexe na timeline, correção só por ReplaceClip, nunca reimportar (Bruno, 11/11/2026)
 - 2026-11-11 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y01): Vídeo de YouTube não precisa de capa no pacote (Bruno, 11/11/2026)
