@@ -15,6 +15,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Decisões de estilo, aprovação do mapa e do piloto | `briefing-criativo` |
 | Qualquer asset (burn, clique, SFX, trilha, fonte, logo, cartão, foto) | `acervo` — busque antes de perguntar; o que o editor apontar entra com `add` |
 | Pastas do projeto (início e fim) | `video-project-structure` |
+| Bruto do Drive **sem minutagem** (precisa transcrever para achar os trechos) | só o áudio: `yt-dlp -F <link>` (só lista) e, se houver o formato `140` (m4a só áudio), `yt-dlp -f 140 -o <proj>/01_sources/<nome>_audio.m4a <link>`; depois, os trechos de vídeo com `trecho_drive.py`. **Nunca** `ffmpeg -map 0:a` pelo proxy: o MP4 é intercalado e puxa o arquivo inteiro (17/11/2026: 1,4 GB para tirar 78 MB de áudio, editor: "era mais fácil baixar o vídeo"). Sem `140`: avise e baixe o arquivo inteiro de uma vez |
 | Bruto grande no Drive (demanda com minutagem): baixar **só os trechos**, nunca o arquivo inteiro | `scripts/trecho_drive.py <link> --saida <proj>/01_sources --trecho "03=00:42:58-00:44:32" …` (proxy de Range fechado + `ffmpeg -c copy`, folga 5 s, confere áudio×vídeo; `--info` só mede) |
 | Bruto longo com bastidores/retakes | `limpeza-gravacao-bruta` |
 | Transcrição de aula/live longa | `transcricao-aulas` |
