@@ -11,3 +11,5 @@ Medido com `gancho-e-ritmo`: 8,3–9,4 (limiar do tema: 6). Nome na tela é **An
 | Identidade | roxo profundo + dourado/âmbar + creme; títulos Cormorant Garamond com destaque itálico dourado; movimento suave (perfil editorial) | painel creme com texto violeta (não mostra o roxo), SFX genérico "feliz", animação dura |
 
 Final aprovado: escurece em 0,9 s depois de uma frase fechada ("Te espero lá."): `"saida": {"tipo": "fade", "dur": 0.9}` no tema.
+
+**Capa (lição repetida 30/10 e 17/11/2026):** título longo em 3 linhas (`l1`, `l1b`, `l2` + `accent`, ~16–20 letras por linha) para a fonte ficar grande; numa linha só o `fitW` encolhe e o editor reprova ("tá muito pequena").
