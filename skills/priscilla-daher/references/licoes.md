@@ -3,6 +3,9 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-18 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y05): YouTube 16:9: motion nunca na frente do rosto; ela senta no centro-esquerda, então cartões e títulos estreitos, até ~33% da largura (Bruno, 18/11/2026, YT 05)
+- 2026-11-18 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y06): YouTube: quando ela fala 'de X para Y', dois cartões ao mesmo tempo, X na esquerda e Y na direita, em vez de um cartão só (Bruno, 18/11/2026, YT 06 ~0:30)
+- 2026-11-18 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y06): YouTube: trilha com pegada mais empresarial, mas com groove (aprovada Funky House CC0 do acervo no YT 06); editor quer ouvir prévia e aprovar a trilha antes do export (Bruno, 18/11/2026)
 - 2026-11-16 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y03): YouTube: trilha com groove e personalidade (aprovada Retro Funky Groove, BombinSound/Pixabay); nada de corporativa genérica (Inspire Corporate, cozy-acoustic, lofi) — buscar fora do acervo quando ele não tem (Bruno, 16/11/2026)
 - 2026-11-16 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y03): YouTube: clique das palavras-chave = cliques do áudio do film burn (acervo priscilla-daher click-filmburn-a..d, alternando), não pop nem click lens (Bruno, 16/11/2026)
 - 2026-11-16 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y03): YouTube: palavra-chave com clique profissional (click lens), não pop-2 (Bruno, 16/11/2026)
