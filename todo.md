@@ -85,3 +85,5 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 - 16/11/2026 (Podcast Sabrina): fila_davinci troca a timeline atual a cada corte e "fecha" a do episódio que o editor está vendo ("pq vc fechou a timeline do meu podcast inteiro"): ao fim da fila, reabrir todas as timelines do projeto com a do episódio na frente.
 - 16/11/2026: resolve_insta.py: AppendToTimeline do composto recém-criado falha na mesma execução; endFrame deve ser dur-1; repetir depois funciona.
 - 16/11/2026: gancho-e-ritmo não vê o "tail" do motion.json (acusa 0 s depois da última palavra) nem os destaques *…* do blocos_manual (0%).
+
+- lettering-motion/reel-motion: legenda palavra a palavra em Pillow alinhar pela LINHA DE BASE (getmetrics + anchor "ls"), nunca centralizar cada palavra pela própria bbox (Michelle 19/11/2026: "tortinha"). Script de referência: michele/04_work/grafismos_v2.py
