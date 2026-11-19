@@ -1,0 +1,178 @@
+{
+ "cliente": "Michelle Gil (@eusoumichellegil) — Mentora Multidimensional, registros akáshicos, cristais; produto Black Despertar",
+ "origem": "identidade medida no perfil do Instagram (19/11/2026): preto + bronze + ouro + creme, serifa estilo Trajan; \"noite mística\" escolhida pelo editor (acento violeta/índigo). Recap Hotmart Cast aprovado 19/11/2026.",
+ "theme": {
+  "colors": {
+   "paper": "#0B0710",
+   "paper2": "#1A1222",
+   "ink": "#EEE4CD",
+   "ink2": "#BAA17A",
+   "terra": "#EABA67",
+   "terraDark": "#3A220B",
+   "peach": "#EABA67",
+   "white": "#1A1222",
+   "video": "#EEE4CD",
+   "onAccent": "#0B0710",
+   "pill": "#3A220B",
+   "bg": "#060301",
+   "gold": "#EABA67",
+   "shadow": "6,3,10",
+   "scrim": "8,5,14"
+  },
+  "fonts": [
+   {
+    "family": "CinzelM",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/michelle/Cinzel-VF.ttf",
+    "weight": "400 900",
+    "style": "normal"
+   },
+   {
+    "family": "CormM",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/michelle/CormorantGaramond-VF.ttf",
+    "weight": "300 700",
+    "style": "normal"
+   },
+   {
+    "family": "CormM",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/michelle/CormorantGaramond-Italic-VF.ttf",
+    "weight": "300 700",
+    "style": "italic"
+   }
+  ],
+  "title": {
+   "family": "CinzelM",
+   "weight": 600,
+   "upper": false,
+   "ls": "-0.015em",
+   "scale": 1.08,
+   "lh": 1.1
+  },
+  "caption": {
+   "family": "CormM",
+   "weight": 600,
+   "upper": false,
+   "ls": 0,
+   "scale": 0.86,
+   "hlAccent": false
+  },
+  "label": {
+   "family": "CormM",
+   "weight": 600
+  },
+  "accent": {
+   "italic": true,
+   "weight": 600
+  },
+  "mediaFilter": "saturate(0.9) contrast(1.03) brightness(0.98)",
+  "burnFilter": "sepia(0.6) saturate(1.8) hue-rotate(-10deg) brightness(1.05)",
+  "burnOpacity": 0.82,
+  "grain": 0.05,
+  "layout": {
+   "splitH": 940,
+   "camShift": 560,
+   "capSplitY": 0,
+   "capFullY": 1380,
+   "capMaxW": 900
+  },
+  "layoutH": {
+   "panelW": 1280,
+   "capSplitY": 992,
+   "capFullY": 960,
+   "capSize": 54,
+   "hookScale": 0.82
+  },
+  "motion": {
+   "perfil": "editorial",
+   "peso": [
+    400,
+    750
+   ]
+  }
+ },
+ "pares_extra": [
+  [
+   "gold",
+   "bg",
+   4.5,
+   "dourado sobre o fundo escuro"
+  ],
+  [
+   "terra",
+   "white",
+   3.0,
+   "dourado sobre card roxo"
+  ],
+  [
+   "ink",
+   "pill",
+   4.5,
+   "texto na pílula"
+  ]
+ ],
+ "capa": {
+  "layout": "serif",
+  "footer": "ANDREIA FRANCOMANO",
+  "footerSombra": true
+ },
+ "regras": [
+  "Títulos e assinatura em Cinzel dourado (#EABA67) com brilho; legenda em Cormorant creme minúscula, destaque itálico dourado, alinhada pela linha de base.",
+  "Cor: LUT CIBO/michelle_mistica_v2 (clara; a v1 escura foi reprovada). P&B só na tensão do gancho.",
+  "Montagem: fotos em rajada (0,2–0,3 s) com clique de câmera seguindo o roteiro do dia; nunca fotos soltas em ordem aleatória.",
+  "Viradas com lens flare P&B (Chlebek, CC BY — crédito no post); palavras-chave uma a uma com clique do filmburn-pack.",
+  "Zoom in/out no Fusion (motion blur) nos planos parados."
+ ],
+ "sfx": {
+  "kit": "/Volumes/SSD/CIBO Acervo/sfx/andreia/wav/",
+  "modo": "so_trocas",
+  "trocas": [
+   "tibetan-singing-bowl"
+  ],
+  "lufs_abaixo_voz": 16,
+  "abertura": true,
+  "nota": "final aprovado 20/10/2026: tigela grave só nas trocas de painel; a aguda (singing-bowl-hit-agudo-36st) soou 'feliz demais'; nada em frase/legenda",
+  "proibidos": [
+   "bell-meditation",
+   "chime",
+   "chime-sound",
+   "clear-bell-chime",
+   "ethereal-riser",
+   "glitter-tinkle",
+   "harp-glissando-chimes",
+   "harp-glissando-down",
+   "magic-sparkle",
+   "magic-spell",
+   "magic-teleport-whoosh",
+   "shimmer-glass",
+   "singing-bowl-hit-agudo-36st",
+   "sparkle",
+   "twinkle-sparkle",
+   "wind-magic"
+  ],
+  "nota_proibidos": "sino/campainha reprovado pelo editor (06/11) e sons 'alegres demais para o tema espiritual pesado' reprovados pela cliente (06/11/2026): só tigelas graves (singing-bowl-hit, singing-bowl-struck, tibetan-singing-bowl), 2–3 palavras-chave por vídeo."
+ },
+ "qualidade": {
+  "limiar": 6,
+  "alvo_eventos_10s": [
+   1.5,
+   4.5
+  ],
+  "max_parado": 7,
+  "enfase": [
+   0.1,
+   0.35
+  ]
+ },
+ "variacao": {
+  "sfx": 0,
+  "burn": 2,
+  "movimento": 3,
+  "painel": 3
+ },
+ "movimento": {
+  "preset": "editorial"
+ },
+ "saida": {
+  "tipo": "fade",
+  "dur": 0.9
+ }
+}
