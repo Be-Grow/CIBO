@@ -92,3 +92,5 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 - reel-motion: montagem de recap (vídeos+fotos+flares) pela API virou script de job (michele/04_work/resolve/monta_recap.py, edita_v2/v3.py): subir ao motor como "recap" (fotos como sequência de links, LUT por plano, zoom Fusion alternado)
 
 - regras/davinci.md: clipe com Fusion comp + Pan no Inspector = faixa preta (o Fusion recebe o quadro já recortado pelo input sizing e o Pan desloca a saída). Reenquadrou com Pan? zoom NÃO vai no Fusion do clipe. DeleteFusionCompByName devolveu False: recolocar o clipe (DeleteClips + AppendToTimeline com GetLeftOffset). Com Fusion o Pan lido cai para 1/4. Medido 19/11/2026 (Michelle).
+
+- regras/davinci.md: ciclo de .drt (export/import) MULTIPLICA por 4 o Pan de clipes de vídeo em scaleToCrop (Michelle 19/11/2026: tela preta nos horizontais). Depois de qualquer .drt, reler e regravar Pan. Sequência de imagens não sofre. resolve_cores: voz_mic_v2.wav cai como a_camera e seria DESLIGADA (regex /voz(__)?.wav).
