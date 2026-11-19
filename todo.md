@@ -87,3 +87,6 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 - 16/11/2026: gancho-e-ritmo não vê o "tail" do motion.json (acusa 0 s depois da última palavra) nem os destaques *…* do blocos_manual (0%).
 
 - lettering-motion/reel-motion: legenda palavra a palavra em Pillow alinhar pela LINHA DE BASE (getmetrics + anchor "ls"), nunca centralizar cada palavra pela própria bbox (Michelle 19/11/2026: "tortinha"). Script de referência: michele/04_work/grafismos_v2.py
+
+- regras/davinci.md: documentar lei do Pan no modo scaleToCrop ("Scale full frame with crop"), medida 19/11/2026 com render (TESTE PAN SCALETOCROP): visto = Pan × largura exibida ÷ largura da timeline (4K 16:9 em 1080x1920: 3,16). Diferente da lei conform none (Pan × arquivo ÷ timeline). Ref.: michele/04_work/resolve/edita_v3.py
+- reel-motion: montagem de recap (vídeos+fotos+flares) pela API virou script de job (michele/04_work/resolve/monta_recap.py, edita_v2/v3.py): subir ao motor como "recap" (fotos como sequência de links, LUT por plano, zoom Fusion alternado)
