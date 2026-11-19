@@ -90,3 +90,5 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 
 - regras/davinci.md: documentar lei do Pan no modo scaleToCrop ("Scale full frame with crop"), medida 19/11/2026 com render (TESTE PAN SCALETOCROP): visto = Pan × largura exibida ÷ largura da timeline (4K 16:9 em 1080x1920: 3,16). Diferente da lei conform none (Pan × arquivo ÷ timeline). Ref.: michele/04_work/resolve/edita_v3.py
 - reel-motion: montagem de recap (vídeos+fotos+flares) pela API virou script de job (michele/04_work/resolve/monta_recap.py, edita_v2/v3.py): subir ao motor como "recap" (fotos como sequência de links, LUT por plano, zoom Fusion alternado)
+
+- regras/davinci.md: clipe com Fusion comp + Pan no Inspector = faixa preta (o Fusion recebe o quadro já recortado pelo input sizing e o Pan desloca a saída). Reenquadrou com Pan? zoom NÃO vai no Fusion do clipe. DeleteFusionCompByName devolveu False: recolocar o clipe (DeleteClips + AppendToTimeline com GetLeftOffset). Com Fusion o Pan lido cai para 1/4. Medido 19/11/2026 (Michelle).
