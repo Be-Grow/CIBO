@@ -39,11 +39,19 @@ viram pergunta. Nunca pergunte o que o perfil do cliente ou o pedido já respond
 
 ### 1b. Referência do editor ("quero nesse estilo")
 
-Quando o editor mandar um vídeo de referência, meça antes de perguntar:
-`~/.claude/skills/content-hub/.venv/bin/python3 scripts/analisa_referencia.py REF.mp4 --out PASTA`
-(ritmo de corte, enquadramento, faixa e troca da legenda, cor, loudness, transientes; 5 s para um
-reel de 1 min). As sugestões viram as opções recomendadas das perguntas (ritmo, `CAP_PRESET`,
-enquadramento, cor) e entram no brief com a origem "referência do editor".
+Quando o editor mandar um vídeo de referência, meça antes de perguntar (e antes de afirmar qualquer coisa
+sobre ele — 19/11/2026: "1 flash" e "silêncio" ditos pela folha eram 17 flashes e um freeze escurecido):
+`python3 scripts/analisa_referencia.py REF.mp4 --out PASTA` (acha sozinho um venv com opencv; ~40 s por
+1 min de vídeo; `--rapido` pula separação, transcrição e OCR). Mede, com o tempo de cada evento:
+ritmo e cortes; flash de exposição, freeze/quase parado (e quanto escurece), P&B, preto, câmera inclinada,
+rampa provável; voz e música separadas (demucs, modelo em `/Volumes/SSD/CIBO/models/torch`): música abaixo
+da voz e quanto abaixa na fala, eco e compressão da voz, entradas/quedas da música, pausas, riser/whoosh,
+música abafada (passa-baixa), impactos, % de cortes na batida contra o acaso; fala (whisper-cli local,
+sem alucinação nem repetição); legenda pelo OCR do Vision (altura real, tamanho, caixa, palavras/bloco).
+Abra só `linha_tempo.jpg` (quadros + trilhas de marcadores, uma folha) e `relatorio.md` (receita: o que
+entra no tema do `reel-motion` e o que é montagem no DaVinci — flash, freeze, P&B e pausa ainda não têm
+chave no tema). SFX e rampa são "prováveis": confirme de ouvido/olho antes de pôr no brief. A receita entra
+no brief com a origem "referência do editor".
 
 ### 1c. Identidade sem manual de marca
 
