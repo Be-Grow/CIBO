@@ -14,4 +14,4 @@ fps = float(t.GetSetting('timelineFrameRate'))
 segs = [s[0] for s in json.load(open(sys.argv[3]))] if len(sys.argv) > 3 else []
 print(nome, '| áudio:', [(t.GetTrackName('audio', k), t.GetIsTrackEnabled('audio', k)) for k in range(1, t.GetTrackCount('audio') + 1)],
       '| pan', round(it[0].GetProperty('Pan'), 2), '| desvio:', [round(x.GetLeftOffset() / fps - s, 2) for x, s in zip(it, segs)])
-pm.SaveProject()
+__import__('sys').path.insert(0, __import__('os').path.join(__import__('os').path.dirname(__import__('os').path.realpath(__file__)), '..')); import fusion_kit as _K; _K.salva(pm)

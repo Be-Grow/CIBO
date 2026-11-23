@@ -150,6 +150,15 @@ Volta ao checklist: [`_checklist.md`](_checklist.md).
 - O motor corrige com `"posicao_resolve": "auto"` no reel.json (obrigatório quando a fonte não tem o tamanho da timeline; `"manual"`
   para job antigo que já gravou cx' = 960 + (cx−960)/1,7778 ou `track_dv.json`). As contas à mão das lições abaixo ficam só para esses.
 - Ao ajustar Pan/Tilt de um clipe pela API, use a mesma razão: Pan = px desejados × largura da timeline ÷ largura do arquivo.
+- **Modo scaleToCrop ("Scale full frame with crop") tem outra lei** (medida com render, Michelle 19/11/2026): deslocamento visto =
+  Pan × largura EXIBIDA ÷ largura da timeline (4K 16:9 em 1080×1920: 3,16). Ref.: michele/04_work/resolve/edita_v3.py.
+- **Clipe com Pan/Tilt não leva Fusion (trava no `fusion_kit.abre_comp`, 23/11/2026).** O Fusion processa antes do Inspector
+  (manual, cap. 11, p. 287) e o Pan desloca a saída: quadro/faixa preta (Michelle 19/11/2026). Zoom nesse clipe vai no Zoom do
+  Inspector, ou componha o vertical antes. Com comp no clipe, o Pan lido cai para 1/4. `DeleteFusionCompByName` devolveu False:
+  para tirar o Fusion, recoloque o clipe (DeleteClips + AppendToTimeline com GetLeftOffset). Liberar: `CIBO_FUSION_PAN_OK=1`.
+- **Ciclo de .drt multiplica por 4 o Pan de clipe em scaleToCrop** (Michelle 19/11/2026, tela preta nos horizontais; sequência de
+  imagens não sofre). Os scripts do motor tiram uma foto do Pan/Tilt/Zoom antes e regravam depois (`fusion_kit.transforms` +
+  `reaplica_transforms`); script novo com .drt faz o mesmo.
 - Fonte girada (iPhone, `rotate`) segue a mesma lei com as medidas do arquivo, mas o motor não corrige: o layout dos temas foi
   calibrado no olho em cima disso. Mexer só com piloto novo da Andrea/Priscilla.
 

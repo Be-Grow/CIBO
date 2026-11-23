@@ -103,7 +103,9 @@ if __name__ == '__main__':
                 if f.is_file(): z.write(f, f.relative_to(d))
         velha = tl_de(nome); velha.SetName(nfc(nome) + ' (antiga)')
         bruto = next((it.GetMediaPoolItem() for _, it in itens(velha) if it.GetMediaPoolItem() and '/_2997/' in (it.GetMediaPoolItem().GetClipProperty('File Path') or '')), None)
+        sys.path.insert(0, str(Path(__file__).parent)); import fusion_kit as K; foto = K.transforms(velha)   # .drt multiplica o Pan por 4 (Michelle 19/11/2026)
         novo = mp.ImportTimelineFromFile(str(tmp / 'b.drt'), {'timelineName': nome}); assert novo, 'importação .drt falhou'
+        K.reaplica_transforms(novo, foto, nome)
         novo.SetName(nome); p.SetCurrentTimeline(novo)
         info['religados'] = religa(mp, novo, bruto)
         info['pacote'] = pacote_certo(mp, novo, nome); info['recarregados'] = recarrega(mp, novo)
@@ -112,4 +114,4 @@ if __name__ == '__main__':
         if not resto and info['GlobalIn'] == [0]: mp.DeleteTimelines([velha])
         aplica(novo); shutil.rmtree(tmp, ignore_errors=True); sys.path.insert(0, str(Path(__file__).parent)); import guarda_editor as G; G.marca(p, novo)
         print(f'{nome[:45]}: {info}', flush=True)
-    r.GetProjectManager().SaveProject()
+    __import__('sys').path.insert(0, __import__('os').path.join(__import__('os').path.dirname(__import__('os').path.realpath(__file__)), '')); import fusion_kit as _K; _K.salva(r.GetProjectManager())

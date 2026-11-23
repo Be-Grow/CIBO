@@ -22,7 +22,7 @@ pelas palavras e diz quantas vezes ele já apareceu:
   voltou COM trava       "A TRAVA FALHOU": a correção é na trava, não só no vídeo.
 Padrão novo: `--padrao nome-curto` cria a entrada em padroes.json (descreva e ponha palavras depois).
 """
-import argparse, collections, json, time, unicodedata
+import argparse, collections, json, re, time, unicodedata
 from pathlib import Path
 
 REF = Path(__file__).resolve().parent.parent / "references"
@@ -162,7 +162,7 @@ def main():
         if not sem: print("  nenhum")
         print("COM TRAVA (ocorrências depois da data da trava = a trava falhou):")
         for k, n in com:
-            dt = next((w for w in P[k]["trava"].replace(",", " ").split() if w.count("/") == 2), "")
+            m = re.findall(r"\b(\d{1,2}/\d{1,2}/\d{4})\b", P[k]["trava"]); dt = m[-1] if m else ""
             depois = 0
             if dt:
                 d, m, y = dt.split("/"); iso = f"{y}-{m.zfill(2)}-{d.zfill(2)}"

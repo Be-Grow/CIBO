@@ -73,21 +73,26 @@
       "pan x4",
       "bruto descia"
     ],
-    "trava": ""
+    "trava": "reel-motion: davinci.py para sem \"posicao_resolve\" quando a fonte não tem o tamanho da timeline (lei medida), 14/11/2026"
   },
   "fusion-faixa-preta": {
-    "descricao": "Fusion com faixa preta ou render falhando por GlobalIn",
+    "descricao": "quadro/faixa preta no Resolve: Fusion em clipe com Pan, Pan x4 depois de .drt, GlobalIn",
     "categorias": [
       "motion",
-      "render"
+      "render",
+      "enquadramento",
+      "processo"
     ],
     "palavras": [
       "faixa preta",
       "globalin",
       "barra preta",
-      "frames pretos"
+      "frames pretos",
+      "pan x4",
+      "multiplica por 4",
+      "fusion em clipe"
     ],
-    "trava": ""
+    "trava": "reel-motion: fusion_kit.abre_comp recusa Fusion em clipe com Pan; .drt regrava Pan/Tilt/Zoom (reaplica_transforms); fixa confere GlobalIn, 23/11/2026"
   },
   "untitled-project": {
     "descricao": "Resolve preso no Untitled Project / diálogo de salvar",

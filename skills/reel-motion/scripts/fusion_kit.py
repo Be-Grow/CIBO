@@ -148,8 +148,22 @@ def le(tool, inp, quadros):
     return [round(float(tool.GetInput(inp, q)), 4) for q in quadros]
 
 
+def reenquadrado(it):
+    """Pan/Tilt do Inspector no clipe (lido ANTES de pôr Fusion: com comp o Pan lido cai para 1/4, Michelle 19/11/2026)"""
+    try:
+        return abs(float(it.GetProperty('Pan') or 0)) > 0.5 or abs(float(it.GetProperty('Tilt') or 0)) > 0.5
+    except (TypeError, ValueError):
+        return False
+
+
 def abre_comp(it):
-    """comp novo no clipe, travado para editar. Devolve (comp, MediaIn1, MediaOut1)."""
+    """comp novo no clipe, travado para editar. Devolve (comp, MediaIn1, MediaOut1).
+    Trava (23/11/2026): clipe reenquadrado com Pan/Tilt não leva Fusion. O Fusion processa ANTES do Inspector (manual do
+    Resolve, cap. 11 "Fusion Effects and Resolution", p. 287) e o Pan desloca a saída: faixa/quadro preto (Michelle 19/11/2026,
+    "frames pretos em 25 s"). Zoom nesse clipe vai no Zoom do Inspector, ou componha o vertical antes. Liberar: CIBO_FUSION_PAN_OK=1."""
+    if not it.GetFusionCompCount() and reenquadrado(it) and os.environ.get('CIBO_FUSION_PAN_OK') != '1':
+        raise AssertionError(f'clipe "{it.GetName()}" reenquadrado com Pan/Tilt ({it.GetProperty("Pan")}, {it.GetProperty("Tilt")}): '
+                             'Fusion aqui revela preto (o Fusion vem antes do Pan). Use o Zoom do Inspector ou componha o vertical antes.')
     comp = it.AddFusionComp(); assert comp, 'AddFusionComp falhou'
     comp.Lock()
     return comp, comp.FindTool('MediaIn1'), comp.FindTool('MediaOut1')
@@ -206,6 +220,40 @@ def entra_sai(it, arq, pivo=(0.5, 0.5), escala=1.06, blur_ent=20, blur_sai=12, e
     anima(bl, 'XBlurSize', [(d, blur_ent), (d + ent, 0), (d + D - 1 - sai, 0), (d + D - 1, blur_sai)])
     anima(bc, 'Gain', [(d, 0), (d + ent, 1), (d + D - 1 - sai, 1), (d + D - 1, 0)])
     return fixa(it, comp, arq)
+
+
+# ---------- ciclo de .drt ----------
+TRANSF = ('Pan', 'Tilt', 'ZoomX', 'ZoomY')
+
+
+def transforms(tl):
+    """foto do Pan/Tilt/Zoom dos clipes de vídeo SEM Fusion, por (nome, início, fim), para conferir depois de um ciclo de .drt"""
+    foto, vistos = {}, set()
+    for k in range(1, tl.GetTrackCount('video') + 1):
+        for it in tl.GetItemListInTrack('video', k) or []:
+            if it.GetFusionCompCount(): continue
+            ch = (nfc(it.GetName()), it.GetStart(), it.GetEnd())
+            if ch in vistos: foto.pop(ch, None); continue        # chave repetida: ambíguo, não mexe
+            vistos.add(ch); foto[ch] = {p: it.GetProperty(p) for p in TRANSF}
+    return foto
+
+
+def reaplica_transforms(tl, foto, nome=''):
+    """Ciclo de .drt (export/import) MULTIPLICA por 4 o Pan dos clipes em scaleToCrop (Michelle 19/11/2026: tela preta nos
+    horizontais). Depois de todo .drt: relê e regrava o que mudou. Devolve quantos clipes foram corrigidos."""
+    fixos = 0
+    for k in range(1, tl.GetTrackCount('video') + 1):
+        for it in tl.GetItemListInTrack('video', k) or []:
+            antes = foto.get((nfc(it.GetName()), it.GetStart(), it.GetEnd()))
+            if not antes or it.GetFusionCompCount(): continue
+            mudou = False
+            for p, v in antes.items():
+                agora = it.GetProperty(p)
+                if isinstance(v, (int, float)) and isinstance(agora, (int, float)) and abs(agora - v) > max(0.01, abs(v) * 0.01):
+                    it.SetProperty(p, v); mudou = True
+            fixos += mudou
+    if fixos: print(f'{nome[:45]}: Pan/Tilt/Zoom de {fixos} clipe(s) mudou no .drt e foi regravado', flush=True)
+    return fixos
 
 
 def pontos_zoom(dur, f0, f1, quanto, entra, sai, seco=False):

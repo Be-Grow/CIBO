@@ -54,7 +54,9 @@ if __name__ == '__main__':
                 for f in d.rglob('*'):
                     if f.is_file(): z.write(f, f.relative_to(d))
             tl.SetName(nome + ' (antiga)')
+            sys.path.insert(0, str(Path(__file__).parent)); import fusion_kit as K; foto = K.transforms(tl)   # .drt multiplica o Pan por 4 (Michelle 19/11/2026)
             novo = mp.ImportTimelineFromFile(str(tmp / 'b.drt'), {'timelineName': nome}); assert novo, 'importação .drt falhou'
+            K.reaplica_transforms(novo, foto, nome)
             novo.SetName(nome); mp.DeleteTimelines([tl]); aplica(novo); tl = novo; sys.path.insert(0, str(Path(__file__).parent)); import guarda_editor as G; G.marca(p, novo)
             shutil.rmtree(tmp, ignore_errors=True)
         else:
@@ -63,4 +65,4 @@ if __name__ == '__main__':
         if preset:
             p.SetCurrentTimeline(tl); ok = f', preset {preset}: {p.ApplyFairlightPresetToCurrentTimeline(preset)}'
         print(f'{nome[:45]}: {cont}{ok}', flush=True)
-    r.GetProjectManager().SaveProject()
+    __import__('sys').path.insert(0, __import__('os').path.join(__import__('os').path.dirname(__import__('os').path.realpath(__file__)), '')); import fusion_kit as _K; _K.salva(r.GetProjectManager())

@@ -9,4 +9,4 @@ for i in range(1, p.GetTimelineCount() + 1):
         cam = 'câmera' in t.GetTrackName('audio', k).lower()
         t.SetTrackEnable('audio', k, not cam)
     print(t.GetName(), [(t.GetTrackName('audio', k), t.GetIsTrackEnabled('audio', k)) for k in range(1, t.GetTrackCount('audio') + 1)])
-pm.SaveProject()
+__import__('sys').path.insert(0, __import__('os').path.join(__import__('os').path.dirname(__import__('os').path.realpath(__file__)), '..')); import fusion_kit as _K; _K.salva(pm)

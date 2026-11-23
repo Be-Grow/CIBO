@@ -39,8 +39,8 @@ Pendências de 12/10/2026 (detalhes em `skills/client-router/references/fontes-e
 
 ## Viram trava (`feedback.py repetidos`, revisão semanal)
 
-- [ ] **posicao-resolve** (6x até 19/11/2026): Pan/zoom do bruto errados no Resolve (1,78× do scaleToFit, Pan ×4 depois de .drt).
-      Trava: conferir pela API (`GetProperty` Pan/ZoomX) depois de montar e parar se não bater com o pacote. Item 4 do plano.
+- [x] **posicao-resolve**: trava desde 14/11/2026 (davinci.py, `posicao_resolve`); as 2 da Michelle eram Fusion/.drt.
+- [x] **fusion-faixa-preta**: trava 23/11/2026 (`fusion_kit.abre_comp` recusa Fusion em clipe com Pan; .drt regrava Pan/Tilt/Zoom).
 
 ## Anotado no YT 01 da Priscilla (09/11/2026) — corrigir depois do job
 - reel-motion `e_davinci`: renderiza a camada inteira `legenda` mesmo com `captions: []` (vídeo sem legenda = ProRes 4444 vazio de 8 min). Pular quando não há legenda. Contornei com um MOV de 1 quadro no lugar.
@@ -93,12 +93,10 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 
 - lettering-motion/reel-motion: legenda palavra a palavra em Pillow alinhar pela LINHA DE BASE (getmetrics + anchor "ls"), nunca centralizar cada palavra pela própria bbox (Michelle 19/11/2026: "tortinha"). Script de referência: michele/04_work/grafismos_v2.py
 
-- regras/davinci.md: documentar lei do Pan no modo scaleToCrop ("Scale full frame with crop"), medida 19/11/2026 com render (TESTE PAN SCALETOCROP): visto = Pan × largura exibida ÷ largura da timeline (4K 16:9 em 1080x1920: 3,16). Diferente da lei conform none (Pan × arquivo ÷ timeline). Ref.: michele/04_work/resolve/edita_v3.py
 - reel-motion: montagem de recap (vídeos+fotos+flares) pela API virou script de job (michele/04_work/resolve/monta_recap.py, edita_v2/v3.py): subir ao motor como "recap" (fotos como sequência de links, LUT por plano, zoom Fusion alternado)
 
-- regras/davinci.md: clipe com Fusion comp + Pan no Inspector = faixa preta (o Fusion recebe o quadro já recortado pelo input sizing e o Pan desloca a saída). Reenquadrou com Pan? zoom NÃO vai no Fusion do clipe. DeleteFusionCompByName devolveu False: recolocar o clipe (DeleteClips + AppendToTimeline com GetLeftOffset). Com Fusion o Pan lido cai para 1/4. Medido 19/11/2026 (Michelle).
 
-- regras/davinci.md: ciclo de .drt (export/import) MULTIPLICA por 4 o Pan de clipes de vídeo em scaleToCrop (Michelle 19/11/2026: tela preta nos horizontais). Depois de qualquer .drt, reler e regravar Pan. Sequência de imagens não sofre. resolve_cores: voz_mic_v2.wav cai como a_camera e seria DESLIGADA (regex /voz(__)?.wav).
+- resolve_cores: voz_mic_v2.wav cai como a_camera e seria DESLIGADA (regex /voz(__)?.wav) (Michelle 19/11/2026).
 - reel-motion: sfx_tema.py precisa de voz.wav, que só o `mix` gera; e o `mix`/`props` precisam de sfx.json (ovo e galinha, depoimentosAlunas 23/11/2026)
 - reel-motion capa.mjs: 'você' (ê) na capa da Andrea (Cormorant) saiu com o circunflexo solto acima da letra (videosGrupo r02, 23/11/2026); contornei trocando o texto
 - reel-motion/fila: no videosGrupo r02 (com painéis) a faixa 'CÂMERA renderizada (ref.)' veio LIGADA por cima do bruto (no r01 sem painéis veio desligada): escondia a CDL e, sem o motion, mostrava a câmera descendo (23/11/2026)

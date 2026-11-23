@@ -135,8 +135,10 @@ for pac in map(Path, [a for a in sys.argv[1:] if not a.startswith('--')]):
         for f in d.rglob('*'):
             if f.is_file(): z.write(f, f.relative_to(d))
     tl.SetName(nome + ' (antiga)')
+    sys.path.insert(0, str(Path(__file__).parent)); import fusion_kit as K; foto = K.transforms(tl)   # .drt multiplica o Pan por 4 (Michelle 19/11/2026)
     novo = mp.ImportTimelineFromFile(str(drt2), {'timelineName': nome})
     assert novo, 'importação .drt falhou'
+    K.reaplica_transforms(novo, foto, nome)
     novo.SetName(nome); p.SetCurrentTimeline(novo)
     for j, fx in enumerate(FX):
         itens = {it.GetStart(): it for it in novo.GetItemListInTrack('video', ib + 2 + j) or []}

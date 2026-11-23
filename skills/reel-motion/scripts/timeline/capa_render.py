@@ -26,4 +26,4 @@ for i in range(1, p.GetTimelineCount() + 1):
     nv = mp.AppendToTimeline([{'mediaPoolItem': it, 'startFrame': 0, 'endFrame': 1, 'mediaType': 1, 'trackIndex': k, 'recordFrame': tl.GetStartFrame()}])
     assert nv and nv[0].GetDuration() == 1, f'capa {nome}: {nv and nv[0].GetDuration()}'
     nv[0].SetClipColor('Brown'); print(nome[:30], f'capa no V{k}, 1 quadro')
-r.GetProjectManager().SaveProject()
+__import__('sys').path.insert(0, __import__('os').path.join(__import__('os').path.dirname(__import__('os').path.realpath(__file__)), '..')); import fusion_kit as _K; _K.salva(r.GetProjectManager())

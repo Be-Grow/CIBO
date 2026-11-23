@@ -128,11 +128,13 @@ if __name__ == '__main__':
     # 3. timelines voltam com o mesmo nome
     for nome, (tmp, info) in drts.items():
         tl = tl_de(nome); tl.SetName(nome + ' (antiga)')
+        sys.path.insert(0, str(Path(__file__).parent)); import fusion_kit as K; foto = K.transforms(tl)   # .drt multiplica o Pan por 4 (Michelle 19/11/2026)
         novo = mp.ImportTimelineFromFile(str(tmp / 'b.drt'), {'timelineName': nome}); assert novo, 'importação .drt falhou'
+        K.reaplica_transforms(novo, foto, nome)
         novo.SetName(nome)
         off = [it.GetName() for ty in ('video', 'audio') for k in range(1, novo.GetTrackCount(ty) + 1)
                for it in novo.GetItemListInTrack(ty, k) or [] if not it.GetMediaPoolItem() and not it.GetFusionCompCount()]
         if off: print(f'{nome[:45]}: {len(off)} clipes sem mídia {off[:3]}; a antiga fica como "(antiga)"', flush=True)
         else: mp.DeleteTimelines([tl])
         aplica(novo); shutil.rmtree(tmp, ignore_errors=True); sys.path.insert(0, str(Path(__file__).parent)); import guarda_editor as G; G.marca(p, novo)
-    r.GetProjectManager().SaveProject(); print('ok', flush=True)
+    __import__('sys').path.insert(0, __import__('os').path.join(__import__('os').path.dirname(__import__('os').path.realpath(__file__)), '')); import fusion_kit as _K; _K.salva(r.GetProjectManager()); print('ok', flush=True)
