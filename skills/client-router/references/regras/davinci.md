@@ -6,6 +6,8 @@ interface funciona: `doc_resolve.py manual TERMO` e depois `--pagina N`. Só dep
 
 **Timeline que o editor mexeu é dele (trava, 23/11/2026):** apagar ou reimportar timeline só via `guarda_editor.apaga`, que recusa
 se a assinatura mudou desde que a CIBO montou (ou se a timeline não é da CIBO). Liberar: `CIBO_EDITOR_OK=1`, só depois de perguntar.
+Antes de refazer, rode `reel-motion/scripts/guarda_editor.py [TIMELINE]`: diz O QUE o editor mudou (clipe, corte, posição, zoom,
+Fusion). Preserve, conte a ele e refaça só o pedido; o ajuste dele que se repete vira lição ou correção registrada.
 
 **Conferência é no preview do DaVinci, sempre (editor, 21/10/2026: "preview no davinci sempre").** Monte as camadas, avise e
 o editor confere no preview do Resolve. Não renderize nem exporte quadro/still pelo Resolve para conferir, e render final só

@@ -55,6 +55,10 @@ A etapa seguinte recusa selo que falta ou ficou velho. **"Pronto" é o que `reel
 - **Timeline que o editor mexeu é dele (trava, 23/11/2026):** `scripts/guarda_editor.py`. Toda timeline que a CIBO monta ganha assinatura;
   apagar/reimportar só passa se ela está como a CIBO deixou. Script novo que apaga timeline usa `G.apaga(mp, p, tl)`, nunca
   `mp.DeleteTimelines` direto, e chama `G.marca(p, tl)` depois de montar. Liberar: `CIBO_EDITOR_OK=1`, só depois de perguntar.
+  **Antes de refazer, mexer ou apagar qualquer timeline, rode `scripts/guarda_editor.py [TIMELINE]`** (lista o que o editor mudou:
+  corte, posição, zoom, Fusion, clipe posto ou tirado). Conte a ele em português ("vi que você encurtou o r02 e trocou o motion por
+  lettering; mantenho"), refaça só o que ele pediu, por cima do que ele fez, nunca do zero. Ajuste dele que se repete em vídeos ou
+  clientes é aprendizado: `licao.py add` (gosto) ou `feedback.py add` (erro da CIBO que ele consertou).
 - **Dúvida de DaVinci: consulte a documentação antes de tentar** (editor, 23/11/2026): `scripts/doc_resolve.py api TERMO` (API de
   scripting) ou `doc_resolve.py manual TERMO` (manual do Resolve). Achou algo que não estava em `regras/davinci.md`? Anote lá.
 - Mudou o motor? `/Volumes/SSD/CIBO/repo/tests/regressao.py check --engine reel-motion` (22 s, sem câmera) antes do push.
