@@ -451,11 +451,32 @@ def bruto(k, a, b, s0):
     var = lambda i: max(v[i] for _, v in vals) - min(v[i] for _, v in vals)
     P_ = anim('position', sorted({n for n, _ in px} | {n for n, _ in py}), lambda n: f'{pv[n][0]:.4f} {pv[n][1]:.4f}', var(0) > 0.02 or var(1) > 0.02)
     S_ = anim('scale', [n for n, _ in sc], lambda n: f'{pv[n][2]:.5f} {pv[n][2]:.5f}', var(2) > 0.0005)
-    return (f'<asset-clip ref="{ref}" lane="1" offset="{tt(a)}" start="{tt(st)}" duration="{tt(b - a)}" srcEnable="video" name={quoteattr(f"bruto {SRC.stem} {s0:.2f}")}>'
+    return (f'<asset-clip ref="{ref}" lane="1" offset="{tt(a)}" start="{tt(st)}" duration="{tt(b - a)}" srcEnable="video" name={quoteattr(NOME_TAKE.get(k, f"bruto {SRC.stem} {s0:.2f}"))}>'
             f'<adjust-conform type="none"/><adjust-transform position="{x0:.4f} {y0:.4f}" scale="{s_:.5f} {s_:.5f}" rotation="{ROT}">{P_}{S_}</adjust-transform></asset-clip>')
 
 
 L = []
+# CÓDIGOS (editor, 23/11/2026): cada legenda, efeito e camada leva no nome um código de 3 números, para o editor apontar
+# "r02, 00:12, 214, legenda cortando a palavra". A centena diz o tipo; o mapa fica em codigos.json (pacote e 04_work/rNN).
+FAIXA_COD = {'corte': (1, 99), 'legenda': (100, 399), 'motion': (400, 499), 'sfx': (500, 599), 'burn': (600, 699),
+             'outro': (700, 799), 'legenda+': (800, 999)}
+CODIGOS, _prox = {}, {}
+
+
+def cod(tipo, nome, off, n, **info):
+    """próximo código do tipo; devolve o nome do clipe com o código na frente e guarda o mapa"""
+    a, b = FAIXA_COD[tipo]
+    c = _prox.get(tipo, a)
+    if c > b:
+        if tipo == 'legenda':
+            return cod('legenda+', nome, off, n, **info)
+        tipo, (a, b) = 'outro', FAIXA_COD['outro']; c = _prox.get('outro', a)
+    _prox[tipo] = c + 1
+    CODIGOS[f'{c:03d}'] = {'tipo': tipo.rstrip('+'), 'nome': nome, 'inicio_s': round(float(off * FD), 2),
+                           'fim_s': round(float((off + n) * FD), 2), **info}
+    return f'{c:03d} {nome}'
+
+
 lane = [0]
 
 
@@ -464,15 +485,15 @@ def nova():
     return lane[0]
 
 
-def faixas(itens, nomear):
-    """itens (arquivo, início, duração, nome, in) em faixas novas sem sobreposição"""
+def faixas(itens, tipo, grupo=''):
+    """itens (arquivo, início, duração, nome, in) em faixas novas sem sobreposição; cada clipe ganha código do tipo"""
     fins, base = [], lane[0]
     for f, off, n, nome, st in sorted(itens, key=lambda z: z[1]):
         k = next((i for i, e in enumerate(fins) if e <= off), len(fins))
         if k == len(fins):
             fins.append(0); nova()
         fins[k] = off + n
-        L.append(clip(f, base + 1 + k, off, n, nome, start=st))
+        L.append(clip(f, base + 1 + k, off, n, cod(tipo, nome, off, n, **({'grupo': grupo} if grupo else {})), start=st))
 
 
 BLUR = CROP and not HZ and RH * VW / min(RW, RH * 9 / 16) > RH * 1.001 and (PUB / R / 'camera.mov').exists()
@@ -482,44 +503,46 @@ if BLUR:                                                      # fundo desfocado 
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(PUB / R / 'camera.mov'), '-an', '-vf',
                         f'scale={VW // 8}:{VH // 8}:force_original_aspect_ratio=increase,crop={VW // 8}:{VH // 8},gblur=sigma=6,eq=brightness=-0.06,scale={VW}:{VH}',
                         '-c:v', 'libx264', '-crf', '20', '-pix_fmt', 'yuv420p', '-r', '30000/1001', str(bg)], check=True)
-    L.append(clip(bg, nova(), 0, D, 'fundo desfocado'))
+    L.append(clip(bg, nova(), 0, D, cod('outro', 'fundo desfocado', 0, D)))
 V1 = nova()                                                   # bruto, take a take, com alça
+NOME_TAKE, COD_TAKE = {}, {}
 for k, (a, b, s0, s1) in enumerate(takes):
+    NOME_TAKE[k] = cod('corte', f'bruto {SRC.stem} {s0:.2f}', a, b - a, fonte_s=[round(s0, 2), round(s1, 2)]); COD_TAKE[a] = NOME_TAKE[k][:3]
     L.append(bruto(k, a, b, s0).replace('lane="1"', f'lane="{V1}"', 1))
-    L.append(clip(OUT / U('voz.wav'), -1, a, b - a, f'voz {s0:.2f}-{s1:.2f}', start=a, video=False, audio=True))
+    L.append(clip(OUT / U('voz.wav'), -1, a, b - a, f'{COD_TAKE[a]} voz {s0:.2f}-{s1:.2f}', start=a, video=False, audio=True))
 V2 = nova()                                                   # câmera renderizada por cima (imagem aprovada); para estender um
 for a, b, s0, s1 in takes:                                    # take, desligue o clipe dela e use o bruto embaixo
     if (CAM / U('camera.mov')).exists() and not C.get('camera_davinci'):   # "camera_davinci": o DaVinci monta a câmera do bruto (validado 19/10/2026)
-        L.append(clip(CAM / U('camera.mov'), V2, a, b - a, f'câmera renderizada {s0:.2f}', start=a))
+        L.append(clip(CAM / U('camera.mov'), V2, a, b - a, f'{COD_TAKE.get(a, "")} câmera renderizada {s0:.2f}'.strip(), start=a))
 if midia:
     V = nova()
     for f, off, n, nome in midia:
-        L.append(clip(f, V, max(0, off), n, nome, start=max(0, off)))
-faixas([(f, off, n, nome, 0) for f, off, n, nome in fundos], None)
-faixas(elem.get('painel', []), None)
-faixas(elem.get('step', []), None)
-faixas(elem.get('tag', []), None)
-faixas(elem.get('titulo', []), None)
-faixas([(f, off, n, nome, 0) for f, off, n, nome in legenda], None)
+        L.append(clip(f, V, max(0, off), n, cod('motion', nome, max(0, off), n, grupo='mídia'), start=max(0, off)))
+faixas([(f, off, n, nome, 0) for f, off, n, nome in fundos], 'motion', 'fundo')
+faixas(elem.get('painel', []), 'motion', 'painel')
+faixas(elem.get('step', []), 'motion', 'step')
+faixas(elem.get('tag', []), 'motion', 'etiqueta')
+faixas(elem.get('titulo', []), 'motion', 'título')
+faixas([(f, off, n, nome, 0) for f, off, n, nome in legenda], 'legenda')
 # extras do reel.json ("extras": [{"arq": "extras/x.mov", "s": 0.4, "nome": "…"}]): elementos feitos fora do Remotion
 # (ex.: cartão com o logo da Growth no gancho do 06, 14/10/2026), cada um na sua faixa
 for e in C.get('extras', []):
     src = W / e['arq']; dst = OUT / 'extras' / src.name
     dst.parent.mkdir(exist_ok=True); shutil.copy(src, dst)
     shutil.copy(src.with_suffix('.png'), dst.with_suffix('.png')) if src.with_suffix('.png').exists() else None
-    L.append(clip(dst, nova(), fr(e.get('s', 0)), fr(dur(dst)), e.get('nome', src.stem)))
+    L.append(clip(dst, nova(), fr(e.get('s', 0)), fr(dur(dst)), cod('motion', e.get('nome', src.stem), fr(e.get('s', 0)), fr(dur(dst)), grupo='extra')))
 V = nova()
 for f, off, n in burns:
-    L.append(clip(f, V, off, n, 'burn', extra=f'<adjust-blend amount="{BOP}"/>'))
-if CP: L.append(clip(OUT / U('capa.mov'), nova(), 0, 1, 'capa (quadro 0)'))
-L.append(clip(OUT / U('trilha.wav'), -2, 0, fr(dur(OUT / U('trilha.wav'))), 'trilha', video=False, audio=True))
+    L.append(clip(f, V, off, n, cod('burn', 'burn', off, n), extra=f'<adjust-blend amount="{BOP}"/>'))
+if CP: L.append(clip(OUT / U('capa.mov'), nova(), 0, 1, cod('outro', 'capa (quadro 0)', 0, 1)))
+L.append(clip(OUT / U('trilha.wav'), -2, 0, fr(dur(OUT / U('trilha.wav'))), cod('outro', 'trilha', 0, fr(dur(OUT / U('trilha.wav')))), video=False, audio=True))
 fim = []                                                      # SFX: faixas de áudio sem sobreposição
 for f, ins_, off, n, db in sorted(sfx, key=lambda z: z[2]):
     k = next((i for i, e in enumerate(fim) if e <= off), len(fim))
     if k == len(fim):
         fim.append(0)
     fim[k] = off + n
-    L.append(clip(f, -3 - k, off, n, f.stem, start=ins_, video=False, audio=True, extra=f'<adjust-volume amount="{db:.1f}dB"/>'))
+    L.append(clip(f, -3 - k, off, n, cod('sfx', f.stem, off, n), start=ins_, video=False, audio=True, extra=f'<adjust-volume amount="{db:.1f}dB"/>'))
 if FX:                                                        # movimentos.json: uma camada de ajuste por movimento (resolve_fx.py)
     U = PU if CROP else 19.2
     def estado(n, z, s_):
@@ -558,7 +581,7 @@ if GROSSO and PR.get('captions'):
     for i, b in enumerate(PR['captions']):
         a0, a1 = fr(b['s']), max(fr(b['s']) + 1, fr(b['e']))
         tx = txt(b).upper() if _up else txt(b)
-        L.append(f'<title ref="rT" lane="20" offset="{tt(a0)}" duration="{tt(a1 - a0)}" name={quoteattr(tx[:40])}>'
+        L.append(f'<title ref="rT" lane="20" offset="{tt(a0)}" duration="{tt(a1 - a0)}" name={quoteattr(cod("legenda", tx[:40], a0, a1 - a0))}>'
                  '<adjust-transform position="0 -38"/>'                          # % da altura, como a câmera (y para cima)
                  f'<text><text-style ref="ts{i}">{tx.replace("&", "&amp;").replace("<", "&lt;")}</text-style></text>'
                  f'<text-style-def id="ts{i}"><text-style font="Montserrat" fontSize="{VH * 0.05:.0f}" fontFace="{_w}" fontColor="1 1 1 1" '
@@ -583,5 +606,8 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 </fcpxml>
 '''
 open(OUT / 'timeline.fcpxml', 'w').write(xml)
+_mapa = {'reel': R, 'nome': C['name'], 'faixas': {k: f'{a:03d}-{b:03d}' for k, (a, b) in FAIXA_COD.items()}, 'codigos': CODIGOS}
+for _d in (OUT, W):
+    (_d / 'codigos.json').write_text(json.dumps(_mapa, ensure_ascii=False, indent=1))
 print(f'pacote DaVinci: {OUT.name} — {len(takes)} takes do bruto, {len(fundos)} fundos, ' + ', '.join(f'{len(v)} {k}' for k, v in elem.items()) + f', {len(legenda)} blocos de legenda, '
       f'{len(burns)} burns, {len(sfx)} SFX, {len(midia)} mídias; master {G:+.1f} dB')

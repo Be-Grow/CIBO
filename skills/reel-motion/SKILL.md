@@ -52,6 +52,11 @@ A etapa seguinte recusa selo que falta ou ficou velho. **"Pronto" é o que `reel
 - O motor escolhe o próprio Python (venv com numpy/PIL) e cada processo tem o seu bundle: pode rodar `verifica` de outro reel durante um render.
 - **Capa é do editor (trava, 23/11/2026):** `final`, `capa` e `entrega` recusam reel.json `"capa"` sem `"editor": "<o que ele escolheu>"`.
   Mostre a folha do `capa_cand.py`, pergunte e registre a escolha nas palavras dele. Prévia sem escolha: `CAPA_PROVISORIA=1` (não entrega).
+- **Código de 3 números em cada elemento (editor, 23/11/2026):** o `davinci.py` põe no nome de cada clipe um código cuja centena diz o
+  tipo — 001–099 cortes do bruto (voz e câmera do mesmo trecho levam o mesmo código), 100–399 legendas, 400–499 motion (painel,
+  título, etiqueta, fundo, mídia, extras), 500–599 SFX, 600–699 burns, 700–799 trilha/capa/fundo, 800–999 legendas além da 300ª —
+  e grava o mapa em `codigos.json` (pacote e `04_work/rNN`). O editor corrige dizendo vídeo, minutagem, código e erro; registre com
+  `feedback.py add --proj --reel --codigo --tempo --texto`, que entra no aprendizado (padrão → trava) como as outras correções.
 - **Timeline que o editor mexeu é dele (trava, 23/11/2026):** `scripts/guarda_editor.py`. Toda timeline que a CIBO monta ganha assinatura;
   apagar/reimportar só passa se ela está como a CIBO deixou. Script novo que apaga timeline usa `G.apaga(mp, p, tl)`, nunca
   `mp.DeleteTimelines` direto, e chama `G.marca(p, tl)` depois de montar. Liberar: `CIBO_EDITOR_OK=1`, só depois de perguntar.
