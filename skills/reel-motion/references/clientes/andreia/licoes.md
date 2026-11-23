@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-23 (videosGrupo r02): Aviso longo para o grupo (3:47, selfie): editor pediu sem motion, só legenda ('tira o motion do 2 e deixa só as legendas'). Cartões em tela dividida não servem para esse formato; aviso de grupo = legenda + cor + trilha.
 - 2026-11-23 (videosGrupo): Capa de selfie em close (rosto grande no quadro): título caiu em cima dos olhos com shift 70; com shift 400 o rosto desce e o título fica acima da cabeça. Medir a posição dos olhos na capa antes de entregar (23/11/2026: 'a legenda tá na cara dela na capa').
 - 2026-11-17 (cortesLiveFimDoMundo): Capa: nome no rodapé (ANDREA FRANCOMANO) quase não aparecia sobre a imagem; sombra forte em camadas (tema capa.footerSombra: true).
 - 2026-11-17 (cortesLiveFimDoMundo): Capa: título longo (headline da Laryssa) numa linha só encolhe a fonte ('tá muito pequena', 17/11/2026). Quebrar em 3 linhas com l1/l1b/l2+accent (~16–20 letras por linha) para a fonte ficar no tamanho cheio. Já tinha sido pedido em 30/10 ('o título da segunda capa tá pequeno').
