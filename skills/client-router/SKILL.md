@@ -69,6 +69,8 @@ atual. Não crie skill-cópia de motor para cliente novo: tema + rubrica. Katia 
    | "olha o material da Fulana", "o que você aprendeu dela?" | `aprende.py <cliente>`; resuma a ficha em até 5 linhas, sem caminho nem nome de chave, e pergunte se aprova |
    | "aprovado", "pode aplicar", "aprovado menos as cores/legenda/fontes" | `aprende.py <cliente> --aplica [--sem theme.colors,theme.caption,theme.fonts]` e avise que o próximo vídeo é piloto |
    | "a cliente mudou a marca", "material novo da Fulana" | mesmo caminho do `--de` |
+   | "minha arena é a pasta X" (a arena é SÓ a porta de entrada; o editor aponta, a CIBO não cria nem mexe nela) | `arena.py define X` (uma vez por computador) |
+   | "tem demanda nova na arena", "pega a demanda da Fulana" | `arena.py lista` → confirme qual → `arena.py recebe DEMANDA [--cliente C]`: cria o projeto na organização da CIBO (`arena.py projetos`) e copia o material; daí em diante trabalhe só no projeto |
 
    Pedidos e proibições da ficha viram `licao.py add` no mesmo turno da aprovação. Nunca no meio de produção. Não crie skill para o
    cliente. O Drive é só para material de edição (baixar efeitos e subir o vídeo pronto): nunca crie pasta de trabalho, fila ou
