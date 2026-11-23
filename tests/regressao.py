@@ -297,6 +297,21 @@ def teste_reel_motion():
     grava(ruim); r = roda("props"); r2 = roda("verifica")
     if r2.returncode == 0 or "vaza do painel" not in r2.stdout:
         erros.append("item comprido demais não foi acusado como 'vaza do painel': " + (r.stdout + r2.stdout + r2.stderr).strip()[-400:])
+    # travas de 23/11/2026 (o que mais volta no feedback): borda de corte em cima da voz e capa sem quadro do editor
+    sh(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "sine=frequency=220:duration=8,volume=0.5", "-f", "lavfi", "-i",
+        "anullsrc=r=16000:cl=mono", "-filter_complex", "[0:a]aresample=16000,aformat=channel_layouts=mono[v];[1:a]atrim=duration=4[s];[v][s]concat=n=2:v=0:a=1",
+        "-ar", "16000", "-ac", "1", str(W / "src_16k.wav")])
+    json.dump([[0.5, 5.0]], open(W / "segs.json", "w"))            # fim em 5,0 s com a voz seguindo até 8 s
+    r = roda("cortes")
+    if r.returncode != 1 or "corte no som" not in r.stdout:
+        erros.append("corte terminando em cima da voz não travou o selo de cortes (bordas.py): " + (r.stdout + r.stderr).strip()[-400:])
+    rj = json.load(open(W / "reel.json")); rj["cortes_ouvidos"] = {"0.50-5.00": "teste: ouvido e assumido"}; json.dump(rj, open(W / "reel.json", "w"), ensure_ascii=False)
+    r = roda("cortes")
+    if r.returncode != 0 or "cortes OK" not in r.stdout:
+        erros.append("corte assumido em cortes_ouvidos não liberou o selo: " + (r.stdout + r.stderr).strip()[-400:])
+    r = roda("final")
+    if r.returncode == 0 or "capa ainda não foi escolhida" not in (r.stdout + r.stderr):
+        erros.append("final sem capa escolhida pelo editor não parou antes do render: " + (r.stdout + r.stderr).strip()[-300:])
     if not erros:
         shutil.rmtree(proj, ignore_errors=True)
     return erros

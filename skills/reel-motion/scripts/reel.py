@@ -537,6 +537,8 @@ def e_previa():
 
 
 def entrega(video):
+    if not str(C.get('capa', {}).get('editor', '')).strip():   # capa provisória (CAPA_PROVISORIA=1) não vai para 06_deliverables
+        sys.exit(f'{R}: entrega parada, a capa ainda não foi escolhida pelo editor (reel.json "capa" sem "editor").')
     sh(['ffmpeg', '-v', 'error', '-y', '-i', str(video), '-loop', '1', '-i', str(CAPA), '-i', str(W / 'mix.wav'), '-filter_complex',
         f"[1:v]scale={VW}:{VH},format=yuv420p[c];[0:v][c]overlay=0:0:enable='eq(n,0)':shortest=1,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv,format=yuv420p[v]",
         '-map', '[v]', '-map', '2:a', '-c:v', 'libx264', '-crf', '17', '-maxrate', '10M', '-bufsize', '20M', '-preset', 'slow', '-x264-params', 'colorprim=bt709:transfer=bt709:colormatrix=bt709',
@@ -549,6 +551,12 @@ def entrega(video):
 
 
 def faz_capa(cp):
+    # trava (23/11/2026, feedback "processo"/"capa": a CIBO fez capa sem o quadro que o editor mandou). O quadro da capa é do
+    # editor: reel.json "capa" leva "editor": "<o que ele escolheu, nas palavras dele>" (ex.: "quadro de 00:07 que ele mandou",
+    # "aprovou o candidato 3 da folha"). Sem isso, nada de capa: mostre a folha do capa_cand.py e pergunte.
+    if not str(cp.get('editor', '')).strip() and os.environ.get('CAPA_PROVISORIA') != '1':
+        sys.exit(f'{R}: capa sem quadro escolhido pelo editor. Mostre a folha (capa_cand.py) e pergunte; depois registre em '
+                 f'reel.json "capa": {{"editor": "<o que ele escolheu>"}}. Prévia sem escolha: CAPA_PROVISORIA=1 (não entrega).')
     # capa pensada para o feed: "frame_file" = quadro já recortado da fonte aberta (pessoa mais baixa, título acima da cabeça
     # dentro da área do grid 3:4); senão o quadro "frame_t" da câmera do reel. Escolha OLHANDO a imagem (olhos abertos).
     if cp.get('frame_file'):
@@ -556,7 +564,7 @@ def faz_capa(cp):
     else:
         sh(['ffmpeg', '-v', 'error', '-y', '-ss', str(cp['frame_t']), '-i', str(PUB / R / 'camera.mov'), '-frames:v', '1', str(PUB / R / 'capa_frame.png')])
     os.environ['COMP'] = 'CapaH' if HZ else 'Capa'; os.environ['PUBLIC_DIR'] = str(pub_enxuta())
-    sh(['node', 'capa.mjs', str(CAPA), json.dumps({'frame': f'{R}/capa_frame.png', 'theme': fontes_tema(), **capa_tema(), **{k: v for k, v in cp.items() if k not in ('frame_t', 'frame_file')}}, ensure_ascii=False)], cwd=MG)
+    sh(['node', 'capa.mjs', str(CAPA), json.dumps({'frame': f'{R}/capa_frame.png', 'theme': fontes_tema(), **capa_tema(), **{k: v for k, v in cp.items() if k not in ('frame_t', 'frame_file', 'editor')}}, ensure_ascii=False)], cwd=MG)
 
 
 def e_capa():
@@ -581,22 +589,25 @@ def e_cortes():
     if 'Traceback' in (r.stderr or '') or r.returncode not in (0, 1):
         print('!! O CHECADOR DE CORTES NÃO RODOU (os cortes NÃO foram conferidos): ' + (r.stderr.strip().splitlines() or ['?'])[-1] + f' — Python em uso: {sys.executable}', flush=True)
         return 2
+    # borda pelo som (bordas.py): era só aviso; virou trava em 23/11/2026, porque a correção mais repetida do editor
+    # (15 de 18 correções de corte) é palavra comida. Mesma regra do checa_takes: corrige ou assume com motivo.
+    b = subprocess.run([sys.executable, str(ENG / 'scripts/bordas.py'), str(W)], capture_output=True, text=True)
+    if 'Traceback' in (b.stderr or '') or b.returncode not in (0, 1):
+        print('!! O CHECADOR DE BORDAS NÃO RODOU (as bordas NÃO foram conferidas): ' + ((b.stderr or b.stdout).strip().splitlines() or ['?'])[-1], flush=True)
+        return 2
+    bl = [l for l in b.stdout.splitlines() if 'corte no som' in l]
     ouv = C.get('cortes_ouvidos') or {}
-    pend = [l for l in r.stdout.splitlines() if ('<--' in l or 'corte no' in l)]
+    pend = [l for l in r.stdout.splitlines() if ('<--' in l or 'corte no' in l)] + bl
     abertas = [l for l in pend if not str(ouv.get(l.split()[0], '')).strip()]
     for l in abertas:
-        print(l)
+        print(l[:180])
     if abertas:
         print(f'{len(abertas)} trecho(s) para ouvir ({len(pend) - len(abertas)} já assumido(s) em cortes_ouvidos): corrija o segs.json ou registre o motivo')
+        if any(l in bl for l in abertas):
+            print(f'   borda em cima da voz: `bordas.py {W} --aplica` acerta o segs.json pelo silêncio (refaça voz/legenda depois)')
         return 1
     selos.grava(W, 'cortes', _entradas()['cortes'], f'{len(pend)} aviso(s) ouvido(s) e assumido(s)' if pend else 'sem aviso')
     print(f"cortes OK: {len(r.stdout.splitlines()) - 1} trechos" + (f', {len(pend)} aviso(s) assumido(s) com motivo no reel.json' if pend else ''))
-    # borda pelo som (bordas.py, 14/11/2026): aviso, não trava — fim de palavra do Whisper acaba antes da voz
-    b = subprocess.run([sys.executable, str(ENG / 'scripts/bordas.py'), str(W)], capture_output=True, text=True)
-    bl = [l for l in b.stdout.splitlines() if 'corte no som' in l]
-    if bl:
-        print(f'!! {len(bl)} borda(s) em cima da voz (a correção mais repetida do editor). Ouça ou rode: bordas.py {W} --aplica')
-        for l in bl[:6]: print('   ' + l[:150])
     return 0
 
 
@@ -882,6 +893,8 @@ def e_davinci():
 
 
 def e_final():
+    if not str(C.get('capa', {}).get('editor', '')).strip():   # antes do render: sem capa escolhida não há entrega (guarda de capa)
+        sys.exit(f'{R}: final parado antes do render, a capa ainda não foi escolhida pelo editor (reel.json "capa" sem "editor").')
     if e_revisa() == 2 and os.environ.get('GANCHO_OK') != '1':
         sys.exit('gancho-e-ritmo abaixo do limiar do cliente: ajuste o que o relatório aponta ou libere com GANCHO_OK=1 (decisão do editor)')
     remotion(W / 'video.mp4', ['--crf=16', '--x264-preset=slow'])
