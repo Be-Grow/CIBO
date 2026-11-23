@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 """Caixa de entrada de aprendizado (23/11/2026): o editor joga material solto numa pasta do cliente e a CIBO estuda.
 
-Pasta de entrada: Meu Drive/CIBO/aprender/<cliente>/ (qualquer um joga lá: fonte, logo, manual em PDF, prints, vídeo de
-referência, links.txt com perfis/posts, notas .txt/.md). Trabalho pesado (downloads, análises) fica no SSD, em
-/Volumes/SSD/CIBO/aprender/<cliente>/<data>/. Nada entra no motor sem aprovação: sai uma FICHA + proposta.json.
+Tudo no SSD (o Drive é só para material de edição: baixar efeitos e subir o vídeo pronto, editor 23/11/2026).
+Pasta de entrada: /Volumes/SSD/CIBO/aprender/<cliente>/entrada/ (fonte, logo, manual em PDF, prints, vídeo de referência,
+links.txt com perfis/posts, notas .txt/.md). Cada rodada grava em <cliente>/rodadas/<data_hora>/ (downloads, análises,
+ficha.md, proposta.json) e o lido vai para entrada/lido/. Nada entra no motor sem aprovação: sai uma FICHA + proposta.json.
 
   aprende.py CLIENTE [--novo] [--alias "a,b"] [--base andreia] [--rapido] [--posts 6] [--nao-move]
-        lê o que chegou na pasta, analisa e escreve ficha.md + proposta.json (cópia da ficha vai para a pasta do Drive)
+        lê o que chegou na pasta, analisa e escreve ficha.md + proposta.json (cópia FICHA_*.md na pasta do cliente)
         --novo   cliente que ainda não existe: cadastra no client-registry (motor reel-motion), cria o tema a partir de
-                 --base, a rubrica e o licoes.md em reel-motion/references/clientes/<cliente>/ e a pasta no Drive
+                 --base, a rubrica e o licoes.md em reel-motion/references/clientes/<cliente>/ e a pasta de entrada
         --rapido vídeos sem separar voz/música, transcrever e OCR de legenda (bem mais rápido, mede menos)
   aprende.py CLIENTE --aplica [proposta.json]
         aplica a proposta APROVADA (apague antes do proposta.json o que o editor recusou): backup do tema e grava
   aprende.py CLIENTE --pasta
-        só mostra/cria a pasta de entrada no Drive
+        só mostra/cria a pasta de entrada
 
 O que vai para onde: fonte -> acervo (tipo fonte) + theme.fonts; logo/manual/prints -> paleta -> theme.colors;
 vídeo -> briefing-criativo/analisa_referencia.py -> receita (theme.mediaFilter, legenda, montagem); links -> yt-dlp baixa os
@@ -45,14 +46,10 @@ def slug(s):
     return re.sub(r'[^a-z0-9]+', '-', s).strip('-')
 
 
-def drive():
-    if os.environ.get('CIBO_APRENDER'):
-        return Path(os.environ['CIBO_APRENDER'])
-    m = sorted(glob.glob(str(Path.home() / 'Library/CloudStorage/GoogleDrive-*/Meu Drive'))) + \
-        sorted(glob.glob(str(Path.home() / 'Library/CloudStorage/GoogleDrive-*/My Drive')))
-    if not m:
-        sys.exit('Google Drive desktop não está montado (Library/CloudStorage). Abra o Drive ou use CIBO_APRENDER=PASTA.')
-    return Path(m[0]) / 'CIBO' / 'aprender'
+def entrada(k):
+    if not WORK_RAIZ.parent.exists():
+        sys.exit(f'{WORK_RAIZ.parent} não existe: SSD desconectado?')
+    return WORK_RAIZ / k / 'entrada'
 
 
 def registro():
@@ -121,7 +118,7 @@ def fontes(arqs, k, w):
                  '--note', f'aprende.py {HOJE}', '--license', 'conferir licença com o cliente'])
         if r.returncode == 0:
             caminho = r.stdout.strip().split('  ')[-1]
-        else:   # sem acervo: guarda no SSD (o original do Drive vai para lido/ e o tema não pode apontar para ele)
+        else:   # sem acervo: guarda no SSD (o original vai para entrada/lido/ e o tema não pode apontar para ele)
             dst = w / 'fontes' / f.name; dst.parent.mkdir(parents=True, exist_ok=True)
             if dst != f: shutil.copy2(f, dst)
             caminho = str(dst)
@@ -317,9 +314,9 @@ def ficha(k, w, achados, prop, notas_cli, avisos):
 
 
 def aprende(k, a):
-    pasta = drive() / k
+    pasta = entrada(k)
     pasta.mkdir(parents=True, exist_ok=True)
-    w = WORK_RAIZ / k / RODADA
+    w = WORK_RAIZ / k / 'rodadas' / RODADA
     (w / 'tmp').mkdir(parents=True, exist_ok=True)
     os.environ['TMPDIR'] = str(w / 'tmp')
     arqs = [p for p in pasta.rglob('*') if p.is_file() and not p.name.startswith(('.', 'FICHA_'))
@@ -388,20 +385,20 @@ def aprende(k, a):
     (w / 'proposta.json').write_text(json.dumps({'cliente': k, 'data': HOJE, 'aplicar': prop}, ensure_ascii=False, indent=1) + '\n')
     txt = ficha(k, w, achados, prop, notas_cli, avisos)
     (w / 'ficha.md').write_text(txt)
-    shutil.copy2(w / 'ficha.md', pasta / f'FICHA_{RODADA}.md')
+    shutil.copy2(w / 'ficha.md', pasta.parent / f'FICHA_{RODADA}.md')
     if not a.nao_move:
         lido = pasta / 'lido' / RODADA
         for p in arqs:
             if p.exists() and pasta in p.parents:
                 dst = lido / p.relative_to(pasta); dst.parent.mkdir(parents=True, exist_ok=True); shutil.move(str(p), dst)
-    print(f'ficha: {w / "ficha.md"} (cópia no Drive: FICHA_{RODADA}.md)')
+    print(f'ficha: {w / "ficha.md"} (cópia: {pasta.parent}/FICHA_{RODADA}.md)')
     print(f'{len(prop)} mudança(s) propostas; {len(avisos)} aviso(s). Mostre a ficha ao editor; aprovado -> aprende.py {k} --aplica')
 
 
 # ---------------------------------------------------------------- aplicar
 def aplica(k, arq):
     if not arq:
-        cand = sorted((WORK_RAIZ / k).glob('*/proposta.json'))
+        cand = sorted((WORK_RAIZ / k / 'rodadas').glob('*/proposta.json'))
         if not cand: sys.exit(f'nenhuma proposta em {WORK_RAIZ / k}: rode aprende.py {k} antes')
         arq = cand[-1]
     P = json.loads(Path(arq).read_text())
@@ -442,7 +439,7 @@ def main():
     elif not k:
         sys.exit(f'cliente "{a.cliente}" não está no client-registry. É novo? aprende.py "{a.cliente}" --novo [--alias "x,y"]')
     if a.pasta:
-        p = drive() / k; p.mkdir(parents=True, exist_ok=True); print(p); return
+        p = entrada(k); p.mkdir(parents=True, exist_ok=True); print(p); return
     if a.aplica is not None:
         aplica(k, a.aplica); return
     aprende(k, a)

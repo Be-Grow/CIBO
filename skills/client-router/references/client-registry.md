@@ -32,6 +32,6 @@ Estas skills tratam de formato/transformação e se combinam com a identidade do
 2. `python3 client-router/scripts/aprende.py "Nome" --novo --alias "apelido,@perfil"`: entrada no `client-registry.json` (motor
    `reel-motion`), tema `reel-motion/temas/<cliente>.json` (base `andreia`), rubrica e `licoes.md`. **Não crie skill para o cliente**
    (decisão "um motor só", 14/11/2026).
-3. Peça o material na pasta `Meu Drive/CIBO/aprender/<cliente>/` e rode `aprende.py <cliente>`; o aprovado entra com `--aplica`.
+3. Peça o material na pasta do SSD `/Volumes/SSD/CIBO/aprender/<cliente>/entrada/` e rode `aprende.py <cliente>`; o aprovado entra com `--aplica`.
 4. Adicione uma linha nesta tabela.
 5. Só reaproveite assets de outro cliente se o usuário confirmar explicitamente que é uma exceção intencional — documente a exceção aqui quando isso acontecer.

@@ -60,9 +60,10 @@ atual. Não crie skill-cópia de motor para cliente novo: tema + rubrica. Katia 
 6. **Se o material não pertencer a nenhum cliente com skill própria:** use o motor padrão `reel-motion` (fluxo da Andreia, editor 20/10/2026: "gostaria que fosse o padrão de edição da CIBO") com um tema novo `temas/<cliente>.json` montado no briefing; `podcast-reels` só se o editor pedir aquele estilo (Cal Sans, clique, burn azul). Cliente recorrente ganha tema, rubrica e lições no motor (passo 7), nunca skill própria. Nunca force os assets/identidade de um cliente existente num material que não é dele.
 7. **Ao nascer um cliente novo** (decisão "um motor só"): `python3 scripts/aprende.py "Nome" --novo [--alias "x,y"]` cadastra no
    `client-registry.json` (motor `reel-motion`), cria o tema a partir do `andreia` e a rubrica + `licoes.md` em
-   `reel-motion/references/clientes/<cliente>/`. Para APRENDER o estilo (cliente novo ou antigo), o editor joga material solto em
-   `Meu Drive/CIBO/aprender/<cliente>/` (fonte, logo, manual PDF, prints, vídeo de referência, `links.txt` com perfis, notas) e você roda
-   `aprende.py <cliente>`: sai uma ficha (`FICHA_*.md`, cópia na pasta) + `proposta.json`. Mostre a ficha; o que o editor aprovar entra com
+   `reel-motion/references/clientes/<cliente>/`. Para APRENDER o estilo (cliente novo ou antigo), o editor joga material solto no SSD, em
+   `/Volumes/SSD/CIBO/aprender/<cliente>/entrada/` (fonte, logo, manual PDF, prints, vídeo de referência, `links.txt` com perfis, notas), e
+   você roda `aprende.py <cliente>`: sai uma ficha (`FICHA_*.md` na pasta do cliente) + `proposta.json`. O Drive é só para material de
+   edição (baixar efeitos e subir o vídeo pronto): nunca crie pasta de trabalho, fila ou aprendizado nele. Mostre a ficha; o que o editor aprovar entra com
    `aprende.py <cliente> --aplica` (backup do tema), e cada nota da ficha vira `licao.py add`. Nunca no meio de produção. Não crie skill.
    Use `video-project-structure` para auditar a organização de pastas do projeto desse cliente.
 8. **A CIBO mora no SSD, numa cópia só (editor, 14/11/2026: "a cibo deve ficar no meu ssd").** O repositório é `/Volumes/SSD/CIBO/repo`
