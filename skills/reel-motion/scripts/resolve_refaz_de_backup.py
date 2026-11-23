@@ -110,6 +110,6 @@ if __name__ == '__main__':
         resto = [it.GetName() for ty in ('video', 'audio') for _, it in itens(novo, ty) if not it.GetMediaPoolItem() and not it.GetFusionCompCount()]
         info['GlobalIn'] = sorted(set(globalin(novo))); info['offline'] = resto[:3]
         if not resto and info['GlobalIn'] == [0]: mp.DeleteTimelines([velha])
-        aplica(novo); shutil.rmtree(tmp, ignore_errors=True)
+        aplica(novo); shutil.rmtree(tmp, ignore_errors=True); sys.path.insert(0, str(Path(__file__).parent)); import guarda_editor as G; G.marca(p, novo)
         print(f'{nome[:45]}: {info}', flush=True)
     r.GetProjectManager().SaveProject()

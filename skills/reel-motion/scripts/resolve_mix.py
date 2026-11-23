@@ -55,7 +55,7 @@ if __name__ == '__main__':
                     if f.is_file(): z.write(f, f.relative_to(d))
             tl.SetName(nome + ' (antiga)')
             novo = mp.ImportTimelineFromFile(str(tmp / 'b.drt'), {'timelineName': nome}); assert novo, 'importação .drt falhou'
-            novo.SetName(nome); mp.DeleteTimelines([tl]); aplica(novo); tl = novo
+            novo.SetName(nome); mp.DeleteTimelines([tl]); aplica(novo); tl = novo; sys.path.insert(0, str(Path(__file__).parent)); import guarda_editor as G; G.marca(p, novo)
             shutil.rmtree(tmp, ignore_errors=True)
         else:
             cont = {}

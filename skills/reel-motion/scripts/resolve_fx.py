@@ -153,5 +153,5 @@ for pac in map(Path, [a for a in sys.argv[1:] if not a.startswith('--')]):
     if not any(it.GetName() == 'Adjustment Clip' for k in range(1, tl.GetTrackCount('video') + 1) for it in tl.GetItemListInTrack('video', k) or []):
         mp.DeleteTimelines([tl])                                 # a antiga só fica se o editor já tinha mexido nela
     shutil.rmtree(tmp, ignore_errors=True)
-    sys.path.insert(0, str(Path(__file__).parent)); from resolve_cores import aplica; aplica(novo)   # cores/nomes (regra do CIBO)
+    sys.path.insert(0, str(Path(__file__).parent)); from resolve_cores import aplica; aplica(novo); import guarda_editor as G; G.marca(p, novo)   # cores/nomes (regra do CIBO)
     print(f'{nome}: {sum(map(len, FX))} camadas de ajuste em {len(FX)} faixas acima do bruto (faixa {ib + 1})', flush=True)

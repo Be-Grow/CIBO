@@ -11,6 +11,7 @@ import os, re, subprocess, sys, time, json
 from pathlib import Path
 sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")
 import DaVinciResolveScript as dvr
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__))); import guarda_editor as G
 
 SEM = os.environ.get('SEM_RENDER') == '1'
 NOME, PASTA, OUT = sys.argv[1], sys.argv[2], Path(sys.argv[3]).resolve(); PACS = [Path(p).resolve() for p in sys.argv[4:]]
@@ -47,14 +48,18 @@ try:
         nome = pac.name; xml = pac / 'timeline.fcpxml'
         _f = re.search(r'<format [^>]*width="(\d+)" height="(\d+)"', xml.read_text(encoding='utf-8'))
         w, h = (int(_f[1]), int(_f[2])) if _f else ((1920, 1080) if '16x9' in nome else (1080, 1920))
+        t = None
         for i in range(p.GetTimelineCount(), 0, -1):          # reimportação: tira a timeline antiga de mesmo nome
             t = p.GetTimelineByIndex(i)
-            if t and t.GetName() == nome: mp.DeleteTimelines([t])
+            if t and t.GetName() == nome and not G.pode_mexer(p, t, 'reimporto'): t = 'editor'; break
+            if t and t.GetName() == nome: G.apaga(mp, p, t, 'reimporto')
+        if t == 'editor': continue                             # timeline ajustada pelo editor: fica como está (guarda_editor)
         tl = mp.ImportTimelineFromFile(str(xml), {"timelineName": nome, "importSourceClips": True})
         if not tl:                                             # 2ª tentativa: mídia do pacote no pool antes do XML
             mp.ImportMedia([str(x) for x in sorted(pac.rglob('*')) if x.suffix.lower() in ('.mov', '.mp4', '.wav', '.png')])
             tl = mp.ImportTimelineFromFile(str(xml), {"timelineName": nome, "importSourceClips": False})
         if not tl: print(f'IMPORTAÇÃO FALHOU: {xml}', flush=True); continue
+        G.marca(p, tl)                                         # assinatura: daqui em diante, mudou = foi o editor
         tl.SetSetting("useCustomSettings", "1"); tl.SetSetting("timelineResolutionWidth", str(w)); tl.SetSetting("timelineResolutionHeight", str(h))
         v = tl.GetTrackCount("video"); a = tl.GetTrackCount("audio")
         itens = sum(len(tl.GetItemListInTrack("video", k) or []) for k in range(1, v + 1))

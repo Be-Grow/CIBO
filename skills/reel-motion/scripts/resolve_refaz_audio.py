@@ -134,5 +134,5 @@ if __name__ == '__main__':
                for it in novo.GetItemListInTrack(ty, k) or [] if not it.GetMediaPoolItem() and not it.GetFusionCompCount()]
         if off: print(f'{nome[:45]}: {len(off)} clipes sem mídia {off[:3]}; a antiga fica como "(antiga)"', flush=True)
         else: mp.DeleteTimelines([tl])
-        aplica(novo); shutil.rmtree(tmp, ignore_errors=True)
+        aplica(novo); shutil.rmtree(tmp, ignore_errors=True); sys.path.insert(0, str(Path(__file__).parent)); import guarda_editor as G; G.marca(p, novo)
     r.GetProjectManager().SaveProject(); print('ok', flush=True)
