@@ -58,14 +58,20 @@ atual. Não crie skill-cópia de motor para cliente novo: tema + rubrica. Katia 
 4. **Rode o `briefing-criativo` antes de editar**: pergunte ao editor só as decisões artísticas e de estilo que o perfil do cliente não responde, grave `07_manifests/brief.md` e siga os pontos de aprovação (mapa de cortes, piloto).
 5. **Delegue todo o trabalho à skill do cliente identificado.** Não copie fonte, logo, filmburn, SFX, `client-content-bible.md` ou convenção de capa de um cliente para o job de outro, mesmo que os arquivos estejam acessíveis no mesmo volume ou pasta compartilhada.
 6. **Se o material não pertencer a nenhum cliente com skill própria:** use o motor padrão `reel-motion` (fluxo da Andreia, editor 20/10/2026: "gostaria que fosse o padrão de edição da CIBO") com um tema novo `temas/<cliente>.json` montado no briefing; `podcast-reels` só se o editor pedir aquele estilo (Cal Sans, clique, burn azul). Cliente recorrente ganha tema, rubrica e lições no motor (passo 7), nunca skill própria. Nunca force os assets/identidade de um cliente existente num material que não é dele.
-7. **Ao nascer um cliente novo** (decisão "um motor só"): `python3 scripts/aprende.py "Nome" --novo [--alias "x,y"]` cadastra no
-   `client-registry.json` (motor `reel-motion`), cria o tema a partir do `andreia` e a rubrica + `licoes.md` em
-   `reel-motion/references/clientes/<cliente>/`. Para APRENDER o estilo (cliente novo ou antigo), o editor joga material solto no SSD, em
-   `/Volumes/SSD/CIBO/aprender/<cliente>/entrada/` (fonte, logo, manual PDF, prints, vídeo de referência, `links.txt` com perfis, notas), e
-   você roda `aprende.py <cliente>`: sai uma ficha (`FICHA_*.md` na pasta do cliente) + `proposta.json`. O Drive é só para material de
-   edição (baixar efeitos e subir o vídeo pronto): nunca crie pasta de trabalho, fila ou aprendizado nele. Mostre a ficha; o que o editor aprovar entra com
-   `aprende.py <cliente> --aplica` (backup do tema), e cada nota da ficha vira `licao.py add`. Nunca no meio de produção. Não crie skill.
-   Use `video-project-structure` para auditar a organização de pastas do projeto desse cliente.
+7. **Cliente novo e aprendizado de estilo: quem roda é você, nunca o editor** (editor, 23/11/2026: "eu não quero que os usuários
+   tenham que digitar ou rodar comandos"). Ele só conversa; você reconhece pelo contexto e roda `scripts/aprende.py` por baixo:
+
+   | O editor diz algo como… | Você faz (sem mostrar o comando) |
+   |---|---|
+   | "cliente novo: Fulana", "vamos começar a editar a Fulana" (e ela não está no registro) | `aprende.py "Fulana" --novo --alias "@perfil,apelido"` e pede o material da seção 3.3 do guia, em português |
+   | manda/aponta arquivo, pasta, link de perfil ou fala um gosto do cliente ("ela odeia amarelo") | `aprende.py <cliente> --de <arquivos/pasta/links/"frase">` (copia para a entrada, o original fica onde está, e analisa) |
+   | "olha o material da Fulana", "o que você aprendeu dela?" | `aprende.py <cliente>`; resuma a ficha em até 5 linhas, sem caminho nem nome de chave, e pergunte se aprova |
+   | "aprovado", "pode aplicar", "aprovado menos as cores/legenda/fontes" | `aprende.py <cliente> --aplica [--sem theme.colors,theme.caption,theme.fonts]` e avise que o próximo vídeo é piloto |
+   | "a cliente mudou a marca", "material novo da Fulana" | mesmo caminho do `--de` |
+
+   Pedidos e proibições da ficha viram `licao.py add` no mesmo turno da aprovação. Nunca no meio de produção. Não crie skill para o
+   cliente. O Drive é só para material de edição (baixar efeitos e subir o vídeo pronto): nunca crie pasta de trabalho, fila ou
+   aprendizado nele. Use `video-project-structure` para auditar a organização de pastas do projeto desse cliente.
 8. **A CIBO mora no SSD, numa cópia só (editor, 14/11/2026: "a cibo deve ficar no meu ssd").** O repositório é `/Volumes/SSD/CIBO/repo`
    e cada skill em `~/.claude/skills/<nome>` é só o ponteiro que o Claude Code exige para a pasta `repo/skills/<nome>`. Editou a skill = editou
    o repositório: não existe mais cópia para sincronizar. **Correção do editor só está feita depois do commit e push** no mesmo turno

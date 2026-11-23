@@ -18,6 +18,9 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
    não renderize nem exporte quadro pelo Resolve para conferir, e render só quando ele pedir. Capa: 1 quadro, sempre.
 7. Dúvida sobre como fazer algo no DaVinci (API ou interface): consulte a documentação antes de tentar, com
    `reel-motion/scripts/doc_resolve.py api|manual TERMO`; web só se ela não resolver. O que aprender vai para `regras/davinci.md`.
+8. O editor nunca digita nem roda comando (editor, 23/11/2026): ele conversa e você roda os scripts por baixo, escolhidos pelo
+   contexto (cliente novo, material apontado, "aprovado menos as cores": tabela do passo 7 do `client-router`). Na resposta, fale do
+   resultado em português, sem nome de script, flag ou caminho, a menos que ele pergunte.
 
 ## Como conversar
 

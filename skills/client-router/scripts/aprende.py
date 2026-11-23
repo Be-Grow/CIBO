@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Caixa de entrada de aprendizado (23/11/2026): o editor joga material solto numa pasta do cliente e a CIBO estuda.
+"""Caixa de entrada de aprendizado (23/11/2026). QUEM RODA É A CIBO, nunca o editor: ele só conversa ("cliente novo: Fulana",
+"olha esse material da Fulana", "aprovado, menos as cores") e ela escolhe o comando pelo contexto (client-router passo 7).
+O material que o editor aponta (arquivo, pasta, link, frase) a CIBO copia para a entrada com --de.
 
 Tudo no SSD (o Drive é só para material de edição: baixar efeitos e subir o vídeo pronto, editor 23/11/2026).
 Pasta de entrada: /Volumes/SSD/CIBO/aprender/<cliente>/entrada/ (fonte, logo, manual em PDF, prints, vídeo de referência,
@@ -11,7 +13,8 @@ ficha.md, proposta.json) e o lido vai para entrada/lido/. Nada entra no motor se
         --novo   cliente que ainda não existe: cadastra no client-registry (motor reel-motion), cria o tema a partir de
                  --base, a rubrica e o licoes.md em reel-motion/references/clientes/<cliente>/ e a pasta de entrada
         --rapido vídeos sem separar voz/música, transcrever e OCR de legenda (bem mais rápido, mede menos)
-  aprende.py CLIENTE --aplica [proposta.json]
+  aprende.py CLIENTE --de ARQ|PASTA|LINK|"frase" …   (o editor apontou material na conversa: copia e analisa)
+  aprende.py CLIENTE --aplica [proposta.json] [--sem theme.colors,theme.caption]
         aplica a proposta APROVADA (apague antes do proposta.json o que o editor recusou): backup do tema e grava
   aprende.py CLIENTE --pasta
         só mostra/cria a pasta de entrada
@@ -325,6 +328,26 @@ def ficha(k, w, achados, prop, notas_cli, avisos):
     return '\n'.join(L) + '\n'
 
 
+def recebe(k, itens):
+    """o editor só aponta (arquivo, pasta, link ou texto na conversa); a CIBO copia para a entrada (original fica onde está)"""
+    pasta = entrada(k); pasta.mkdir(parents=True, exist_ok=True); n = 0
+    for it in itens:
+        if re.match(r'https?://', it):
+            with open(pasta / 'links.txt', 'a') as f: f.write(it.strip() + '\n')
+            n += 1; continue
+        p = Path(it).expanduser()
+        if p.is_dir():
+            for f in p.rglob('*'):
+                if f.is_file() and not f.name.startswith('.'):
+                    dst = pasta / f.relative_to(p.parent); dst.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(f, dst); n += 1
+        elif p.is_file():
+            shutil.copy2(p, pasta / p.name); n += 1
+        else:   # frase do editor ("não quero legenda amarela") vira nota
+            with open(pasta / 'notas_do_editor.txt', 'a') as f: f.write(it.strip() + '\n')
+            n += 1
+    print(f'{n} item(ns) recebidos na entrada de {k}')
+
+
 def aprende(k, a):
     pasta = entrada(k)
     pasta.mkdir(parents=True, exist_ok=True)
@@ -408,12 +431,16 @@ def aprende(k, a):
 
 
 # ---------------------------------------------------------------- aplicar
-def aplica(k, arq):
+def aplica(k, arq, sem=()):
     if not arq:
         cand = sorted((WORK_RAIZ / k / 'rodadas').glob('*/proposta.json'))
         if not cand: sys.exit(f'nenhuma proposta em {WORK_RAIZ / k}: rode aprende.py {k} antes')
         arq = cand[-1]
     P = json.loads(Path(arq).read_text())
+    if sem:   # o que o editor recusou em palavras ("menos as cores") sai da proposta antes de aplicar
+        fora = [c for c in P['aplicar'] if any(c == x or c.startswith(x + '.') for x in sem)]
+        for c in fora: P['aplicar'].pop(c)
+        if fora: print('  recusado pelo editor, não entra: ' + ', '.join(fora))
     tema_nome = registro().get(k, {}).get('tema') or k
     tp = TEMAS / f'{tema_nome}.json'
     if not tp.exists(): sys.exit(f'tema {tp.name} não existe (cliente novo: aprende.py "{k}" --novo)')
@@ -452,6 +479,8 @@ def main():
     ap.add_argument('--base', default='andreia'); ap.add_argument('--rapido', action='store_true')
     ap.add_argument('--posts', type=int, default=6); ap.add_argument('--nao-move', action='store_true')
     ap.add_argument('--aplica', nargs='?', const='', default=None); ap.add_argument('--pasta', action='store_true')
+    ap.add_argument('--de', nargs='+', default=[], help='arquivos, pastas, links ou frases que o editor apontou (copia para a entrada)')
+    ap.add_argument('--sem', default='', help='com --aplica: chaves recusadas, ex. "theme.colors,theme.caption"')
     a = ap.parse_args()
     k = acha_cliente(a.cliente)
     if a.novo:
@@ -461,7 +490,9 @@ def main():
     if a.pasta:
         p = entrada(k); p.mkdir(parents=True, exist_ok=True); print(p); return
     if a.aplica is not None:
-        aplica(k, a.aplica); return
+        aplica(k, a.aplica, [x.strip() for x in a.sem.split(',') if x.strip()]); return
+    if a.de:
+        recebe(k, a.de)
     aprende(k, a)
 
 
