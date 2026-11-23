@@ -83,6 +83,18 @@ def cria_cliente(nome, aliases, base):
               'skill': 'reel-motion', 'tema': k}
     REG.write_text(json.dumps(reg, ensure_ascii=False, indent=2) + '\n')
     t = json.loads((TEMAS / f'{base}.json').read_text())
+    # do base fica só a ESTRUTURA (layout, motion, qualidade); a identidade do outro cliente sai (isolamento de cliente:
+    # o tema da michelle nasceu do andreia e herdou rodapé "ANDREIA FRANCOMANO" e o kit de SFX dela)
+    th = t.setdefault('theme', {})
+    th['fonts'] = []
+    for k2 in ('title', 'caption', 'label'):
+        if isinstance(th.get(k2), dict): th[k2].pop('family', None)
+    th.pop('burnFilter', None)
+    t['capa'] = {k2: v for k2, v in (t.get('capa') or {}).items() if k2 not in ('footer', 'logo', 'foto')}
+    t['capa']['footer'] = nome.upper()
+    t['sfx'] = {}
+    t['regras'] = []
+    t['_identidade_pendente'] = 'fontes, cores, capa e SFX ainda são genéricos (aprende.py --novo)'
     t['cliente'] = nome
     t['origem'] = f'criado por aprende.py em {HOJE} a partir do tema "{base}": cores, fontes e regras ainda são do base até ' \
                   f'aplicar a ficha (aprende.py {k} --aplica)'
@@ -416,6 +428,14 @@ def aplica(k, arq):
     bak = tp.with_name(f'{tp.name}.bak-{time.strftime("%Y%m%d-%H%M")}')
     shutil.copy2(tp, bak)
     t['origem'] = (t.get('origem', '') + f' | aprende.py {P["data"]} aplicado em {HOJE}').strip(' |')
+    if t.get('_identidade_pendente'):
+        falta = [n for n, ok in (('fontes', t['theme'].get('fonts')), ('cores', any(k.startswith('theme.colors') for k in P['aplicar'])))
+                 if not ok]
+        if falta:
+            print(f'  !! tema continua PENDENTE (o motor não roda): falta {", ".join(falta)} na proposta aprovada')
+        else:
+            t.pop('_identidade_pendente')
+            print('  identidade aprovada: o motor libera este tema (confira capa e SFX no piloto)')
     tp.write_text(json.dumps(t, ensure_ascii=False, indent=1) + '\n')
     for chave, val in P['aplicar'].items():
         d = antes

@@ -57,6 +57,10 @@ NAME = C['name']; ENTREGA = P / '06_deliverables' / f'{NAME}.mp4'; CAPA = P / '0
 # pasta pública do Remotion é do projeto (mídia do reel, fontes do tema); o código é o do motor
 PUB = Path(os.environ.get('REEL_PUBLIC', WK / 'public')); PUB.mkdir(parents=True, exist_ok=True)
 TEMA = json.load(open(ENG / 'temas' / f"{C.get('tema', 'priscilla')}.json"))
+if TEMA.get('_identidade_pendente') and os.environ.get('CIBO_TEMA_PENDENTE_OK') != '1':
+    # trava (23/11/2026): tema nascido do aprende.py --novo ainda sem fontes/cores/capa do cliente aprovadas
+    sys.exit(f"tema {C.get('tema')} sem identidade aprovada: {TEMA['_identidade_pendente']}. "
+             f"Rode client-router/scripts/aprende.py {C.get('tema')} e --aplica; teste: CIBO_TEMA_PENDENTE_OK=1")
 TH = TEMA.get('theme', {})
 os.environ['PUBLIC_DIR'] = str(PUB)
 FPS = C.get('fps', 29.97)
