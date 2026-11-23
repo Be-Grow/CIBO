@@ -25,6 +25,8 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
 9. Aprendizado sempre (`client-router/references/aprendizado.md`): todo sinal (correção, ajuste no DaVinci, "o que você mudaria?",
    script feito no job) vai para lição, tema, trava, melhoria ou candidata no mesmo turno; no fim do job, `aprendizado.py colhe PROJ`;
    toda semana, `aprendizado.py revisao`. Mudança em skill só fora de produção, com teste, e marcada `aprendizado.py feito ID`.
+10. **Nada sobe para o Drive sem o OK do editor** (editor, 23/11/2026: "de extrema importância"): mostre os arquivos e o destino,
+   pergunte e espere a resposta dele; o envio (`entrega_drive.py --aprovado "<palavras dele>"`) recusa sem plano mostrado ou se algo mudou.
 
 ## Como conversar
 
