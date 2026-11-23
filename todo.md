@@ -96,3 +96,4 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 - regras/davinci.md: ciclo de .drt (export/import) MULTIPLICA por 4 o Pan de clipes de vídeo em scaleToCrop (Michelle 19/11/2026: tela preta nos horizontais). Depois de qualquer .drt, reler e regravar Pan. Sequência de imagens não sofre. resolve_cores: voz_mic_v2.wav cai como a_camera e seria DESLIGADA (regex /voz(__)?.wav).
 - reel-motion: sfx_tema.py precisa de voz.wav, que só o `mix` gera; e o `mix`/`props` precisam de sfx.json (ovo e galinha, depoimentosAlunas 23/11/2026)
 - reel-motion capa.mjs: 'você' (ê) na capa da Andrea (Cormorant) saiu com o circunflexo solto acima da letra (videosGrupo r02, 23/11/2026); contornei trocando o texto
+- reel-motion/fila: no videosGrupo r02 (com painéis) a faixa 'CÂMERA renderizada (ref.)' veio LIGADA por cima do bruto (no r01 sem painéis veio desligada): escondia a CDL e, sem o motion, mostrava a câmera descendo (23/11/2026)
