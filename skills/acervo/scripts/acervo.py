@@ -28,8 +28,13 @@ import argparse, hashlib, json, os, re, shutil, subprocess, sys, time, unicodeda
 from pathlib import Path
 
 CONF = Path(os.environ.get("CIBO_ACERVO_CONF", Path.home() / ".cibo" / "acervo.json"))
-SUGESTAO = "/Volumes/SSD/CIBO Acervo"
-REGISTRY = Path.home() / ".claude/skills/client-router/references/client-registry.json"
+SUGESTAO = str(Path.home() / "CIBO Acervo")
+try:
+    from skills._shared.paths import cibo_root
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+    from skills._shared.paths import cibo_root
+REGISTRY = Path(os.environ.get("CIBO_CLIENT_REGISTRY", cibo_root() / "skills/client-router/references/client-registry.json"))
 MEDIA = {".mp4", ".mov", ".mkv", ".webm", ".wav", ".mp3", ".aif", ".aiff", ".m4a", ".flac", ".ogg"}
 SKIP = {".DS_Store", "Thumbs.db"}
 
@@ -37,8 +42,14 @@ SKIP = {".DS_Store", "Thumbs.db"}
 # ------------------------------------------------------------------ config / catálogo
 def conf() -> dict:
     try:
-        return json.loads(CONF.read_text())
-    except (OSError, ValueError):
+        raw = CONF.read_bytes()
+        try:
+            text = raw.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            # Configuração criada no Windows com encoding legado do PowerShell.
+            text = raw.decode("cp1252")
+        return json.loads(text)
+    except (OSError, ValueError, UnicodeDecodeError):
         return {}
 
 
@@ -60,7 +71,7 @@ def cat_path() -> Path:
 
 def load() -> dict:
     try:
-        return json.loads(cat_path().read_text())
+        return json.loads(cat_path().read_text(encoding="utf-8-sig"))
     except (OSError, ValueError):
         return {"version": 1, "items": {}}
 
@@ -68,7 +79,7 @@ def load() -> dict:
 def save(cat: dict) -> None:
     p = cat_path()
     tmp = p.with_suffix(".tmp")
-    tmp.write_text(json.dumps(cat, ensure_ascii=False, indent=1) + "\n")
+    tmp.write_text(json.dumps(cat, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     tmp.replace(p)
     # cópia de segurança do catálogo fora do disco da biblioteca (é pequeno)
     bk = CONF.parent / "catalog_backup.json"
@@ -142,7 +153,7 @@ def guess_type(p: Path) -> str:
 def guess_client(p: Path) -> str:
     n = slug(str(p))
     try:
-        reg = json.loads(REGISTRY.read_text())
+        reg = json.loads(REGISTRY.read_text(encoding="utf-8-sig"))
     except (OSError, ValueError):
         reg = {}
     for key, v in reg.items():
@@ -176,7 +187,7 @@ def cmd_init(a):
     CONF.parent.mkdir(parents=True, exist_ok=True)
     c = conf()
     c.update({"library": str(p), "since": time.strftime("%Y-%m-%d")})
-    CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1))
+    CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1), encoding="utf-8")
     if not (p / "catalog.json").exists():
         save({"version": 1, "items": {}})
     print(f"biblioteca: {p}")
@@ -450,12 +461,13 @@ def cmd_move(a):
     old = lib()
     new = Path(a.caminho).expanduser()
     new.mkdir(parents=True, exist_ok=True)
-    r = subprocess.run(["rsync", "-a", f"{old}/", f"{new}/"])
-    if r.returncode:
-        sys.exit("rsync falhou; biblioteca continua no lugar antigo")
+    try:
+        shutil.copytree(old, new, dirs_exist_ok=True, copy_function=shutil.copy2)
+    except OSError as e:
+        sys.exit(f"cópia falhou; biblioteca continua configurada no lugar antigo: {e}")
     c = conf()
     c.update(library=str(new), moved_from=str(old), moved_at=time.strftime("%Y-%m-%d"))
-    CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1))
+    CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1), encoding="utf-8")
     bad = [k for k, it in load()["items"].items() if it["kind"] == "lib" and not resolve(it).exists()]
     print(f"biblioteca agora em {new}; {len(bad)} itens com problema. A cópia antiga em {old} "
           f"continua lá: apague só depois que o editor confirmar.")

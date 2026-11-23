@@ -6,10 +6,11 @@ Uso: track.py SRC.mov OUT.json
 - Pontos a cada 0,5 s e um par de pontos colado em cada corte de câmera (degrau).
 """
 import json, os, sys
+from pathlib import Path
 import cv2, numpy as np
 
 # modelo de detecção genérico (YuNet), não é asset de cliente
-MODEL = os.environ.get('YUNET', os.path.expanduser('~/.claude/skills/content-hub/assets/yunet.onnx'))
+MODEL = os.environ.get('YUNET', str(Path(__file__).resolve().parents[2] / 'content-hub' / 'assets' / 'yunet.onnx'))
 src, out = sys.argv[1], sys.argv[2]
 cap = cv2.VideoCapture(src)
 fps = cap.get(cv2.CAP_PROP_FPS) or 30

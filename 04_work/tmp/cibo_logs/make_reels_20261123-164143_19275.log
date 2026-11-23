@@ -1,0 +1,23 @@
+$ /Volumes/SSD/CIBO/wt_antes/skills/content-hub/scripts/make_reels.py corte01
+review sheet: /Users/bruno/.cache/cibo/regressao/content-hub/work/review.csv
+========== corte01 total=16.10 caps=12
+    0.00   0.87 Quantas vezes tu     ...
+    0.87   1.20 já viu               ..
+    1.60   3.10 alguém na internet   ...
+    3.50   5.00 com mais resultado   ...
+    5.15   6.65 que você tem hoje    ....
+    7.05   8.05 só porque teve       ...
+    8.05   8.55 coragem              .
+    8.95   9.82 de produzir          ..
+    9.82  10.45 conteúdo             .
+   10.60  12.10 e tu não faz isso    .....
+   12.50  14.00 por vergonha         ..
+   14.40  15.90 isso é uma força     ....
+caps:corte01 built
+lettering:corte01 built
+clicks:corte01 built
+cut:corte01 built
+intro:corte01 built
+cover:corte01 built
+final:corte01 built
+corte01 DONE -> /Users/bruno/.cache/cibo/regressao/content-hub/out/01 - TESTE DE REGRESSAO.mp4

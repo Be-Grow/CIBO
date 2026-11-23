@@ -14,11 +14,12 @@ Musica (job["music_source"]): {"file", "end": fim musical real em s, "gain_to_vo
 no gancho e no cartao final. O job aponta music.file para a cama, offset 0, db 0; o render.py faz o ducking.
 """
 import json, os, subprocess, sys
+from pathlib import Path
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__)); SKILL = os.path.dirname(HERE)
 job = json.load(open(sys.argv[1]))
-sys.path.insert(0, job.get("engine_scripts_fernanda", os.path.expanduser("~/.claude/skills/fernanda-produto/scripts")))
+sys.path.insert(0, job.get("engine_scripts_fernanda", str(Path(os.environ.get("CIBO_SKILLS", Path(__file__).resolve().parents[2])) / "fernanda-produto/scripts")))
 from timeline import segments, duration
 
 SR = 48000; W = job["work"]; D = duration(job); LIB = os.path.join(SKILL, "assets", "sfx")

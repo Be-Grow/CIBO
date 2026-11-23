@@ -11,8 +11,9 @@ pedidos; negativos contam do fim, fração < 1 é proporção da duração). Lei
 if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
     import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import argparse, glob, json, os, re, subprocess, sys, tempfile
+from pathlib import Path
 
-VERIFY = os.path.expanduser('~/.claude/skills/video-delivery-safety-check/scripts/verify_video.py')
+VERIFY = str(Path(os.environ.get('CIBO_SKILLS', Path(__file__).resolve().parents[2])) / 'video-delivery-safety-check/scripts/verify_video.py')
 
 
 def run(cmd):

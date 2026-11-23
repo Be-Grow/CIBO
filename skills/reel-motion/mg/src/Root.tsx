@@ -5,8 +5,10 @@ import {LottieOverlay} from './LottieOverlay';
 import {Audiogram, calcAudiogram} from './Audiogram';
 import {Reel, ReelProps} from './reel/Reel';
 import {Capa} from './reel/Capa';
+import {CiboTestCompositions} from './CiboTestMotion';
 export const RemotionRoot: React.FC = () => (
   <>
+    <CiboTestCompositions />
     <Composition id="SeguirCard" component={SeguirCard} durationInFrames={150} fps={30}
       width={1080} height={1920} defaultProps={{name: 'João Guilherme Campos', handle: '@jgcampos'}} />
     <Composition id="GanchoTitle" component={GanchoTitle} durationInFrames={105} fps={30}

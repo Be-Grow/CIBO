@@ -6,7 +6,7 @@ if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client
     import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import os, subprocess, sys, time
 P = sys.argv[1]; R = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reel.py')
-os.environ.setdefault('TMPDIR', '/Volumes/SSD/CIBO/tmp')
+os.environ.setdefault('TMPDIR', os.path.join(os.environ.get('CIBO_TEMP', os.path.join(os.environ.get('TEMP', '/tmp'), 'CIBO'))))
 res = []
 for job in sys.argv[2:]:
     t = time.time(); r = subprocess.run([sys.executable, R, P] + job.split(), capture_output=True, text=True)

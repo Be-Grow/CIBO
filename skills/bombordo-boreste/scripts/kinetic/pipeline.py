@@ -90,7 +90,7 @@ def preview(job, jobf, work, clip, cfg, start, dur):
     pv = os.path.join(kd, 'preview_out'); os.makedirs(pv, exist_ok=True)
     bp = ensure_data(job, work, clip, cfg)
     jf, kw = derived_job(job, jobf, work, clip, cfg, bp, pv)
-    run_make_reels(jf, root, clip, encoder='h264_videotoolbox')
+    run_make_reels(jf, root, clip, encoder='h264_videotoolbox' if sys.platform == 'darwin' else 'libx264')
     name = job['clips'][clip].get('filename', clip)
     full = os.path.join(pv, f'{name}.mp4'); out = os.path.join(kd, f'preview_{clip}.mp4')
     subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-ss', f'{start:.3f}', '-t', f'{dur:.3f}', '-i', full,

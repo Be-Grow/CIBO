@@ -1,5 +1,7 @@
 # CIBO
 
+> **Windows:** a instalação, adaptação de caminhos, dependências e verificações estão em [`WINDOWS.md`](WINDOWS.md). Os comandos e exemplos abaixo descrevem o ambiente original macOS/Claude.
+
 CIBO é um agente de edição de vídeo construído como uma coleção de skills do Claude Code. Cada skill encapsula um fluxo de edição específico — de um cliente, de um formato ou de uma etapa de qualidade — com suas próprias instruções, scripts e assets.
 
 O nome vem de *BLAME!* (Tsutomu Nihei): Cibo é uma inteligência que sobrevive migrando de corpo em corpo, carregando conhecimento adiante. É a mesma lógica deste repositório — o agente não é uma skill fixa, é a soma de tudo que ele já aprendeu, e cresce a cada skill nova ou correção que entra aqui.

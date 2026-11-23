@@ -264,8 +264,17 @@ def plist_path() -> Path:
 
 
 def install_schedule() -> None:
+    if platform.system() == "Windows":
+        task = "CIBO Hardware Profile"
+        command = f'"{sys.executable}" "{Path(__file__).resolve()}" scheduled'
+        r = subprocess.run(["schtasks", "/Create", "/TN", task, "/SC", "WEEKLY", "/D", "MON",
+                            "/ST", "10:00", "/TR", command, "/F"], capture_output=True, text=True)
+        if r.returncode:
+            sys.exit(r.stderr or r.stdout)
+        print(f"agendado no Task Scheduler: toda segunda 10:00 ({task})")
+        return
     if platform.system() != "Darwin":
-        print(f"Fora do macOS, agende no cron: 0 10 * * 1 {sys.executable} {Path(__file__).resolve()} check")
+        print(f"Fora do macOS/Windows, agende no cron: 0 10 * * 1 {sys.executable} {Path(__file__).resolve()} scheduled")
         return
     ffdir = str(Path(shutil.which("ffmpeg") or "/opt/homebrew/bin/ffmpeg").parent)
     CACHE.mkdir(parents=True, exist_ok=True)
@@ -291,6 +300,10 @@ def install_schedule() -> None:
 
 
 def uninstall_schedule() -> None:
+    if platform.system() == "Windows":
+        subprocess.run(["schtasks", "/Delete", "/TN", "CIBO Hardware Profile", "/F"], check=False)
+        print("agenda removida")
+        return
     p = plist_path()
     subprocess.run(["launchctl", "unload", str(p)], capture_output=True)
     p.unlink(missing_ok=True)
@@ -322,7 +335,10 @@ def main() -> None:
         if a.json:
             print(json.dumps(v | {"reason": p["choice"]["reason"], "last_check": p.get("last_check")}, ensure_ascii=False))
         else:
-            print("\n".join(f"export {k}={v}" for k, v in v.items()))
+            if platform.system() == "Windows":
+                print("\n".join(f"$env:{k}='{value}'" for k, value in v.items()))
+            else:
+                print("\n".join(f"export {k}={value}" for k, value in v.items()))
             lc = p.get("last_check") or {}
             if lc.get("problems"):
                 print(f"# aviso do último teste: {'; '.join(lc['problems'])}", file=sys.stderr)

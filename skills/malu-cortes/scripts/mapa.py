@@ -8,8 +8,9 @@ Planos (nivel), movimentos de camera, referencias, graficos, destaques da legend
 "intencao" do item no job quando existir; senao, da regra da skill para aquele tipo de evento.
 """
 import json, os, sys
+from pathlib import Path
 job = json.load(open(sys.argv[1])); out = sys.argv[2]
-sys.path.insert(0, job.get("engine_scripts_fernanda", os.path.expanduser("~/.claude/skills/fernanda-produto/scripts")))
+sys.path.insert(0, job.get("engine_scripts_fernanda", str(Path(os.environ.get("CIBO_SKILLS", Path(__file__).resolve().parents[2])) / "fernanda-produto/scripts")))
 from timeline import duration
 D = duration(job); ev = []
 NIV = {0: "N0 aberto", 1: "N1 médio", 2: "N2 fechado"}

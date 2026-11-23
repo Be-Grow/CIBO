@@ -6,7 +6,8 @@ Uso: deixas_vinheta.py --trilha T.mp3 --inicio-trilha 20.8 --batida 0.859 --prim
        --pausa 8.5 --impacto 11.75 --dur 17 [--palavras 3] [--brilho-depois 1.6] > deixas.json
 Os SFX vêm do acervo (sfx/_global + Músicas edicao); troque um caminho no JSON se o editor pedir outro som.
 """
-import argparse, json
+import argparse, json, os
+from pathlib import Path
 
 G = '/Volumes/SSD/CIBO Acervo/sfx/_global/'
 M = '/Volumes/SSD/Music/Sound/Músicas edicao/'

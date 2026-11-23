@@ -13,9 +13,9 @@ e `"mfa": false`. MFA e modelos ficam no SSD (`/Volumes/SSD/CIBO`, `CIBO_MFA_HOM
 import argparse, json, os, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
-HOME = Path(os.environ.get("CIBO_MFA_HOME", "/Volumes/SSD/CIBO"))
-MFA = HOME / "miniforge" / "envs" / "mfa" / "bin" / "mfa"
-ROOT = HOME / "mfa_root"
+HOME = Path(os.environ.get("CIBO_MFA_HOME", Path.home() / ".cibo" / "mfa"))
+MFA = Path(shutil.which("mfa") or (HOME / "miniforge" / "envs" / "mfa" / ("Scripts/mfa.exe" if os.name == "nt" else "bin/mfa")))
+ROOT = Path(os.environ.get("MFA_ROOT_DIR", HOME / "mfa_root"))
 
 
 def textgrid_words(tg):
@@ -46,7 +46,8 @@ def main():
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{A:.3f}", "-to", f"{B:.3f}", "-i", a.audio, "-ac", "1",
                         "-ar", "16000", str(corp / "trecho.wav")], check=True)
         (corp / "trecho.txt").write_text(texto)
-        env = dict(os.environ, MFA_ROOT_DIR=str(ROOT), PATH=f"{MFA.parent}:{os.environ.get('PATH', '')}")   # openfst/kaldi do ambiente
+        path_sep = os.pathsep
+        env = dict(os.environ, MFA_ROOT_DIR=str(ROOT), PATH=f"{MFA.parent}{path_sep}{os.environ.get('PATH', '')}")   # openfst/kaldi do ambiente
         r = subprocess.run([str(MFA), "align", "--clean", "--single_speaker", "-q", str(corp), "portuguese_brazil_mfa",
                             "portuguese_mfa", str(Path(tmp) / "out")], capture_output=True, text=True, env=env)
         tg = Path(tmp) / "out" / "trecho.TextGrid"

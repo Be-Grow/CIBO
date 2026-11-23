@@ -8,10 +8,11 @@ Aprovado no EP 04 (Ayrton Fernandes).
       --logo .../logo_podcast.png --lt 4.0 8.0 [--card 2.5]
 --lt: entrada e saída do nome na tela (s do vídeo final, que começa com 1 frame de capa)."""
 import os, sys, subprocess, shutil, argparse
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1080, 1920
-FONT = os.path.expanduser('~/.claude/skills/bombordo-boreste/assets/CalSans-Regular.ttf')
+FONT = os.environ.get('CIBO_FONT', str(Path(__file__).resolve().parents[1] / 'assets' / 'CalSans-Regular.ttf'))
 BLUE = (79, 149, 255, 255); NAVY = (6, 10, 20)
 ap = argparse.ArgumentParser(); ap.add_argument('video'); ap.add_argument('--nome', required=True)
 ap.add_argument('--sub', required=True); ap.add_argument('--logo', required=True)

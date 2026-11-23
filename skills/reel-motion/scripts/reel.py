@@ -28,14 +28,14 @@ Temporários sempre no SSD (TMPDIR) e mantidos (o editor pediu para guardar).
 """
 if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
     import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
-import json, os, re, shutil, subprocess, sys, time
+import json, os, re, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 # ambiente fixo (10/11/2026): o python3 do Mac sem numpy deixava o checador de cortes mudo. Sem numpy/PIL neste Python, o
 # motor se reexecuta no venv dele; sem nenhum que sirva, para com a instrução em vez de seguir pela metade.
 try:
     import numpy as _np, PIL as _pil   # noqa: F401
 except ImportError:
-    for _c in (str(Path.home() / '.venvs/audiotools/bin/python'), '/opt/homebrew/bin/python3.14', '/opt/homebrew/bin/python3.13', '/opt/homebrew/bin/python3.12'):
+    for _c in (str(Path.home() / '.venvs/audiotools' / ('Scripts/python.exe' if os.name == 'nt' else 'bin/python')), '/opt/homebrew/bin/python3.14', '/opt/homebrew/bin/python3.13', '/opt/homebrew/bin/python3.12'):
         if os.path.exists(_c) and os.path.realpath(_c) != os.path.realpath(sys.executable) and subprocess.run([_c, '-c', 'import numpy, PIL'], capture_output=True).returncode == 0:
             os.execv(_c, [_c] + sys.argv)
     sys.exit('motor sem numpy/PIL em nenhum Python conhecido: crie o venv (python3 -m venv ~/.venvs/audiotools && ~/.venvs/audiotools/bin/pip install numpy pillow)')
@@ -43,14 +43,18 @@ sys.path.insert(0, str(Path(__file__).resolve().parent)); import selos
 
 ENG = Path(__file__).resolve().parent.parent           # skill reel-motion
 P = Path(sys.argv[1]).resolve()
-WK = P / '04_work'; MG = ENG / 'mg'; SK = Path.home() / '.claude/skills'
-TMP = '/Volumes/SSD/CIBO/tmp'
+WK = P / '04_work'; MG = ENG / 'mg'; SK = Path(os.environ.get('CIBO_SKILLS', ENG.parent))
+# temporários no SSD no Mac (regra do CIBO); no Windows, CIBO_TEMP ou a pasta temporária do sistema (Igor 14/10/2026)
+TMP = os.environ.get('CIBO_TEMP') or ('/Volumes/SSD/CIBO/tmp' if sys.platform == 'darwin' else str(Path(tempfile.gettempdir()) / 'CIBO'))
 # TMPDIR próprio por processo: o limpa_bundles apagava o bundle do Remotion de OUTRO reel rodando junto (capa do r03 quebrou com
 # ENOENT durante a fila do r02, Andreia cortesMesaRadionica 06/11/2026). Cada processo limpa só a sua pasta.
 TMPP = os.path.join(TMP, f'reel_{os.getpid()}'); os.makedirs(TMPP, exist_ok=True)
 os.environ['TMPDIR'] = TMPP
+if os.name == 'nt': os.environ['TEMP'] = os.environ['TMP'] = TMPP
 import atexit as _ax; _ax.register(lambda: shutil.rmtree(TMPP, ignore_errors=True))
-AUDIOPY = str(Path.home() / '.venvs/audiotools/bin/python')
+_VENV = Path.home() / '.venvs/audiotools' / ('Scripts/python.exe' if os.name == 'nt' else 'bin/python')
+AUDIOPY = str(_VENV) if _VENV.exists() else sys.executable
+NPX = 'npx.cmd' if os.name == 'nt' else 'npx'
 R = sys.argv[2]; ETAPA = sys.argv[3]; ARGS = sys.argv[4:]; W = WK / R
 C = json.load(open(W / 'reel.json'))
 NAME = C['name']; ENTREGA = P / '06_deliverables' / f'{NAME}.mp4'; CAPA = P / '06_deliverables' / f'CAPA - {NAME}.jpg'
@@ -105,7 +109,10 @@ def segs():
 
 
 def whisper(audio, out, prompt=None):
-    cmd = ['uv', 'run', '--quiet', '--with', 'mlx-whisper', 'python', str(ENG / 'scripts/wt.py'), str(audio), str(out), 'mlx-community/whisper-large-v3-mlx']
+    if sys.platform == 'darwin':   # Mac: mlx-whisper (Apple Silicon); Windows: faster-whisper (wt.py escolhe)
+        cmd = ['uv', 'run', '--quiet', '--with', 'mlx-whisper', 'python', str(ENG / 'scripts/wt.py'), str(audio), str(out), 'mlx-community/whisper-large-v3-mlx']
+    else:
+        cmd = ['uv', 'run', '--quiet', '--with', 'faster-whisper', 'python', str(ENG / 'scripts/wt.py'), str(audio), str(out), 'large-v3']
     sh(cmd + ([prompt] if prompt else []), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
@@ -436,6 +443,14 @@ def limpa_bundles():
 
 
 def mata_orfaos():
+    if os.name == 'nt':
+        cmd = "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'reel-motion\\\\node_modules' } | Select-Object -ExpandProperty ProcessId | ConvertTo-Json -Compress"
+        raw = subprocess.run(['powershell', '-NoProfile', '-Command', cmd], capture_output=True, text=True).stdout.strip()
+        try: ids = json.loads(raw) if raw else []
+        except ValueError: ids = []
+        if isinstance(ids, int): ids = [ids]
+        for pid in ids: subprocess.run(['taskkill', '/F', '/T', '/PID', str(pid)], capture_output=True)
+        return
     """esbuild/Chrome do motor que ficaram órfãos (pai = 1) de render encerrado: dois esbuild ficaram 4 h a ~280% de CPU (auditoria 14/10/2026)"""
     for l in subprocess.run(['ps', '-eo', 'pid=,ppid=,command='], capture_output=True, text=True).stdout.splitlines():
         p = l.split(None, 2)
@@ -488,7 +503,7 @@ def bundle_unico():
             except PermissionError:
                 pass
         dst = WK / '_bundle' / f'{R}_{os.getpid()}'
-        sh(['npx', 'remotion', 'bundle', 'src/index.ts', f'--public-dir={pub_enxuta()}', f'--out-dir={dst}', '--log=error'], cwd=MG)
+        sh([NPX, 'remotion', 'bundle', 'src/index.ts', f'--public-dir={pub_enxuta()}', f'--out-dir={dst}', '--log=error'], cwd=MG)
         _BUNDLE = dst; atexit.register(lambda: shutil.rmtree(dst, ignore_errors=True))
     return _BUNDLE
 
@@ -505,16 +520,18 @@ def remotion(out, extra, props=None, codec=('--codec=h264',)):
     # 2 abas quando a página abre vídeo (RAM do Mac de 16 GB); camada com alfa não abre câmera: 5 abas (medido no M4, 10/11/2026:
     # etiqueta de 145 quadros 6,1 s → 4,4 s; fundo 300 quadros 11,9 s → 10,4 s). REEL_ABAS força um valor.
     abas = os.environ.get('REEL_ABAS') or (5 if any('image-format=png' in c for c in codec) and not pr.get('inserts') else 2)
-    cmd = ['npx', 'remotion', 'render', str(ent), 'ReelH' if HZ else 'Reel', str(out), f'--props={props}', *codec,
+    cmd = [NPX, 'remotion', 'render', str(ent), 'ReelH' if HZ else 'Reel', str(out), f'--props={props}', *codec,
            '--muted', '--overwrite', '--log=error', '--timeout=180000', f'--concurrency={abas}'] + extra   # 180 s por quadro com a máquina ocupada
     mata_orfaos()
     for tentativa in (1, 2):
         print('$', ' '.join(map(str, cmd))[:160], f'(limite {lim}s)', flush=True)
-        p = subprocess.Popen(cmd, cwd=MG, start_new_session=True)
+        popen_kw = {'cwd': MG, 'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == 'nt' else {'cwd': MG, 'start_new_session': True}
+        p = subprocess.Popen(cmd, **popen_kw)
         import signal
         def _fim(sig, frm, p=p):   # reel.py encerrado: leva o render junto (grupo próprio não recebe o sinal do pai)
             try:
-                os.killpg(p.pid, 15)
+                if os.name == 'nt': subprocess.run(['taskkill', '/F', '/T', '/PID', str(p.pid)], capture_output=True)
+                else: os.killpg(p.pid, 15)
             except ProcessLookupError:
                 pass
             sys.exit(1)
@@ -524,7 +541,9 @@ def remotion(out, extra, props=None, codec=('--codec=h264',)):
                 break
             raise subprocess.CalledProcessError(p.returncode, cmd)
         except subprocess.TimeoutExpired:
-            os.killpg(p.pid, 15); p.wait()
+            if os.name == 'nt': subprocess.run(['taskkill', '/F', '/T', '/PID', str(p.pid)], capture_output=True)
+            else: os.killpg(p.pid, 15)
+            p.wait()
             print(f'render passou de {lim}s (travado?): encerrado' + ('; nova tentativa' if tentativa == 1 else ''), flush=True)
             if tentativa == 2:
                 raise

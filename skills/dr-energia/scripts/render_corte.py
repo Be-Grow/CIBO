@@ -345,7 +345,7 @@ def render(cfg, palavras):
         *entradas,
         "-filter_complex", filtro,
         "-map", "[vout]", "-map", "[aout]",
-        "-c:v", "h264_videotoolbox", "-b:v", "12M", "-profile:v", "high",
+        "-c:v", "h264_videotoolbox" if sys.platform == "darwin" else "libx264", "-b:v", "12M", "-profile:v", "high",
         "-pix_fmt", "yuv420p", "-r", str(FPS),
         # sinalizacao de cor completa: sem isso o player adivinha e a cor escorrega
         "-colorspace", "bt709", "-color_primaries", "bt709",

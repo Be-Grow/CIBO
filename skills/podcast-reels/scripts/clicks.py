@@ -32,8 +32,9 @@ def _acervo(i,fallback):
         if r.returncode==0 and os.path.exists(p): return p
     except Exception: pass
     return fallback
-DEFAULT_CLICKS=(_acervo('sfx-click-lens','/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav')+'|'+
-                _acervo('sfx-camera-click','/Volumes/SSD/CIBO/repo/skills/fernanda-produto/assets/camera_click.mp3'))
+_repo_click=os.path.abspath(os.path.join(os.path.dirname(__file__),'..','..','fernanda-produto','assets','camera_click.mp3'))
+_mac_lens='/Volumes/SSD/Music/Sound/Músicas edicao/click lens.wav'   # Mac antigo; no Windows vem só do acervo
+DEFAULT_CLICKS=(_acervo('sfx-click-lens',_mac_lens if os.path.exists(_mac_lens) else '')+'|'+_acervo('sfx-camera-click',_repo_click))
 def _load(fp):
     raw=subprocess.run(f'ffmpeg -v error -i "{fp}" -f s16le -ar {SR} -ac 1 -',
                        shell=True,capture_output=True).stdout

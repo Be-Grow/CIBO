@@ -17,6 +17,7 @@ import json, os, re, shutil, subprocess, sys
 from fractions import Fraction
 from pathlib import Path
 from xml.sax.saxutils import quoteattr
+PRORES = 'prores_videotoolbox' if sys.platform == 'darwin' else 'prores_ks'   # videotoolbox só existe no Mac
 import numpy as np, soundfile as sf
 
 def no_disco(p):
@@ -45,7 +46,9 @@ if GROSSO:
     C = {**C, 'camera_davinci': True, 'camera_moves': []}; C.pop('track', None)
 # versão horizontal 16:9 ("orient": "h", Andreia 19/10/2026): timeline 1920×1080, painel à esquerda, deslocamento da pessoa em x
 HZ = C.get('orient') == 'h'; VW, VH = (1920, 1080) if HZ else (1080, 1920)
-SFXDIR = '/Volumes/SSD/CIBO Acervo/sfx/_global/'
+_acervo_conf = Path(os.environ.get('CIBO_ACERVO_CONF', Path.home() / '.cibo' / 'acervo.json'))   # Windows: Igor 14/10/2026
+try: SFXDIR = str(Path(json.loads(_acervo_conf.read_text(encoding='utf-8-sig'))['library']) / 'sfx' / '_global') + os.sep
+except (OSError, ValueError, KeyError): SFXDIR = '/Volumes/SSD/CIBO Acervo/sfx/_global/'
 FD = Fraction(1, 30) if str(C.get('fps', '')) in ('30', '30.0') else Fraction(1001, 30000)   # "fps": 30 = timeline no fps da fonte editada (Bombordo EP 08, 01/11/2026: sem cópia 29,97)
 if GROSSO:                                                     # aula longa: timeline no fps da fonte, sem cópia 29,97 (João 21/10/2026:
     _s = Path(C['src']) if os.path.isabs(C['src']) else P / '01_sources' / C['src']   # "o Resolve consegue fazer isso sozinho")
@@ -157,7 +160,7 @@ if not CP.exists():
 if C.get('sem_capa'):                                        # vídeo de YouTube não leva capa no quadro 0 (Bruno, 11/11/2026); a thumb é outra peça
     CP = None
 if CP: sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', CP, '-frames:v', '1', '-r', '30000/1001', '-vf', f'scale={VW}:{VH}',
-   '-c:v', 'prores_videotoolbox', '-profile:v', 'standard', OUT / U('capa.mov'))
+   '-c:v', PRORES, '-profile:v', 'standard', OUT / U('capa.mov'))
 hms = lambda t: f'{int(t // 3600):02d}:{int(t % 3600 // 60):02d}:{int(t % 60):02d},{int(round(t % 1 * 1000)) % 1000:03d}'
 txt = lambda b: ' '.join(w['t'] for w in b['words'])
 if PR.get('captions'):   # vídeo sem legenda: sem SRT vazio nem faixa de legenda no pacote

@@ -1,0 +1,32 @@
+$ /Volumes/SSD/CIBO/wt_antes/skills/podcast-reels/scripts/make_reels.py corte01
+review sheet: /Users/bruno/.cache/cibo/regressao/podcast-reels/work/review.csv
+========== corte01 total=16.10 caps=12
+caps:corte01 built
+clicks:corte01 built
+[vost#0:0/rawvideo @ 0x14a707990] Error submitting a packet to the muxer: Broken pipe
+    Last message repeated 1 times
+[out#0/rawvideo @ 0x600000108300] Error muxing a packet
+[out#0/rawvideo @ 0x600000108300] Task finished with error code: -32 (Broken pipe)
+[out#0/rawvideo @ 0x600000108300] Terminating thread with return code -32 (Broken pipe)
+[out#0/rawvideo @ 0x600000108300] Error writing trailer: Broken pipe
+[out#0/rawvideo @ 0x600000108300] Error closing file: Broken pipe
+[vost#0:0/rawvideo @ 0x15ae083a0] Error submitting a packet to the muxer: Broken pipe
+    Last message repeated 1 times
+[out#0/rawvideo @ 0x60000304c540] Error muxing a packet
+[out#0/rawvideo @ 0x60000304c540] Task finished with error code: -32 (Broken pipe)
+[out#0/rawvideo @ 0x60000304c540] Terminating thread with return code -32 (Broken pipe)
+[out#0/rawvideo @ 0x60000304c540] Error writing trailer: Broken pipe
+[out#0/rawvideo @ 0x60000304c540] Error closing file: Broken pipe
+[vost#0:0/rawvideo @ 0x141607ff0] Error submitting a packet to the muxer: Broken pipe
+    Last message repeated 1 times
+[out#0/rawvideo @ 0x600000a00540] Error muxing a packet
+[out#0/rawvideo @ 0x600000a00540] Task finished with error code: -32 (Broken pipe)
+[out#0/rawvideo @ 0x600000a00540] Terminating thread with return code -32 (Broken pipe)
+[out#0/rawvideo @ 0x600000a00540] Error writing trailer: Broken pipe
+[out#0/rawvideo @ 0x600000a00540] Error closing file: Broken pipe
+cut:corte01 built
+intro:corte01 built
+logo skip [Errno 2] No such file or directory: ''
+cover:corte01 built
+final:corte01 built
+corte01 DONE -> /Users/bruno/.cache/cibo/regressao/podcast-reels/out/01 - TESTE DE REGRESSAO.mp4

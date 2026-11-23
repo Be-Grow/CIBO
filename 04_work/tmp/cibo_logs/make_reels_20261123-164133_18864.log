@@ -1,0 +1,27 @@
+$ /Volumes/SSD/CIBO/wt_antes/skills/bombordo-boreste/scripts/make_reels.py corte01
+review sheet: /Users/bruno/.cache/cibo/regressao/bombordo-boreste/work/review.csv
+========== corte01 total=16.30 caps=12
+    0.00   0.87 Quantas vezes tu     ...
+    0.87   1.32 já viu               ..
+    1.60   3.10 alguém na internet   ...
+    3.50   5.00 com mais resultado   ...
+    5.25   6.75 que você tem hoje    ....
+    7.15   8.15 só porque teve       ...
+    8.15   8.65 coragem              .
+    9.05   9.92 de produzir          ..
+    9.92  10.55 conteúdo             .
+   10.80  12.30 e tu não faz isso    .....
+   12.70  14.20 por vergonha         ..
+   14.60  16.10 isso é uma força     ....
+!! ATENCAO: rodando uma COPIA do pipeline (/Volumes/SSD/CIBO/wt_antes/skills/bombordo-boreste/scripts), nao a skill. Arquivos diferentes da skill: ['make_reels.py']. Rode direto de /Users/bruno/.claude/skills/bombordo-boreste/scripts.
+!! CORTE NO MEIO DA FALA: corte01 seg0 start em 0.30s (nenhuma pausa por perto)
+   corte ajustado p/ pausa: corte01 seg1 start 5.75->5.65
+   corte ajustado p/ pausa: corte01 seg2 start 11.45->11.35
+caps:corte01 built
+clicks:corte01 built
+cut:corte01 built
+intro:corte01 built
+logo skip [Errno 2] No such file or directory: ''
+cover:corte01 built
+final:corte01 built
+corte01 DONE -> /Users/bruno/.cache/cibo/regressao/bombordo-boreste/out/01 - TESTE DE REGRESSAO.mp4
