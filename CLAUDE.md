@@ -43,3 +43,11 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
 - Scripts do motor imprimem até 15 linhas e gravam o log completo em `05_qa/logs/` (`client-router/scripts/saida_curta.py`;
   `CIBO_VERBOSO=1` mostra tudo). Em erro: caminho do log + últimas 20 linhas; abra o log só se isso não bastar.
 - Uma folha de contato por decisão; nada de prints soltos de quadro.
+
+## Navegador (requisito, 23/11/2026)
+
+A CIBO precisa de um navegador com a extensão Claude instalada (ferramentas `mcp__claude-in-chrome__*`), sempre no MESMO perfil:
+é nele que ficam a extensão e os logins (Instagram, Drive, ClickUp). Cada máquina declara no seu `~/.claude/CLAUDE.md` qual
+navegador, qual perfil e o comando que abre esse perfil. No Mac do Bruno: Helium, perfil "Bruno" (`--profile-directory=Default`).
+Sem extensão no perfil aberto, a CIBO não navega: avise e diga qual perfil abrir.
+
