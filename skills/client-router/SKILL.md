@@ -40,6 +40,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Projeto Premiere (só sob pedido) | `podcast-reels/scripts/projeto_nle.py` |
 | Entrega no Drive (com links) | `scripts/entrega_drive.py` desta skill — simula sem `--confirmo`; confirme o destino |
 | Correção do editor | `scripts/feedback.py add` no mesmo turno (o padrão do erro é sugerido; confirme ou passe `--padrao`). Aviso **VIRA TRAVA** = anote em `todo.md` "Viram trava"; **A TRAVA FALHOU** = a correção é na trava. Revisão semanal: `feedback.py repetidos` |
+| **Aprendizado (sempre)** | Regra em `references/aprendizado.md`: árvore de decisão (lição, tema, trava, melhoria, candidata, nada), quando criar skill nova (repetiu em 2+ jobs, nenhuma skill cobre, etapa própria, não é de cliente; tipo de vídeo = formato do reel-motion) e quando aposentar. Fim de todo job: `scripts/aprendizado.py colhe PROJ` e registre cada script/correção (`registra`). Toda semana ou quando o editor pedir revisão: `aprendizado.py revisao` (inclui o `feedback.py repetidos`). Feito com teste: `aprendizado.py feito ID` |
 | Cor de fotos | `foto-evento-cor` |
 | SEO / thumb do episódio / demanda ClickUp | `seo-youtube-podcast` e, **logo em seguida e sempre**, `clickup-thumb-podcast` (SEO pronto = demanda criada; nunca esperar pedido) |
 

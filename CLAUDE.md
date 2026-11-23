@@ -5,8 +5,9 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
 
 1. Invoque a skill `client-router` antes de tocar no material. Ela identifica o cliente e
    traz o mapa de qual skill usar em cada etapa.
-2. Use a skill de cada etapa sem esperar o usuário apontar. Se nenhuma cobre, diga isso e
-   proponha estender uma skill existente.
+2. Use a skill de cada etapa sem esperar o usuário apontar. Se nenhuma cobre, faça no job, guarde o script e registre como
+   candidata (`client-router/scripts/aprendizado.py registra --destino candidata --tipo X`); skill nova só pelos critérios de
+   `client-router/references/aprendizado.md` (repetiu em 2+ jobs, nenhuma skill cobre, etapa própria, não é de cliente).
 3. Asset (burn, clique, trilha, fonte, logo, cartão): busque com a skill `acervo`
    (`acervo.py find`) em vez de perguntar onde está; o que o editor apontar, registre com `add`.
 4. Tudo no SSD: em todo Bash do job, `export TMPDIR="<projeto>/04_work/tmp"`. Prévias, testes e
@@ -21,6 +22,9 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
 8. O editor nunca digita nem roda comando (editor, 23/11/2026): ele conversa e você roda os scripts por baixo, escolhidos pelo
    contexto (cliente novo, material apontado, "aprovado menos as cores": tabela do passo 7 do `client-router`). Na resposta, fale do
    resultado em português, sem nome de script, flag ou caminho, a menos que ele pergunte.
+9. Aprendizado sempre (`client-router/references/aprendizado.md`): todo sinal (correção, ajuste no DaVinci, "o que você mudaria?",
+   script feito no job) vai para lição, tema, trava, melhoria ou candidata no mesmo turno; no fim do job, `aprendizado.py colhe PROJ`;
+   toda semana, `aprendizado.py revisao`. Mudança em skill só fora de produção, com teste, e marcada `aprendizado.py feito ID`.
 
 ## Como conversar
 
