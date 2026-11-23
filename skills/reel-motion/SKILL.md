@@ -42,7 +42,7 @@ A etapa seguinte recusa selo que falta ou ficou velho. **"Pronto" é o que `reel
 | Passo | Comando | Selo | Se reclamar |
 |---|---|---|---|
 | estado | `status.py PROJ` | mostra `cortes✓ layout✗ audio· pacote·` | ✗ = arquivo mudou depois do selo: refaça a etapa |
-| cortes | `reel.py PROJ rNN cortes` | `cortes` | corrija o `segs.json` ou registre a decisão em reel.json `"cortes_ouvidos": {"a-b": "motivo"}` |
+| cortes | `reel.py PROJ rNN cortes` | `cortes` | corrija o `segs.json` ou registre a decisão em reel.json `"cortes_ouvidos": {"a-b": "motivo"}`. Borda em cima da voz (`bordas.py`) também trava desde 23/11/2026: `bordas.py W --aplica` acerta pelo silêncio |
 | motion | escreva `rNN/motion.json` (declarativo: ver cabeçalho de `scripts/monta_props.py`; `scripts/esquema.py` lista painéis e campos) → `props` → `verifica` | `layout` | a saída diz o alvo e o defeito; `VERIFICA_TUDO=1` dá a folha única com tudo |
 | som | `sfx.json` → `mix` | `audio` | — |
 | pacote | `davinci` (exige os três) → `fila_davinci.py` | `pacote` | liberar sem selo é decisão do editor (`SELOS_OK=1`) |
@@ -50,6 +50,13 @@ A etapa seguinte recusa selo que falta ou ficou velho. **"Pronto" é o que `reel
 - `motion.json` substitui o `props.py` à mão: sem coordenada de etiqueta (`"onde": "topo"|"base"`, a linha quebra sozinha), sem lista de burns, sem
   tela dividida escrita (sai dos painéis), vídeo sem legenda com `"legenda": false`. `props.py` antigo continua funcionando.
 - O motor escolhe o próprio Python (venv com numpy/PIL) e cada processo tem o seu bundle: pode rodar `verifica` de outro reel durante um render.
+- **Capa é do editor (trava, 23/11/2026):** `final`, `capa` e `entrega` recusam reel.json `"capa"` sem `"editor": "<o que ele escolheu>"`.
+  Mostre a folha do `capa_cand.py`, pergunte e registre a escolha nas palavras dele. Prévia sem escolha: `CAPA_PROVISORIA=1` (não entrega).
+- **Timeline que o editor mexeu é dele (trava, 23/11/2026):** `scripts/guarda_editor.py`. Toda timeline que a CIBO monta ganha assinatura;
+  apagar/reimportar só passa se ela está como a CIBO deixou. Script novo que apaga timeline usa `G.apaga(mp, p, tl)`, nunca
+  `mp.DeleteTimelines` direto, e chama `G.marca(p, tl)` depois de montar. Liberar: `CIBO_EDITOR_OK=1`, só depois de perguntar.
+- **Dúvida de DaVinci: consulte a documentação antes de tentar** (editor, 23/11/2026): `scripts/doc_resolve.py api TERMO` (API de
+  scripting) ou `doc_resolve.py manual TERMO` (manual do Resolve). Achou algo que não estava em `regras/davinci.md`? Anote lá.
 - Mudou o motor? `/Volumes/SSD/CIBO/repo/tests/regressao.py check --engine reel-motion` (22 s, sem câmera) antes do push.
 
 ## Padrão de edição do CIBO (10 etapas)

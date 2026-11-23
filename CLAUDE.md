@@ -16,6 +16,8 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
    `feedback.jsonl` nunca é lido inteiro: só `client-router/scripts/feedback.py add` e `feedback.py resumo`.
 6. Conferência no DaVinci é no preview do editor, sempre (regra geral do CIBO, 21/10/2026): monte as camadas e avise;
    não renderize nem exporte quadro pelo Resolve para conferir, e render só quando ele pedir. Capa: 1 quadro, sempre.
+7. Dúvida sobre como fazer algo no DaVinci (API ou interface): consulte a documentação antes de tentar, com
+   `reel-motion/scripts/doc_resolve.py api|manual TERMO`; web só se ela não resolver. O que aprender vai para `regras/davinci.md`.
 
 ## Como conversar
 

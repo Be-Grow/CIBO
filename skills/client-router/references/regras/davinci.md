@@ -1,5 +1,12 @@
 # Regras transversais — DaVinci Resolve pela API (medido no Resolve 20.2.3, EP 06, 18/10/2026)
 
+**Dúvida sobre como fazer algo no DaVinci: consulte a documentação antes de tentar (editor, 23/11/2026).** Função, argumento ou
+propriedade da API: `reel-motion/scripts/doc_resolve.py api TERMO` (README de scripting da versão instalada). Como uma função da
+interface funciona: `doc_resolve.py manual TERMO` e depois `--pagina N`. Só depois disso, web. O que aprender, anote aqui.
+
+**Timeline que o editor mexeu é dele (trava, 23/11/2026):** apagar ou reimportar timeline só via `guarda_editor.apaga`, que recusa
+se a assinatura mudou desde que a CIBO montou (ou se a timeline não é da CIBO). Liberar: `CIBO_EDITOR_OK=1`, só depois de perguntar.
+
 **Conferência é no preview do DaVinci, sempre (editor, 21/10/2026: "preview no davinci sempre").** Monte as camadas, avise e
 o editor confere no preview do Resolve. Não renderize nem exporte quadro/still pelo Resolve para conferir, e render final só
 quando ele pedir. Conferência minha fica fora do Resolve (folha de contato com os MOVs/PNGs sobre quadros do MP4).
