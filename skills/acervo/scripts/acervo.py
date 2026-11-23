@@ -19,6 +19,8 @@ em ~/.cibo/acervo.json. O catálogo (`catalog.json`) fica dentro da biblioteca e
                                            copia para o projeto e registra em 07_manifests/assets_usados.md
   acervo.py segments ID [--min-black 0.3]  acha trechos separados por preto (pacotes de transição)
   acervo.py check                          confere tudo; religa pelo hash o que mudou de lugar
+  acervo.py drive-define CAMINHO           pasta "CIBO Assets" do Drive DESTE computador (Mac ou Windows; o editor aponta)
+  acervo.py drive-indexa                   cataloga a estrutura fixa do Drive sem copiar (references/drive-assets.md); `get` copia o usado
   acervo.py dupes                          arquivos repetidos (mesmo hash)
 Só biblioteca padrão; ffprobe/ffmpeg para mídia.
 """
@@ -164,7 +166,85 @@ def guess_client(p: Path) -> str:
 
 
 def resolve(it: dict) -> Path:
+    if it["kind"] == "drive":        # assets do Drive: caminho relativo à pasta "CIBO Assets" DESTE computador (Mac ou Windows)
+        return drive_root() / it["rel_drive"]
     return lib() / it["rel"] if it["kind"] == "lib" else Path(it["path"])
+
+
+# ------------------------------------------------------------------ assets no Drive (estrutura fixa, editor 23/11/2026)
+# Todos os editores sobem os assets para a MESMA estrutura no Drive (ver references/drive-assets.md). O Drive aparece como disco no
+# Mac e no Windows; a CIBO indexa sem copiar e só copia para o projeto o que usar (`get`). O caminho fica relativo à raiz, então o
+# mesmo catálogo vale no Mac (~/Library/CloudStorage/...) e no Windows (G:\...).
+PASTA_TIPO = {"burns": "filmburn", "transicoes": "overlay", "sfx": "sfx", "trilhas": "musica", "luts": "lut", "overlays": "overlay",
+              "fontes": "fonte", "templates": "outro", "logo": "logo", "cores": "imagem", "capas": "imagem", "referencias": "video"}
+
+
+def drive_root() -> Path:
+    r = conf().get("drive_assets")
+    if not r:
+        sys.exit("ASSETS_DRIVE_NAO_DEFINIDO: pergunte ao editor onde está a pasta 'CIBO Assets' no Drive dele e rode "
+                 "`acervo.py drive-define CAMINHO`")
+    p = Path(r)
+    if not p.is_dir():
+        sys.exit(f"pasta de assets do Drive não encontrada: {p} (Drive para computador aberto e logado?)")
+    return p
+
+
+def cmd_drive_define(a):
+    p = Path(a.caminho).expanduser()
+    if not p.is_dir():
+        sys.exit(f"pasta não existe: {p}")
+    c = conf(); c["drive_assets"] = str(p.resolve())
+    CONF.parent.mkdir(parents=True, exist_ok=True); CONF.write_text(json.dumps(c, ensure_ascii=False, indent=1))
+    print(f"assets do Drive: {c['drive_assets']}")
+
+
+def _cliente_da_pasta(nome: str) -> str:
+    try:
+        reg = json.loads(REGISTRY.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        reg = {}
+    s = slug(nome)
+    for key, v in reg.items():
+        if s == slug(key) or s in {slug(x) for x in v.get("aliases", [])}:
+            return key
+    return s
+
+
+def cmd_drive_indexa(a):
+    """indexa a estrutura fixa; avisa o que está fora do lugar (não mexe em nada no Drive)"""
+    root = drive_root(); cat = load(); novos, fora = 0, []
+    for f in sorted(root.rglob("*")):
+        if not f.is_file() or f.name in SKIP or f.name.startswith((".", "~", "._")) or f.suffix.lower() in {".txt", ".md", ".gdoc"}:
+            continue
+        parts = f.relative_to(root).parts
+        if parts[0] == "_global" and len(parts) >= 3:
+            client, pasta, extra = "_global", parts[1], parts[2:-1]
+        elif parts[0] == "clientes" and len(parts) >= 4:
+            client, pasta, extra = _cliente_da_pasta(parts[1]), parts[2], parts[3:-1]
+        else:
+            fora.append("/".join(parts)); continue
+        typ = PASTA_TIPO.get(slug(pasta))
+        if not typ:
+            fora.append("/".join(parts)); continue
+        rel = "/".join(parts)
+        if any(it.get("rel_drive") == rel for it in cat["items"].values()):
+            continue
+        tags = sorted({slug(pasta)} | {slug(x) for x in extra})
+        k = new_id(cat, typ, f.name)
+        cat["items"][k] = {"id": k, "name": f.name, "type": typ, "client": client, "tags": tags, "note": "", "license": "",
+                           "qhash": "", "size": f.stat().st_size, "source": "drive", "added": time.strftime("%Y-%m-%d"),
+                           "kind": "drive", "rel_drive": rel}
+        novos += 1
+    save(cat)
+    print(f"assets do Drive: {novos} novos no catálogo ({root})")
+    if fora:
+        print(f"{len(fora)} arquivo(s) fora da estrutura (não indexados; avise o editor onde colocar):")
+        for x in fora[:10]:
+            print("   " + x)
+
+
+
 
 
 def new_id(cat: dict, typ: str, name: str) -> str:
@@ -177,7 +257,7 @@ def new_id(cat: dict, typ: str, name: str) -> str:
 
 
 def by_hash(cat: dict) -> dict:
-    return {it["qhash"]: k for k, it in cat["items"].items()}
+    return {it["qhash"]: k for k, it in cat["items"].items() if it.get("qhash")}
 
 
 # ------------------------------------------------------------------ comandos
@@ -422,7 +502,10 @@ def cmd_check(a):
     cat = load()
     hashes = None
     missing, relinked = [], []
+    drive_ok = bool(conf().get("drive_assets")) and Path(conf()["drive_assets"]).is_dir()
     for k, it in cat["items"].items():
+        if it["kind"] == "drive" and not drive_ok:
+            continue                     # Drive deste computador não configurado/aberto: não conta como faltando
         p = resolve(it)
         if p.exists():
             continue
@@ -502,6 +585,8 @@ def main():
     for o in ("--type", "--client", "--tags", "--add-tags", "--note", "--license"): p.add_argument(o)
     p.set_defaults(f=cmd_edit)
     p = sp.add_parser("check"); p.set_defaults(f=cmd_check)
+    p = sp.add_parser("drive-define"); p.add_argument("caminho"); p.set_defaults(f=cmd_drive_define)
+    p = sp.add_parser("drive-indexa"); p.set_defaults(f=cmd_drive_indexa)
     p = sp.add_parser("dupes"); p.set_defaults(f=cmd_dupes)
     a = ap.parse_args()
     a.f(a)

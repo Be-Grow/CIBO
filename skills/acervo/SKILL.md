@@ -22,6 +22,11 @@ Script: `~/.claude/skills/acervo/scripts/acervo.py` (só biblioteca padrão + ff
   vez só.
 - **Editor pediu para mudar de lugar**: `acervo.py move-library NOVO`. Copia, confere e passa a
   usar o novo; a cópia antiga só é apagada depois que o editor confirmar.
+- **Assets da equipe no Drive (estrutura fixa, 23/11/2026):** os editores sobem efeitos, trilhas, fontes, logos e templates para
+  `CIBO Assets/` no Drive (`_global/...` e `clientes/<Nome>/...`, regra completa em `references/drive-assets.md`). O Drive é disco no
+  Mac e no Windows: `acervo.py drive-define CAMINHO` uma vez por computador (o editor aponta; `ASSETS_DRIVE_NAO_DEFINIDO` = pergunte),
+  `acervo.py drive-indexa` no começo do dia ou quando o editor avisar que subiu coisa (cataloga sem copiar e lista o que está fora do
+  lugar), e o `find`/`get` de sempre já incluem o Drive; `get` copia só o usado para o projeto.
 - **SSD desconectado** (`ACERVO_INACESSIVEL`): peça para conectar. Não saia caçando cópias soltas
   pelo disco.
 
