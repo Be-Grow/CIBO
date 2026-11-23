@@ -14,7 +14,7 @@ K.limite(240)
 r, pm, p = K.resolve(); antes = p.GetName() if p else None
 assert not antes or antes.startswith('Untitled Project') or antes == 'TESTE fusion_kit', f'feche o projeto "{antes}" antes do teste (não mexo em projeto do editor)'
 p, novo = K.abre_projeto(pm, 'CIBO testes', 'TESTE fusion_kit')
-for k, v in dict(timelineResolutionWidth='1080', timelineResolutionHeight='1920', timelineFrameRate='29.97').items(): p.SetSetting(k, v)
+for k, v in dict(timelineResolutionWidth='1080', timelineResolutionHeight='1920', timelineFrameRate='29.97', timelineInputResMismatchBehavior='scaleToCrop').items(): p.SetSetting(k, v)
 mp = p.GetMediaPool()
 if K.timelines(p): mp.DeleteTimelines(K.timelines(p))
 cl = mp.ImportMedia([str(V)])[0]; tl = mp.CreateEmptyTimeline('TESTE'); tl.SetTrackName('video', 1, 'CÂMERA bruto'); s0 = tl.GetStartFrame()
@@ -27,6 +27,26 @@ K.entra_sai(c, T / 'comps/c.comp'); ok.append(c.GetFusionCompCount() == 1)
 txt = (T / 'comps/a.comp').read_text()
 ok.append('ShutterAngle = Input { Value = 360' in txt and 'MotionBlur = Input { Value = 1' in txt)
 ok.append(all(i.GetFusionCompCount() == 1 for i in (a, b, c)))
-pm.SaveProject(); pm.CloseProject(p); pm.GotoRootFolder(); pm.OpenFolder('CIBO testes'); apagou = pm.DeleteProject('TESTE fusion_kit')
-print('zoom clipe inteiro, zoom clipe aparado, entra/sai, shutter 360 gravado, 1 comp por clipe:', ok, '| projeto de teste apagado:', apagou)
+# travas de 23/11/2026: Fusion em clipe com Pan é recusado; ciclo de .drt não pode mudar Pan/Tilt/Zoom
+VH = T / 'teste_horizontal_4k.mp4'                               # bruto 16:9 em timeline 9:16 no scaleToCrop (caso da Michelle)
+if not VH.exists():
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=3840x2160:rate=30000/1001:duration=4', '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv420p', str(VH)], check=True)
+clh = mp.ImportMedia([str(VH)])[0]
+assert mp.AppendToTimeline([{'mediaPoolItem': clh, 'startFrame': 0, 'endFrame': 90, 'trackIndex': 1, 'recordFrame': s0 + 270, 'mediaType': 1}])
+d = K.itens(tl, 'CÂMERA bruto')[3]; d.SetProperty('Pan', 100.0); d.SetProperty('ZoomX', 1.2); d.SetProperty('ZoomY', 1.2)
+print('Pan gravado 100, lido logo depois:', d.GetProperty('Pan'))
+try:
+    K.zoom(d, [(15, 1.0), (30, 1.1)], T / 'comps/d.comp'); barrou = False
+except AssertionError:
+    barrou = True
+ok.append(barrou and d.GetFusionCompCount() == 0 and abs(float(d.GetProperty('Pan')) - 100) < 0.01)
+foto = K.transforms(tl); drt = T / 'ciclo.drt'; drt.unlink(missing_ok=True)
+assert tl.Export(str(drt), r.EXPORT_DRT, r.EXPORT_NONE), 'exportação .drt falhou'
+nv = mp.ImportTimelineFromFile(str(drt), {'timelineName': 'TESTE drt'}); assert nv, 'importação .drt falhou'
+dn = K.itens(nv, 'CÂMERA bruto')[3]; pan_drt = float(dn.GetProperty('Pan'))
+fixos = K.reaplica_transforms(nv, foto, 'TESTE drt')
+ok.append(abs(float(dn.GetProperty('Pan')) - 100) < 0.01 and abs(float(dn.GetProperty('ZoomX')) - 1.2) < 0.01)
+print(f'Pan depois do .drt: {pan_drt} (pedido 100); regravados: {fixos}')
+K.salva(pm); pm.CloseProject(p); pm.GotoRootFolder(); pm.OpenFolder('CIBO testes'); apagou = pm.DeleteProject('TESTE fusion_kit')
+print('zoom clipe inteiro, zoom clipe aparado, entra/sai, shutter 360 gravado, 1 comp por clipe, Fusion+Pan barrado, Pan intacto depois do .drt:', ok, '| projeto de teste apagado:', apagou)
 sys.exit(0 if all(ok) else 1)
