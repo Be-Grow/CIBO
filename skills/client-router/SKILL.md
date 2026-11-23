@@ -39,7 +39,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Render final (padrão: no DaVinci do editor — camadas + XML, validar em projeto NOVO, sem render queimado) | `reel-motion` `scripts/fila_davinci.py` (pacote → projeto organizado → Fusion/cores → `qa_resolve`), depois do render do editor `qa_render.py`; FCP7: `bombordo-boreste/scripts/historias_xml/`; regras em `references/regras-transversais.md` → "DaVinci Resolve pela API" |
 | Projeto Premiere (só sob pedido) | `podcast-reels/scripts/projeto_nle.py` |
 | Entrega no Drive (com links) | `scripts/entrega_drive.py` desta skill — simula sem `--confirmo`; confirme o destino |
-| Correção do editor | `scripts/feedback.py add` no mesmo turno em que a skill é corrigida; `resumo` mostra onde investir |
+| Correção do editor | `scripts/feedback.py add` no mesmo turno (o padrão do erro é sugerido; confirme ou passe `--padrao`). Aviso **VIRA TRAVA** = anote em `todo.md` "Viram trava"; **A TRAVA FALHOU** = a correção é na trava. Revisão semanal: `feedback.py repetidos` |
 | Cor de fotos | `foto-evento-cor` |
 | SEO / thumb do episódio / demanda ClickUp | `seo-youtube-podcast` e, **logo em seguida e sempre**, `clickup-thumb-podcast` (SEO pronto = demanda criada; nunca esperar pedido) |
 

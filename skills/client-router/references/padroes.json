@@ -1,0 +1,118 @@
+{
+  "_como": "Tipos de erro que se repetem. 'palavras' sugerem o padrão no `feedback.py add` (o agente confirma); 'trava' = onde o motor barra esse erro sozinho (vazio = ainda não tem: 2ª ocorrência vira trava). Erro que volta com trava = a trava falhou ou não cobre o caso: revise a trava, não só o vídeo.",
+  "borda-na-voz": {
+    "descricao": "corte comendo palavra ou fala truncada na borda do trecho",
+    "categorias": [
+      "corte",
+      "audio"
+    ],
+    "palavras": [
+      "comeu",
+      "comendo",
+      "comida",
+      "engol",
+      "truncad",
+      "metade da palavra",
+      "corte em cima",
+      "cortou a palavra",
+      "palavra cortada",
+      "cortando a fala",
+      "corte seco na fala"
+    ],
+    "trava": "reel-motion: `reel.py cortes` barra borda em cima da voz (bordas.py + checa_takes), 23/11/2026"
+  },
+  "timeline-do-editor": {
+    "descricao": "a CIBO apagou, reimportou ou fechou timeline que o editor já tinha ajustado",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [
+      "apagou a timeline",
+      "apagou as timeline",
+      "apagou timeline",
+      "sobrescrev",
+      "fechou a timeline",
+      "reimport",
+      "timeline que eu"
+    ],
+    "trava": "reel-motion: guarda_editor.py (assinatura da timeline) em resolve_render/mix/fx/refaz, 23/11/2026"
+  },
+  "capa-sem-quadro-do-editor": {
+    "descricao": "capa feita sem o quadro que o editor escolheu ou mandou",
+    "categorias": [
+      "capa",
+      "processo"
+    ],
+    "palavras": [
+      "quadro que eu",
+      "frame que eu",
+      "não usou o quadro",
+      "nao usou o quadro",
+      "print que eu mandei",
+      "sem o quadro"
+    ],
+    "trava": "reel-motion: `final`/`capa`/`entrega` exigem reel.json capa.editor, 23/11/2026"
+  },
+  "posicao-resolve": {
+    "descricao": "posição, Pan ou zoom errados depois de montar no Resolve",
+    "categorias": [
+      "enquadramento",
+      "processo",
+      "render"
+    ],
+    "palavras": [
+      "posição do bruto",
+      "posicao do bruto",
+      "pan ",
+      "pan)",
+      "1,78",
+      "scaletofit",
+      "escala 1,0",
+      "multiplica",
+      "pan ×4",
+      "pan x4",
+      "bruto descia"
+    ],
+    "trava": ""
+  },
+  "fusion-faixa-preta": {
+    "descricao": "Fusion com faixa preta ou render falhando por GlobalIn",
+    "categorias": [
+      "motion",
+      "render"
+    ],
+    "palavras": [
+      "faixa preta",
+      "globalin",
+      "barra preta",
+      "frames pretos"
+    ],
+    "trava": ""
+  },
+  "untitled-project": {
+    "descricao": "Resolve preso no Untitled Project / diálogo de salvar",
+    "categorias": [
+      "processo",
+      "render"
+    ],
+    "palavras": [
+      "untitled"
+    ],
+    "trava": ""
+  },
+  "asset-perguntado": {
+    "descricao": "perguntou onde estava um asset que já existia (acervo/Drive)",
+    "categorias": [
+      "asset"
+    ],
+    "palavras": [
+      "onde está",
+      "onde esta",
+      "onde fica",
+      "perguntou",
+      "já te mandei",
+      "ja te mandei"
+    ],
+    "trava": ""
+  }
+}

@@ -37,6 +37,11 @@ Pendências de 12/10/2026 (detalhes em `skills/client-router/references/fontes-e
 - [ ] **`status.py` acusar render quebrado** (lição joao "ep 26", 04/11/2026): marcar reel sem MP4 em `06_deliverables`,
       `.mov`/`.mp4` com menos de 1 MB e `04_work/_bundle/rNN` que sobrou. O r05 e o r06 ficaram sem entrega sem alerta.
 
+## Viram trava (`feedback.py repetidos`, revisão semanal)
+
+- [ ] **posicao-resolve** (6x até 19/11/2026): Pan/zoom do bruto errados no Resolve (1,78× do scaleToFit, Pan ×4 depois de .drt).
+      Trava: conferir pela API (`GetProperty` Pan/ZoomX) depois de montar e parar se não bater com o pacote. Item 4 do plano.
+
 ## Anotado no YT 01 da Priscilla (09/11/2026) — corrigir depois do job
 - reel-motion `e_davinci`: renderiza a camada inteira `legenda` mesmo com `captions: []` (vídeo sem legenda = ProRes 4444 vazio de 8 min). Pular quando não há legenda. Contornei com um MOV de 1 quadro no lugar.
 - reel-motion `mix.py`: trilha não faz loop; vídeo longo (YouTube) precisa de trilha longa. Fiz à mão com acrossfade (`y01/trilha_lofi-tea_longa.wav`).
