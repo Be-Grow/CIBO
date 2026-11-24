@@ -189,3 +189,14 @@ O editor achou cada uma na tela; nenhuma o checador da época pegava.
 - **Whisper com prompt longo pula o começo** (EP 08 r01: 26 s sem texto): confira se a 1ª palavra do `edit_mfa.json` está em ~0 s e o
   texto inicial é o planejado; refaça sem prompt.
 - **SSD:** a fila para abaixo de 8 GB; apague MOV intermediário já remontado (confira as durações antes) e pacotes antigos.
+
+## Ler o padrão de um cliente a partir de um projeto do DaVinci (pesquisa de 24/11/2026, ainda sem script)
+
+- Caminho pela API (doc local, `doc_resolve.py api`): `ProjectManager.ImportProject(arquivo.drp, nome)` → abrir → para cada timeline,
+  `GetItemListInTrack` e `TimelineItem.GetProperty()` (Pan, Tilt, ZoomX/Y, CropLeft…, Opacity; lista em "Looking up Timeline item
+  properties"); `MediaPoolItem.GetClipProperty()` (arquivo de trilha/SFX/fonte); `Timeline.GetSetting()` (resolução, fps);
+  `Timeline.Export(arq, resolve.EXPORT_FCPXML_1_10)` para ter tudo em XML de uma vez. Depois `DeleteProject` do importado.
+- Títulos Text+: `GetFusionCompByIndex(1)` → ferramenta TextPlus → `GetInput('StyledText')`, `'Font'`, `'Style'`, `'Size'`, cores
+  (`'Red1'`…). Padrão citado no fórum da Blackmagic; `GetInput` já é usado no fusion_kit (GlobalIn).
+- O .drp é um ZIP (project.xml, MediaPool/…/MpFolder.xml) sem esquema publicado (PRONOM fmt/2064): ler pela API, não pelo XML.
+- Sempre em projeto importado à parte, nunca no projeto aberto do editor. Melhoria #17 do aprendizado.
