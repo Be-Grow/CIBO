@@ -190,7 +190,10 @@ O editor achou cada uma na tela; nenhuma o checador da época pegava.
   texto inicial é o planejado; refaça sem prompt.
 - **SSD:** a fila para abaixo de 8 GB; apague MOV intermediário já remontado (confira as durações antes) e pacotes antigos.
 
-## Ler o padrão de um cliente a partir de um projeto do DaVinci (pesquisa de 24/11/2026, ainda sem script)
+## Ler o padrão de um cliente a partir de um projeto do DaVinci (24/11/2026): `client-router/scripts/le_davinci.py`
+
+Pronto e testado (`tests/le_davinci_teste.py`). Entra sozinho pelo `aprende.py` (.drp na entrada ou `--de "davinci:Pasta/Projeto"`).
+Devolve o projeto do editor no fim e apaga o importado. Como funciona por dentro:
 
 - Caminho pela API (doc local, `doc_resolve.py api`): `ProjectManager.ImportProject(arquivo.drp, nome)` → abrir → para cada timeline,
   `GetItemListInTrack` e `TimelineItem.GetProperty()` (Pan, Tilt, ZoomX/Y, CropLeft…, Opacity; lista em "Looking up Timeline item
@@ -199,4 +202,5 @@ O editor achou cada uma na tela; nenhuma o checador da época pegava.
 - Títulos Text+: `GetFusionCompByIndex(1)` → ferramenta TextPlus → `GetInput('StyledText')`, `'Font'`, `'Style'`, `'Size'`, cores
   (`'Red1'`…). Padrão citado no fórum da Blackmagic; `GetInput` já é usado no fusion_kit (GlobalIn).
 - O .drp é um ZIP (project.xml, MediaPool/…/MpFolder.xml) sem esquema publicado (PRONOM fmt/2064): ler pela API, não pelo XML.
-- Sempre em projeto importado à parte, nunca no projeto aberto do editor. Melhoria #17 do aprendizado.
+- Sempre em projeto importado à parte, nunca no projeto aberto do editor; projeto do banco só é lido, nunca salvo.
+- Em terminal sem locale UTF-8, todo `write_text`/`subprocess(text=True)` precisa de `encoding='utf-8'` (quebrou no 1º teste).

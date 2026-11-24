@@ -5,7 +5,7 @@ O material que o editor aponta (arquivo, pasta, link, frase) a CIBO copia para a
 
 Tudo no SSD (o Drive é só para material de edição: baixar efeitos e subir o vídeo pronto, editor 23/11/2026).
 Pasta de entrada: /Volumes/SSD/CIBO/aprender/<cliente>/entrada/ (fonte, logo, manual em PDF, prints, vídeo de referência,
-links.txt com perfis/posts, notas .txt/.md). Cada rodada grava em <cliente>/rodadas/<data_hora>/ (downloads, análises,
+links.txt com perfis/posts, notas .txt/.md, projeto do DaVinci .drp). Cada rodada grava em <cliente>/rodadas/<data_hora>/ (downloads, análises,
 ficha.md, proposta.json) e o lido vai para entrada/lido/. Nada entra no motor sem aprovação: sai uma FICHA + proposta.json.
 
   aprende.py CLIENTE [--novo] [--alias "a,b"] [--base andreia] [--rapido] [--posts 6] [--nao-move]
@@ -20,7 +20,8 @@ ficha.md, proposta.json) e o lido vai para entrada/lido/. Nada entra no motor se
         só mostra/cria a pasta de entrada
 
 O que vai para onde: fonte -> acervo (tipo fonte) + theme.fonts; logo/manual/prints -> paleta -> theme.colors;
-vídeo -> briefing-criativo/analisa_referencia.py -> receita (theme.mediaFilter, legenda, montagem); links -> yt-dlp baixa os
+projeto do DaVinci (.drp na entrada ou --de "davinci:Pasta/Projeto" do banco do Resolve) -> le_davinci.py (camadas, títulos Text+
+com fonte/tamanho/cor/posição, cortes, zoom, trilhas e SFX); vídeo -> briefing-criativo/analisa_referencia.py -> receita (theme.mediaFilter, legenda, montagem); links -> yt-dlp baixa os
 últimos posts públicos e analisa em lote; notas -> lista de pedidos para virar lição (`licao.py add`).
 Instagram que barrar sem login: CIBO_COOKIES="chrome" (ou "chromium:/caminho/do/perfil") usa o login do navegador;
 nunca peça nem digite senha. Se ainda falhar, peça os vídeos baixados.
@@ -335,6 +336,9 @@ def recebe(k, itens):
         if re.match(r'https?://', it):
             with open(pasta / 'links.txt', 'a') as f: f.write(it.strip() + '\n')
             n += 1; continue
+        if it.strip().lower().startswith('davinci:'):   # projeto que já está no banco do Resolve ("davinci:BeGrow/Cliente/Projeto")
+            with open(pasta / 'davinci.txt', 'a') as f: f.write(it.strip()[8:].strip() + '\n')
+            n += 1; continue
         p = Path(it).expanduser()
         if p.is_dir():
             for f in p.rglob('*'):
@@ -374,6 +378,16 @@ def aprende(k, a):
             if fam: achados.append(('Manual: fontes citadas', fam[:6]))
         elif s in IMG:
             imgs.append(p)
+        elif s == '.drp' or p.name == 'davinci.txt':
+            alvos = [('--drp', str(p))] if s == '.drp' else [('--projeto', l.strip()) for l in p.read_text().splitlines() if l.strip()]
+            for op, alvo in alvos:
+                print(f'  lendo projeto do DaVinci {Path(alvo).name}…', flush=True)
+                o = w / 'davinci' / slug(Path(alvo).stem if op == '--drp' else alvo)
+                rr = run([sys.executable, str(Path(__file__).with_name('le_davinci.py')), op, alvo, '--out', str(o)], encoding='utf-8', errors='replace')
+                if rr.returncode or not (o / 'padrao.md').exists():
+                    avisos.append(f'não li o projeto do DaVinci {alvo}: o Resolve está aberto? (log em {o})'); continue
+                linhas = [l[2:] for l in (o / 'padrao.md').read_text(encoding='utf-8').splitlines() if l.startswith('- ')]
+                achados.append((f'Projeto do DaVinci: {Path(alvo).stem}', linhas + [f'detalhe clipe a clipe: {o / "leitura.json"}']))
         elif s in TXT:
             for l in p.read_text(errors='replace').splitlines():
                 l = l.strip().lstrip('-*• ').strip()
