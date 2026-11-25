@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-25 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher): YouTube 16:9: enquadramento mais fechado nela do que o usado nos YT 01-06 — cortar objetos do fundo e das laterais, sem ficar colado no rosto (cliente via áudio, 23/11/2026)
 - 2026-11-18 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y05): YouTube 16:9: motion nunca na frente do rosto; ela senta no centro-esquerda, então cartões e títulos estreitos, até ~33% da largura (Bruno, 18/11/2026, YT 05)
 - 2026-11-18 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y06): YouTube: quando ela fala 'de X para Y', dois cartões ao mesmo tempo, X na esquerda e Y na direita, em vez de um cartão só (Bruno, 18/11/2026, YT 06 ~0:30)
 - 2026-11-18 (/Volumes/SSD/Movies/Edição/Mídia/priscilla daher y06): YouTube: trilha com pegada mais empresarial, mas com groove (aprovada Funky House CC0 do acervo no YT 06); editor quer ouvir prévia e aprovar a trilha antes do export (Bruno, 18/11/2026)
