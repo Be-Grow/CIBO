@@ -204,3 +204,7 @@ Devolve o projeto do editor no fim e apaga o importado. Como funciona por dentro
 - O .drp é um ZIP (project.xml, MediaPool/…/MpFolder.xml) sem esquema publicado (PRONOM fmt/2064): ler pela API, não pelo XML.
 - Sempre em projeto importado à parte, nunca no projeto aberto do editor; projeto do banco só é lido, nunca salvo.
 - Em terminal sem locale UTF-8, todo `write_text`/`subprocess(text=True)` precisa de `encoding='utf-8'` (quebrou no 1º teste).
+
+- **WAV importado pela API pode vir a 24 qps** (Priscilla YT 02, 25/11/2026): `ImportMedia` de um .wav deu `FPS`=24 e `Frames` vazio; o
+  `AppendToTimeline` com `endFrame` em quadros da timeline (29,97) entrou 25% mais longo e esticou a timeline. Calcule `endFrame` com o
+  `FPS` do próprio clipe (`dur_s * float(GetClipProperty("FPS"))`) e confira a duração do item contra a da timeline depois de inserir.
