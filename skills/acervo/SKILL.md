@@ -60,6 +60,13 @@ python3 $A get filmburn-pack --segment 7 --to 03_assets/fx   # copia e registra 
 
 ## Manutenção
 
+- **Biblioteca do editor em outro disco** (26/11/2026, `D:\EDIÇÃO`, 19 mil arquivos): nunca copie nem mexa na estrutura dela.
+  Junção dentro do acervo apontando para lá + `acervo.py index PASTA` (indexa como `ref`, sem copiar). O index lê e mede cada
+  arquivo: rode em segundo plano e não grave no catálogo enquanto ele roda (ele salva tudo no fim e apagaria o que entrar antes).
+- **Classificação pelo caminho inteiro** (26/11/2026): pasta de música (`MÚSICAS`, `trilha`, `soundtrack`) vence; pasta ou nome de
+  efeito (`SFX`, `Efeitos Sonoros`, `whoosh`, `ocular`, `ambiente`…) vira `sfx`; áudio nunca é `filmburn`; `.mogrt/.prfpset/.drfx`
+  = `template`, `.prproj/.aep/.drp` = `projeto`; cache do Premiere/Audition (`.pek`, `.cfa`…) nunca entra (eram 4.610 itens).
+  Catálogo antigo com tipo errado: `acervo.py reclassifica RAIZ [--dry]` (refaz tipo e ID dos `ref` sem reler os arquivos).
 - `acervo.py check`: confere todos os caminhos e religa pelo hash o que mudou de pasta dentro das
   raízes indexadas. Rode no começo de um job grande e depois de reorganizar o SSD.
 - `acervo.py dupes`: arquivos repetidos (mesmo hash). Ao achar cópias de um mesmo asset espalhadas
