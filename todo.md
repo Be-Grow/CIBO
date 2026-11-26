@@ -100,3 +100,5 @@ Material bruto: `colheita/2026-11-14/` (556 scripts, notas e configs de job). Fe
 - reel-motion: sfx_tema.py precisa de voz.wav, que só o `mix` gera; e o `mix`/`props` precisam de sfx.json (ovo e galinha, depoimentosAlunas 23/11/2026)
 - reel-motion capa.mjs: 'você' (ê) na capa da Andrea (Cormorant) saiu com o circunflexo solto acima da letra (videosGrupo r02, 23/11/2026); contornei trocando o texto
 - reel-motion/fila: no videosGrupo r02 (com painéis) a faixa 'CÂMERA renderizada (ref.)' veio LIGADA por cima do bruto (no r01 sem painéis veio desligada): escondia a CDL e, sem o motion, mostrava a câmera descendo (23/11/2026)
+
+- 26/11/2026 TRAVA FALHOU (borda-na-voz, 16ª vez): joao cortesPodcast_2026-11-25 r05 00:40 — pacote saiu com saída em 2475.78 e "felicidade" até 2475.98; segs.json foi corrigido (bordas, 23:33) DEPOIS do pacote (23:14) e o pacote não foi refeito. Trava: o pacote/davinci precisa recusar se segs.json for mais novo que o pacote.
