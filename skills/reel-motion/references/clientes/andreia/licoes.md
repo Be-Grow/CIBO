@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-26 (/Volumes/SSD/Movies/Edição/Mídia/andreia/cortesVideoLongo): Capa feita no ChatGPT a partir do quadro que o editor escolhe (título serif 3 linhas, itálico dourado, degradê roxo, rodapé ANDREA FRANCOMANO): editor achou melhor assim; pediu também retoque para deixá-la mais bonita (não saiu por limite da conta gratuita).
 - 2026-11-25 (/Volumes/SSD/Movies/Edição/Mídia/andreia/temporizador): Temporizador de live (Mapa do Invisível): logo oficial com o pêndulo PARADO (animação de balanço ficou 'bugada'); foto sem fundo mandada pelo editor em vez de recorte automático; fundo de nuvem roxa/preta animada com partículas; trilha espiritual (meditation-pad).
 - 2026-11-24 (/Volumes/SSD/Movies/Edição/Mídia/andreia/orgonite r01): Capa da Orgonite: editor trocou o quadro sorrindo com a pirâmide (2.6 s) por um quadro dela no meio da fala segurando a ponteira (timeline 00:00:54:17), escolhido no preview do DaVinci. De novo preferiu expressão no meio da fala + objeto do tema a quadro sorrindo/neutro.
 - 2026-11-23 (videosGrupo r02): Aviso longo para o grupo (3:47, selfie): editor pediu sem motion, só legenda ('tira o motion do 2 e deixa só as legendas'). Cartões em tela dividida não servem para esse formato; aviso de grupo = legenda + cor + trilha.
