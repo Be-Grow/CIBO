@@ -77,8 +77,9 @@ def fontes_tema():
     import shutil, time
     (PUB / 'fonts').mkdir(exist_ok=True)
     th = json.loads(json.dumps(TH))
+    sys.path.insert(0, str(ENG.parent / '_shared')); from paths import portable_path  # Mac: igual; Windows: acervo daqui
     for f in th.get('fonts', []):
-        src = Path(os.path.expanduser(f['file']))
+        src = portable_path(f['file'])
         if not (PUB / 'fonts' / src.name).exists():
             shutil.copy2(src, PUB / 'fonts' / src.name)
         f['file'] = f'fonts/{src.name}'
