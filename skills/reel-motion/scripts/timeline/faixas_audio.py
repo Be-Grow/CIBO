@@ -1,5 +1,6 @@
 # confere/corrige as faixas de áudio pelo CONTEÚDO (não pelo nome): faixa com o bruto .MP4 = câmera (desliga),
 # faixa com voz__*.wav = VOZ (liga); renomeia certo. O Resolve às vezes importa com os nomes trocados (02, 27/10/2026)
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import sys, DaVinciResolveScript as d
 p = d.scriptapp('Resolve').GetProjectManager().GetCurrentProject()
 for i in range(p.GetTimelineCount()):

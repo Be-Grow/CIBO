@@ -2,6 +2,7 @@
 # Depois de rodar: ajusta_resolve.py (Pan), faixas_audio.py e qa_resolve.py — conferir quadros na emenda.
 # cópia → divide clipes nos cortes (API) + ripple em todas as faixas → zoom/tela dividida deslocados e sem sobreposição
 # (resolve_fx) → apaga a original e a cópia assume o nome. uso: corta_trecho.py "TIMELINE" TA TB
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import json, os, sys, subprocess, DaVinciResolveScript as d
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fx_sem_sobrepor import apara
@@ -48,7 +49,7 @@ for c in m['camadas']:
     c['kf'] = kf; c['dur'] -= min(f, b) - max(i, a); novas.append(c)
 m['camadas'] = novas; apara(m); g = f'{P}/04_work/tmp/fx/{TMP}'; os.makedirs(g, exist_ok=True)
 json.dump(m, open(f'{g}/movimentos.json', 'w', encoding='utf-8'), ensure_ascii=False)
-print((subprocess.run(['/opt/homebrew/bin/python3.14', FX, g], capture_output=True, text=True).stdout.strip().splitlines() or ['?'])[-1][-70:])
+print((subprocess.run([("/opt/homebrew/bin/python3.14" if sys.platform == "darwin" else sys.executable), FX, g], capture_output=True, text=True).stdout.strip().splitlines() or ['?'])[-1][-70:])
 # guarda os movimentos novos junto do pacote (próximo ajuste parte daqui)
 json.dump(m, open(f'{P}/07_davinci/{NOME}/movimentos.json', 'w', encoding='utf-8'), ensure_ascii=False)
 # 5) troca: apaga a original, a cópia assume o nome

@@ -1,5 +1,6 @@
 # organiza o Media Pool do projeto aberto: 00 TIMELINES/{9x16,16x9} · 01 BRUTO · 02 MÍDIA POR VÍDEO/<vídeo>/<tipo>;
 # clipe repetido (mesmo arquivo) sem uso em timeline sai do pool (o arquivo no disco fica). uso: organiza_pool.py [--aplica]
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import sys, re, DaVinciResolveScript as d
 AP = '--aplica' in sys.argv
 p = d.scriptapp('Resolve').GetProjectManager().GetCurrentProject(); mp = p.GetMediaPool(); root = mp.GetRootFolder()

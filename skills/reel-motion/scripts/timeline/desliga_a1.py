@@ -1,4 +1,5 @@
 # desliga a faixa de áudio de referência da câmera (pelo NOME, a ordem muda entre timelines) nas timelines dadas
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import sys, DaVinciResolveScript as d
 pm = d.scriptapp('Resolve').GetProjectManager(); p = pm.GetCurrentProject()
 for i in range(1, p.GetTimelineCount() + 1):

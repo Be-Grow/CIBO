@@ -16,8 +16,8 @@ a = sys.argv[1:]
 P, NOME, PASTA, REELS = Path(a[0]).resolve(), a[1], a[2], a[3:]
 S = Path(__file__).resolve().parent; PY = sys.executable
 os.environ['TMPDIR'] = str(P / '04_work' / 'tmp'); (P / '04_work' / 'tmp').mkdir(parents=True, exist_ok=True)
-os.environ.setdefault('RESOLVE_SCRIPT_API', '/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting')
-os.environ.setdefault('RESOLVE_SCRIPT_LIB', '/Applications/DaVinci Resolve/DaVinci Resolve.app/Contents/Libraries/Fusion/fusionscript.so')
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / '_shared'))
+import resolve_env  # noqa: E402  (define RESOLVE_SCRIPT_API/LIB e PYTHONPATH para os scripts filhos, Mac e Windows)
 LOG = open(P / '05_qa' / 'fila_davinci.log', 'a')
 
 
@@ -27,7 +27,7 @@ def diz(m):
 
 def roda(cmd, limite, env=None):
     """API do Resolve sempre com limite de tempo (travou o DaVinci do editor sem ele)"""
-    r = subprocess.run(['perl', '-e', f'alarm {limite}; exec @ARGV', *map(str, cmd)], capture_output=True, text=True, env=env)
+    r = resolve_env.roda_com_limite(cmd, limite, env=env)   # antes: perl alarm (não existe no Windows)
     return r.returncode, (r.stdout + r.stderr).strip().splitlines()
 
 

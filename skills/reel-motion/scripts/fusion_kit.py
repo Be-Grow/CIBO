@@ -24,10 +24,9 @@ Os comps ficam em PROJ/04_work/comps (ou --comps PASTA)."""
 import os, signal, subprocess, sys, time, unicodedata
 from pathlib import Path
 
-API = '/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting'
-os.environ.setdefault('RESOLVE_SCRIPT_API', API)
-os.environ.setdefault('RESOLVE_SCRIPT_LIB', '/Applications/DaVinci Resolve/DaVinci Resolve.app/Contents/Libraries/Fusion/fusionscript.so')
-if API + '/Modules' not in sys.path: sys.path.append(API + '/Modules')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../_shared'))
+import resolve_env  # noqa: E402  (API do Resolve em Mac/Windows; no Mac os mesmos caminhos de antes)
+API = resolve_env.api_dir()
 
 E = 1 / 3                                   # alça = 1/3 do intervalo (ease in/out do motor)
 nfc = lambda x: unicodedata.normalize('NFC', x or '')
@@ -36,18 +35,12 @@ nfc = lambda x: unicodedata.normalize('NFC', x or '')
 # ---------- conexão e projeto ----------
 def limite(seg):
     """A API trava calada com diálogo aberto no Resolve: todo script tem tempo limite."""
-    def fim(*_):
-        sys.exit(f'PAREI: {seg} s sem resposta do Resolve. Janelas abertas: {dialogos()}')
-    signal.signal(signal.SIGALRM, fim); signal.alarm(seg)
+    resolve_env.limite(seg, lambda: f'PAREI: {seg} s sem resposta do Resolve. Janelas abertas: {dialogos()}')
 
 
 def dialogos():
     """janelas do Resolve além da principal (diálogo modal = API presa)"""
-    try:
-        return subprocess.run(['osascript', '-e', 'tell application "System Events" to tell process "Resolve" to get name of every window'],
-                              capture_output=True, text=True, timeout=10).stdout.strip()
-    except Exception as e:
-        return f'(não li: {e})'
+    return resolve_env.janelas_resolve()
 
 
 def resolve(espera=180):

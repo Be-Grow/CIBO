@@ -3,7 +3,7 @@ quadro 0; MOV de 10 quadros porque o Resolve não corta 1 quadro de um still) ; 
 uso: capa_render.py"""
 import glob, os, sys, unicodedata
 from pathlib import Path
-sys.path.append('/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules')
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import DaVinciResolveScript as dvr
 AQ = Path(__file__).resolve().parent.parent; nfc = lambda s: unicodedata.normalize('NFC', s)
 r = dvr.scriptapp('Resolve'); p = r.GetProjectManager().GetCurrentProject()

@@ -1,5 +1,6 @@
 # pós-importação: desliga o som da câmera (pelo nome), aplica Pan medido em quadros do Resolve e confere a sincronia
 # uso: ajusta_resolve.py "TIMELINE" PAN [segs.json]   (PAN "-" = não mexe; unidade da API ≈ 14 px na vertical)
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import sys, json, DaVinciResolveScript as d
 pm = d.scriptapp('Resolve').GetProjectManager(); p = pm.GetCurrentProject(); nome, pan = sys.argv[1], sys.argv[2]
 t = next(p.GetTimelineByIndex(i) for i in range(1, p.GetTimelineCount() + 1) if p.GetTimelineByIndex(i).GetName() == nome)

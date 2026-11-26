@@ -1,4 +1,5 @@
 # capa (1 quadro) no quadro 0 de cada timeline vertical, faixa própria no topo "CAPA"; JPG na pasta do vídeo no Media Pool
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import glob, os, re, unicodedata, DaVinciResolveScript as d
 P = __file__.rsplit('/04_work/', 1)[0]; nfc = lambda s: unicodedata.normalize('NFC', s)
 p = d.scriptapp('Resolve').GetProjectManager().GetCurrentProject(); mp = p.GetMediaPool(); root = mp.GetRootFolder()
