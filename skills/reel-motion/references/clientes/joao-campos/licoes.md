@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-26 (/Volumes/SSD/Movies/Edição/Mídia/joao/cortesPodcast_2026-11-25): Thumb Vai Lá e Faz: copiar a do EP 27 na medida — fundo = estúdio desfocado em azul com brilho ciano nos cantos (nunca degradê liso), rostos do host e do convidado do mesmo tamanho, título grosso ~140 px, parte de baixo escura; conferir lado a lado com a do EP 27 antes de mostrar
 - 2026-11-26 (/Volumes/SSD/Movies/Edição/Mídia/joao/cortesPodcast_2026-11-25): Thumb do Vai Lá e Faz: o João entra sempre com a foto que se repete nas thumbs (camiseta preta, falando, olhando para a direita, EP 22/24/27), não com quadro do episódio; visual EP 25-27 (fundo azul, 2ª linha na faixa azul, COM NOME laranja, barra laranja)
 - 2026-11-26 (/Volumes/SSD/Movies/Edição/Mídia/joao/cortesPodcast_2026-11-25): Episódio completo do Vai Lá e Faz: só corta começo e fim e põe a logo Vai Lá e Faz pequena no canto INFERIOR ESQUERDO; monta no DaVinci (nada de render por ffmpeg)
 - 2026-11-25 (/Volumes/SSD/Movies/Edição/Mídia/joao/cortesPodcast_2026-11-25): Bruto do OBS vai direto para o projeto do DaVinci, sem recodificar (o Resolve conforma); e o projeto pronto abre sozinho no DaVinci no fim (editor 25/11)
