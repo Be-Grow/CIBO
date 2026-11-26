@@ -119,5 +119,45 @@
       "ja te mandei"
     ],
     "trava": ""
+  },
+  "xml-no-davinci": {
+    "descricao": "editor: 'esse arquivo xml do final cut funciona até certo ponto, mas perde muita coisa… pro davinci use o arquivo propri",
+    "categorias": [
+      "entrega"
+    ],
+    "palavras": [],
+    "trava": ""
+  },
+  "skill-ignorada": {
+    "descricao": "editor: 'verifica as skills da cibo pra como se comunicar com o davinci, muita coisa já está lá como skill e já tem flux",
+    "categorias": [
+      "skill"
+    ],
+    "palavras": [],
+    "trava": ""
+  },
+  "checklist-pulado": {
+    "descricao": "Job Jansen 26/11: comecei sem ler regras/_checklist.md, sem briefing-criativo e sem confirmar a grafia dos nomes na tela",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [],
+    "trava": ""
+  },
+  "plataforma-sem-camada": {
+    "descricao": "editor: 'cria uma camada de adaptação no Windows para que não mexa com a versão do Mac… polimorfismo… a mesma api funcio",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [],
+    "trava": ""
+  },
+  "projeto-desorganizado": {
+    "descricao": "editor: 'vai seguir aquele fluxo de criar os projetos no davinci e deixar tudo muito organizado em pastas'. organiza() n",
+    "categorias": [
+      "entrega"
+    ],
+    "palavras": [],
+    "trava": ""
   }
 }
