@@ -208,3 +208,16 @@ Devolve o projeto do editor no fim e apaga o importado. Como funciona por dentro
 - **WAV importado pela API pode vir a 24 qps** (Priscilla YT 02, 25/11/2026): `ImportMedia` de um .wav deu `FPS`=24 e `Frames` vazio; o
   `AppendToTimeline` com `endFrame` em quadros da timeline (29,97) entrou 25% mais longo e esticou a timeline. Calcule `endFrame` com o
   `FPS` do próprio clipe (`dur_s * float(GetClipProperty("FPS"))`) e confira a duração do item contra a da timeline depois de inserir.
+
+## Endireitar vídeo gravado torto (27/11/2026, emerson/IMG_1386): `reel-motion/scripts/endireita.py`
+
+- **Meça, não chute.** O editor tinha posto 10,4° no olho; a medida pelas linhas da sala (bordas do telão, paredes, teto, Hough
+  a cada 2 s na parte de cima do quadro) deu **6,4° constante** nos 19 min, e 6,4° ficou reto ("perfeito"). Picos de 11–14° são
+  perspectiva/luminária: use a **mediana**, e só anime a rotação se a mediana por trecho variar mais de ~1°.
+- **Sinal:** cena tombada no sentido horário (linhas descendo para a direita) = `RotationAngle` **positivo** no Resolve.
+- **Antes de aplicar, confira a borda:** girar exige zoom. 9:16 com 6,4° centrado pede zoom ≥ 1,20; com zoom 1,74 o Pan livre vai
+  até ±295 px. O script calcula a margem com o Zoom/Pan atuais do clipe e avisa se aparece preto. Mantém o Zoom/Pan do editor.
+  Conta vale para fonte do tamanho da timeline (Pan 1:1); outro tamanho segue a lei de Pan acima.
+- Prova visual fora do Resolve: quadro girado no ffmpeg (`rotate=-θ*PI/180`) com `drawgrid`, uma folha; a conferência final é
+  no preview do editor.
+- `GetProperty` devolvendo tudo `None` (e `GetCurrentPage()` None) = Resolve com janela/diálogo aberto: não insista, peça para fechar.
