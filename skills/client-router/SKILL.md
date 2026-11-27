@@ -24,6 +24,7 @@ O CIBO edita para vários clientes, e cada um tem um fluxo de edição diferente
 | Trilha por corte | `talking-head-music`; trilha nova (acervo → Openverse CC0/CC BY): `busca-trilha` |
 | B-roll / referência em tela | `semantic-broll-validator` (sentido) + `busca-stock` (acervo → Pixabay → Pexels, folha, nota, download catalogado) |
 | Cartão Seguir, título, lower third, legenda animada | `lettering-motion` (+ `anthropic-skills:motion-graphics`) |
+| Dúvida de Remotion (medir texto, fontes, legenda, áudio, render, 3D, mapas) | `remotion-best-practices` (plugin oficial do Remotion, MIT, v4.0.528, em `/Volumes/SSD/CIBO/vendor/remotion-plugin-4.0.528`; consulte antes de mexer em componente do motor) |
 | **Motor padrão de edição do CIBO** (fluxo da Andreia, 20/10/2026): fala/talking head de cliente novo ou sem skill própria, reel com motion em tela dividida, versão 16:9 | `reel-motion` — seção "Padrão de edição do CIBO" (10 etapas, do briefing ao QA do render); um tema `temas/<cliente>.json` por cliente; nunca copie o motor para o projeto |
 | Vinheta, intro, abertura, logo animada | `vinheta-marca` (template Remotion 16:9/4K) |
 | Som conduzido por música (vinheta, teaser, motion): trilha medida, cortes na batida, SFX pelo pico | `desenho-de-som` |
@@ -56,6 +57,10 @@ atual. Não crie skill-cópia de motor para cliente novo: tema + rubrica. Katia 
 2. **Rode `scripts/detect_client.py "<pasta, marca ou trecho de SRT>"`**: imprime só a linha do cliente (skill, fonte, identidade, SFX, engine, fonte de verdade). Nunca leia o `references/client-registry.md` inteiro; abra-o só para editar a linha de um cliente.
 3. **Leia as lições e a rubrica do cliente antes de editar**: `python3 scripts/licao.py ler <cliente>` (lições do editor,
    mais novas primeiro, e o caminho da `rubrica.md`). Lição vale mais que o padrão do motor; se uma contradiz o brief, pergunte.
+3b. **Consulte a biblioteca de aprendizado geral antes de editar** (sem cliente, compartilhada no Drive): `python3 scripts/biblioteca.py consulta <etapa e assunto, ex.: davinci timeline corte borda>`.
+   Traz as 5–6 lições, travas e scripts já feitos mais parecidos com o trabalho; use o script existente em vez de refazer. Ao fim do job,
+   o `aprendizado.py colhe` roda `biblioteca.py envia`, que regera e copia ao Drive sozinho (autorizado pelo editor em 27/11/2026,
+   só para esta biblioteca; recusa se sobrar nome de cliente).
 4. **Rode o `briefing-criativo` antes de editar**: pergunte ao editor só as decisões artísticas e de estilo que o perfil do cliente não responde, grave `07_manifests/brief.md` e siga os pontos de aprovação (mapa de cortes, piloto).
 5. **Delegue todo o trabalho à skill do cliente identificado.** Não copie fonte, logo, filmburn, SFX, `client-content-bible.md` ou convenção de capa de um cliente para o job de outro, mesmo que os arquivos estejam acessíveis no mesmo volume ou pasta compartilhada.
 6. **Se o material não pertencer a nenhum cliente com skill própria:** use o motor padrão `reel-motion` (fluxo da Andreia, editor 20/10/2026: "gostaria que fosse o padrão de edição da CIBO") com um tema novo `temas/<cliente>.json` montado no briefing; `podcast-reels` só se o editor pedir aquele estilo (Cal Sans, clique, burn azul). Cliente recorrente ganha tema, rubrica e lições no motor (passo 7), nunca skill própria. Nunca force os assets/identidade de um cliente existente num material que não é dele.

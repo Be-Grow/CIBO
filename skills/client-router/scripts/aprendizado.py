@@ -79,6 +79,9 @@ def colhe(proj):
     print('Para cada script e cada correção do job, siga a árvore de aprendizado.md seção 2 e registre:\n'
           '  resolve etapa que já existe → --destino melhoria --skill <skill>; trabalho que nenhuma skill cobre → --destino candidata '
           '--tipo <nome>; caso único → nada (não precisa registrar).')
+    # biblioteca geral (sem cliente) no Drive da GBrand: atualiza sozinha no fim do job (editor, 27/11/2026)
+    r = subprocess.run([sys.executable, str(AQUI / 'biblioteca.py'), 'envia'], capture_output=True, text=True)
+    print('biblioteca: ' + ((r.stdout.strip().splitlines() or [''])[-1] or r.stderr.strip()[-200:]))
 
 
 def dias(data):
