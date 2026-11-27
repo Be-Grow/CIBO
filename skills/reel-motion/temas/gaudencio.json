@@ -1,0 +1,125 @@
+{
+ "cliente": "gaudencio",
+ "origem": "tema amarelo (editor 27/11/2026: 'identidade visual amarela', motion com lettering e gráficos ilustrando a fala, referência do Pexels; ele em tela cheia, legenda obrigatória). Montserrat genérica (Google Fonts).",
+ "theme": {
+  "colors": {
+   "paper": "#111111",
+   "paper2": "#1C1C1C",
+   "ink": "#FFFFFF",
+   "ink2": "#C9C9C9",
+   "terra": "#FFC814",
+   "terraDark": "#7A5E00",
+   "peach": "#FFC814",
+   "white": "#242424",
+   "video": "#FFFFFF",
+   "onAccent": "#111111",
+   "pill": "#2B2B2B",
+   "bg": "#0B0B0B",
+   "gold": "#FFC814",
+   "shadow": "0,0,0",
+   "scrim": "8,8,8"
+  },
+  "fonts": [
+   {
+    "family": "MontG",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/gaudencio/Montserrat-VF.ttf",
+    "weight": "100 900"
+   }
+  ],
+  "title": {
+   "family": "MontG",
+   "weight": 900,
+   "upper": true,
+   "ls": "0.01em",
+   "scale": 0.62,
+   "lh": 1.0
+  },
+  "caption": {
+   "family": "MontG",
+   "weight": 800,
+   "upper": false,
+   "ls": 0,
+   "scale": 0.84,
+   "hlAccent": true
+  },
+  "label": {
+   "family": "MontG",
+   "weight": 700
+  },
+  "accent": {
+   "italic": false,
+   "weight": 900
+  },
+  "mediaFilter": "contrast(1.03) saturate(1.02)",
+  "burnOpacity": 0.8,
+  "grain": 0.05,
+  "layout": {
+   "splitH": 768,
+   "camShift": 460,
+   "capSplitY": 1370,
+   "capFullY": 1300,
+   "capMaxW": 820,
+   "autoTags": true
+  }
+ },
+ "pares_extra": [
+  [
+   "gold",
+   "paper",
+   4.5,
+   "COM FULANO (secundário dourado)"
+  ],
+  [
+   "terra",
+   "paper2",
+   3.0,
+   "destaque no degradê"
+  ]
+ ],
+ "capa": {
+  "layout": "faixa",
+  "y": 58,
+  "logoY": 1530,
+  "logoW": 460,
+  "footer": "GAUDENCIO"
+ },
+ "regras": [],
+ "saida": {
+  "tipo": "fade",
+  "dur": 0.9
+ },
+ "sfx": {
+  "kit": "/Volumes/SSD/CIBO Acervo/sfx/_global/",
+  "modo": "variado",
+  "grupos": {
+   "layout": [
+    "Swoosh 01 - 02",
+    "Swoosh 04 - 02",
+    "Soft Slide 02 - Short 02"
+   ],
+   "burn": [
+    "Swoosh 04 - 02",
+    "Soft Slide 02 - Short 02"
+   ],
+   "brilho": [
+    "click-sharp",
+    "click-soft",
+    "click-soft-2"
+   ],
+   "marca": [
+    "click-sharp",
+    "click-soft-2"
+   ]
+  },
+  "db": {
+   "layout": -16,
+   "burn": -16,
+   "brilho": -15,
+   "marca": -14
+  },
+  "abertura": true,
+  "nota": "piloto 27/11/2026: swoosh curto nas entradas de vídeo/painel, clique nas palavras de impacto amarelas; ajustar depois do piloto"
+ },
+ "_identidade_pendente": "fontes, cores, capa e SFX ainda são genéricos (aprende.py --novo)",
+ "_base": "joao-campos"
+}

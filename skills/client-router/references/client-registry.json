@@ -106,5 +106,18 @@
     "skill": "reel-motion",
     "tema": "emerson",
     "drive": "emerson-supermercado"
+  },
+  "gaudencio": {
+    "aliases": [
+      "galdêncio",
+      "gaudencia",
+      "gaudencio",
+      "gaudência",
+      "gaudêncio",
+      "marketing jurídico"
+    ],
+    "skill": "reel-motion",
+    "tema": "gaudencio",
+    "drive": "gaudencio-marketing-juridico"
   }
 }
