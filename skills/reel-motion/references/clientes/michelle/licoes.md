@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-27 (/Volumes/SSD/Movies/Edição/Mídia/michele): Legenda na parte de baixo (~77% da altura). Vídeo pode abrir só com B-roll (sem rosto) cobrindo o gancho; mesma capa (Cinzel dourada no alto) em todos.
 - 2026-11-27 (/Volumes/SSD/Movies/Edição/Mídia/michele): Legenda branca (sem destaque dourado). Capa: headline no alto, nunca sobre o rosto. Trilha = a dela (03_assets/audio/trilha_mic.wav), não Openverse. B-roll do Pexels obrigatório nas viradas da fala.
 - 2026-11-27 (/Volumes/SSD/Movies/Edição/Mídia/michele): Legenda das falas em Montserrat Bold (não Cormorant). Vídeos dela pedem vídeos de referência (B-roll) e o motor da CIBO (reel-motion).
 - 2026-11-19 (/Volumes/SSD/Movies/Edição/Mídia/michele): Legenda das falas: 60 px ficou difícil de ler; padrão aprovado = Cormorant 74 px, sombra dupla (larga suave + contorno curto escuro), a 66% da altura (abaixo do queixo). O gancho kinetic não muda.
