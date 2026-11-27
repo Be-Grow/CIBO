@@ -8,7 +8,8 @@
 
 A biblioteca tem: regras/ (md), licoes.jsonl (travas, melhorias, candidatas), erros.jsonl (correções por padrão),
 padroes.json, scripts.md (índice dos scripts das skills) e INDICE.json (usado pela consulta).
-Lições e temas de UM cliente (gosto, identidade) nunca entram. Envio ao Drive só com o OK do editor (entrega_drive.py).
+No Drive: aprendizado/universal/ (isto, sem nome de cliente) e aprendizado/clientes/<pasta>/ (lições, rubrica, briefing e
+tema de cada cliente da GBrand, marcado com "drive": "<pasta>" no client-registry.json). Clientes sem "drive" não sobem.
 Saída curta."""
 import argparse, json, os, re, sys, unicodedata
 from pathlib import Path
@@ -17,8 +18,11 @@ AQUI = Path(__file__).resolve().parent
 REF = AQUI.parent / 'references'
 REPO = AQUI.parents[2]
 SKILLS = REPO / 'skills'
-DRIVE_PADRAO = Path.home() / 'Library/CloudStorage/GoogleDrive-assessoriagbrand@gmail.com/Meu Drive/CLIENTES/AGENTE_DE_EDIÇÃO/aprendizado'
-DRIVE = Path(os.environ['CIBO_BIBLIOTECA']) if os.environ.get('CIBO_BIBLIOTECA') else DRIVE_PADRAO
+BASE_PADRAO = Path.home() / 'Library/CloudStorage/GoogleDrive-assessoriagbrand@gmail.com/Meu Drive/CLIENTES/AGENTE_DE_EDIÇÃO/aprendizado'
+BASE = Path(os.environ['CIBO_BIBLIOTECA']) if os.environ.get('CIBO_BIBLIOTECA') else BASE_PADRAO
+DRIVE = BASE / 'universal'       # vale para todo cliente, sem nome de cliente
+CLIENTES_DRIVE = BASE / 'clientes'  # preferências de cada cliente da GBrand (registro com "drive": "<pasta>")
+ARQS_CLIENTE = ['licoes.md', 'rubrica.md', 'briefing.md']
 SAIDA = Path('/Volumes/SSD/CIBO/biblioteca_staging')
 LOCAL = SAIDA
 DESTINOS_GERAIS = {'trava', 'melhoria', 'candidata', 'skill-nova', 'formato'}
@@ -207,31 +211,59 @@ def consulta(termos, n):
 def envia():
     """fim do job: regera o rascunho e copia ao Drive. Autorização permanente do editor (27/11/2026, "Sim, liga") vale SÓ
     para esta biblioteca geral; recusa se sobrar nome de cliente. Não apaga nada no Drive."""
-    import shutil
-    if not DRIVE.parent.exists():
-        print(f'Drive não montado ({DRIVE.parent}); biblioteca fica só no rascunho local'); return 1
+    if not BASE.parent.exists():
+        print(f'Drive não montado ({BASE.parent}); biblioteca fica só no rascunho local'); return 1
     exporta(SAIDA)
     sobra = confere(SAIDA)
     if sobra:
         print(f'ENVIO RECUSADO: {len(sobra)} possível(is) nome(s) de cliente; acrescente em EXTRAS e rode de novo'); return 2
-    novos, mudou = [], []
-    for f in sorted(SAIDA.rglob('*')):
-        if not f.is_file() or f.name == '.DS_Store':
+    pares = [(f, DRIVE / f.relative_to(SAIDA)) for f in sorted(SAIDA.rglob('*')) if f.is_file() and f.name != '.DS_Store']
+    pares += pares_clientes()
+    novos, mudou = copia(pares)
+    if not novos and not mudou:
+        print('Drive já estava em dia')
+    else:
+        print(f'enviado ao Drive: {len(novos)} novo(s), {len(mudou)} atualizado(s): ' + ', '.join(novos + mudou)[:300])
+    return 0
+
+
+def pasta_cliente(chave, reg):
+    sk = reg.get('skill') or 'reel-motion'
+    return SKILLS / 'reel-motion/references/clientes' / chave if sk == 'reel-motion' else SKILLS / sk / 'references'
+
+
+def pares_clientes():
+    """só clientes da GBrand: os que têm "drive" no registro. Preferência de cliente, com nome, na pasta dele."""
+    reg = json.loads((REF / 'client-registry.json').read_text())
+    pares = []
+    for chave, r in reg.items():
+        nome = r.get('drive')
+        if not nome:
             continue
-        alvo = DRIVE / f.relative_to(SAIDA)
+        src = pasta_cliente(chave, r)
+        for a in ARQS_CLIENTE:
+            if (src / a).exists():
+                pares.append((src / a, CLIENTES_DRIVE / nome / a))
+        tema = SKILLS / 'reel-motion/temas' / f'{chave}.json'
+        if tema.exists():
+            pares.append((tema, CLIENTES_DRIVE / nome / 'tema.json'))
+    return pares
+
+
+def copia(pares):
+    import shutil
+    novos, mudou = [], []
+    for f, alvo in pares:
+        rel = str(alvo.relative_to(BASE))
         if not alvo.exists():
-            novos.append(f.relative_to(SAIDA))
+            novos.append(rel)
         elif alvo.read_bytes() != f.read_bytes():
-            mudou.append(f.relative_to(SAIDA))
+            mudou.append(rel)
         else:
             continue
         alvo.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(f, alvo)
-    if not novos and not mudou:
-        print('Drive já estava em dia')
-    else:
-        print(f'enviado ao Drive: {len(novos)} novo(s), {len(mudou)} atualizado(s): ' + ', '.join(map(str, (novos + mudou)[:8])))
-    return 0
+    return novos, mudou
 
 
 def main():

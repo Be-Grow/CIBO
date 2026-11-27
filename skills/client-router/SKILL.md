@@ -61,6 +61,10 @@ atual. Não crie skill-cópia de motor para cliente novo: tema + rubrica. Katia 
    Traz as 5–6 lições, travas e scripts já feitos mais parecidos com o trabalho; use o script existente em vez de refazer. Ao fim do job,
    o `aprendizado.py colhe` roda `biblioteca.py envia`, que regera e copia ao Drive sozinho (autorizado pelo editor em 27/11/2026,
    só para esta biblioteca; recusa se sobrar nome de cliente).
+   **Universal x cliente (editor, 27/11/2026):** o que vale para qualquer edição (erro técnico, trava, regra do DaVinci, script) vai para
+   `aprendizado/universal/`, sem nome; gosto, estilo e identidade de UM cliente ficam nas lições/rubrica/tema dele e sobem para
+   `aprendizado/clientes/<pasta>/` só se o cliente é da GBrand (`"drive": "<pasta>"` no `client-registry.json`; Emerson =
+   `emerson-supermercado`). Na dúvida se é universal, pergunte-se: "isso estaria certo num vídeo de outro cliente?".
 4. **Rode o `briefing-criativo` antes de editar**: pergunte ao editor só as decisões artísticas e de estilo que o perfil do cliente não responde, grave `07_manifests/brief.md` e siga os pontos de aprovação (mapa de cortes, piloto).
 5. **Delegue todo o trabalho à skill do cliente identificado.** Não copie fonte, logo, filmburn, SFX, `client-content-bible.md` ou convenção de capa de um cliente para o job de outro, mesmo que os arquivos estejam acessíveis no mesmo volume ou pasta compartilhada.
 6. **Se o material não pertencer a nenhum cliente com skill própria:** use o motor padrão `reel-motion` (fluxo da Andreia, editor 20/10/2026: "gostaria que fosse o padrão de edição da CIBO") com um tema novo `temas/<cliente>.json` montado no briefing; `podcast-reels` só se o editor pedir aquele estilo (Cal Sans, clique, burn azul). Cliente recorrente ganha tema, rubrica e lições no motor (passo 7), nunca skill própria. Nunca force os assets/identidade de um cliente existente num material que não é dele.

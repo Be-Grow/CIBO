@@ -1,0 +1,197 @@
+{
+ "cliente": "emerson",
+ "origem": "tema neutro (editor 26/11/2026: ainda sem identidade; grafite + branco + verde contido; Tusker Grotesk no gancho/capa, Montserrat na legenda). Se precisar de mais, puxar do Instagram dele. | 26/11/2026 piloto: identidade AMARELA (editor: 'traz pra identidade visual amarela'), nome em Montserrat bold com barra amarela, palavras de impacto embaixo.",
+ "theme": {
+  "colors": {
+   "paper": "#16181B",
+   "paper2": "#202328",
+   "ink": "#F5F4F0",
+   "ink2": "#B9BCC2",
+   "terra": "#F5B301",
+   "terraDark": "#8A6500",
+   "peach": "#F5B301",
+   "white": "#2A2E34",
+   "video": "#FFFFFF",
+   "onAccent": "#16181B",
+   "pill": "#2F343B",
+   "bg": "#0F1113",
+   "gold": "#F5B301",
+   "shadow": "6,7,8",
+   "scrim": "12,13,15"
+  },
+  "fonts": [
+   {
+    "family": "TuskerE",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/emerson/TuskerGrotesk-6700Bold.ttf",
+    "weight": "700"
+   },
+   {
+    "family": "TuskerE",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/emerson/TuskerGrotesk-6800Super.ttf",
+    "weight": "800"
+   },
+   {
+    "family": "MontE",
+    "file": "/Volumes/SSD/CIBO Acervo/fonte/emerson/Montserrat-VF.ttf",
+    "weight": "100 900"
+   }
+  ],
+  "title": {
+   "family": "TuskerE",
+   "weight": 700,
+   "upper": true,
+   "ls": "0.01em",
+   "scale": 1.0,
+   "lh": 1.0
+  },
+  "caption": {
+   "family": "MontE",
+   "weight": 700,
+   "upper": false,
+   "ls": 0,
+   "scale": 0.84,
+   "hlAccent": true
+  },
+  "label": {
+   "family": "MontE",
+   "weight": 600
+  },
+  "accent": {
+   "italic": false,
+   "weight": 800
+  },
+  "mediaFilter": "contrast(1.03) saturate(1.0)",
+  "burnOpacity": 0.6,
+  "grain": 0.03,
+  "layout": {
+   "splitH": 940,
+   "camShift": 560,
+   "capSplitY": 0,
+   "capFullY": 1380,
+   "capMaxW": 900,
+   "kwY": 1420,
+   "lowerY": 1711,
+   "lowerX": 81
+  },
+  "layoutH": {
+   "panelW": 1280,
+   "capSplitY": 992,
+   "capFullY": 960,
+   "capSize": 54,
+   "hookScale": 0.82
+  },
+  "motion": {
+   "perfil": "editorial",
+   "peso": [
+    400,
+    700
+   ]
+  },
+  "lower": {
+   "family": "MontE",
+   "weight": 800,
+   "bar": "vertical"
+  },
+  "ouro": "#F5B301"
+ },
+ "pares_extra": [
+  [
+   "gold",
+   "bg",
+   4.5,
+   "amarelo de acento sobre o fundo"
+  ],
+  [
+   "terra",
+   "white",
+   3.0,
+   "amarelo sobre card grafite"
+  ],
+  [
+   "ink",
+   "pill",
+   4.5,
+   "texto na pílula"
+  ]
+ ],
+ "capa": {
+  "layout": "serif",
+  "footerSombra": true,
+  "footer": "EMERSON"
+ },
+ "regras": [
+  "estilo sóbrio e premium de especialista: sem meme, whoosh, transição chamativa ou tela cheia (editor, 26/11/2026)",
+  "números dos casos de faturamento viram texto de apoio na tela",
+  "uma cor de acento só (verde), sem emoji na legenda"
+ ],
+ "sfx": {
+  "kit": "/Volumes/SSD/CIBO Acervo/sfx/_global/",
+  "modo": "variado",
+  "grupos": {
+   "layout": [
+    "impact-soft-1",
+    "impact-soft-2",
+    "impact-soft-3"
+   ],
+   "burn": [
+    "impact-soft-2",
+    "impact-soft-3"
+   ],
+   "brilho": [
+    "click-sharp",
+    "click-soft",
+    "click-soft-2",
+    "tap"
+   ],
+   "marca": [
+    "click-sharp",
+    "click-soft-2",
+    "click-soft",
+    "tap"
+   ]
+  },
+  "db": {
+   "layout": -14,
+   "burn": -14,
+   "brilho": -14,
+   "marca": -13
+  },
+  "abertura": true,
+  "proibidos": [
+   "whoosh-medium-1s",
+   "whoosh-long-2s",
+   "whoosh-soft",
+   "send-whoosh-up",
+   "Swoosh 01 - 02",
+   "Swoosh 04 - 02",
+   "stinger-energetic-hit"
+  ],
+  "nota": "editor 26/11/2026: clique toda vez que aparece frase de impacto em Tusker (gancho, títulos, palavras-chave), girando entre os cliques do kit; impacto grave suave só nas trocas; sem whoosh. Prévia de 10 s antes do render."
+ },
+ "qualidade": {
+  "limiar": 6,
+  "alvo_eventos_10s": [
+   1.5,
+   4.5
+  ],
+  "max_parado": 7,
+  "enfase": [
+   0.1,
+   0.35
+  ]
+ },
+ "variacao": {
+  "sfx": 0,
+  "burn": 1,
+  "movimento": 3,
+  "painel": 3
+ },
+ "movimento": {
+  "preset": "editorial"
+ },
+ "saida": {
+  "tipo": "fade",
+  "dur": 0.9
+ },
+ "_base": "andreia"
+}
