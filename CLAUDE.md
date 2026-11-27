@@ -27,8 +27,9 @@ produto, legenda, capa, trilha, motion, render), mesmo sem cliente citado:
    toda semana, `aprendizado.py revisao`. Mudança em skill só fora de produção, com teste, e marcada `aprendizado.py feito ID`.
 10. **Nada sobe para o Drive sem o OK do editor** (editor, 23/11/2026: "de extrema importância"): mostre os arquivos e o destino,
    pergunte e espere a resposta dele; o envio (`entrega_drive.py --aprovado "<palavras dele>"`) recusa sem plano mostrado ou se algo mudou.
-   Única exceção: a biblioteca de aprendizado geral (sem cliente) em `AGENTE_DE_EDIÇÃO/aprendizado`, que o `aprendizado.py colhe`
-   atualiza sozinho no fim do job (editor, 27/11/2026: "Sim, liga"); o envio recusa se sobrar nome de cliente. Material de job nunca.
+   Única exceção: a biblioteca de aprendizado em `AGENTE_DE_EDIÇÃO/aprendizado`, que o `aprendizado.py colhe` atualiza sozinho no
+   fim do job: `universal/` sem nome de cliente (editor, 27/11/2026: "Sim, liga"; recusa se sobrar nome) e `clientes/<pasta>/`, só
+   lições, rubrica, briefing e tema de cliente da GBrand (editor, 27/11/2026: "Sim, sozinhas"). Material de job (vídeo, render, projeto) nunca.
 
 ## Como conversar
 
