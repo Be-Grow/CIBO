@@ -128,6 +128,18 @@ def media_info(p: Path) -> dict:
     return info
 
 
+AUDIO_EXT = {".wav", ".mp3", ".aif", ".aiff", ".m4a", ".flac", ".ogg", ".aac"}
+# pastas/nomes que dizem "isto é trilha" (vence) ou "isto é efeito sonoro"; vale o caminho inteiro, não só o nome
+MUSICA_RE = r"m[uú]sicas?\b|\bmusics?\b|trilha|soundtrack|\bsongs?\b|\bbeats?\b|\bbgm\b"   # "musical tone" é SFX
+SFX_RE = (r"click|clique|whoosh|woosh|swoosh|\bpop|efx|sfx|riser|\bhits?\b|impact|transi|efeito|sonor|sound ?design|"
+          r"foley|ambien|glitch|ocular|swish|boom|drone|stinger|ui ?sound|interface|digita")
+# presets e templates de editor; projetos de NLE/AE (26/11/2026: no D:\EDIÇÃO eram ~5 mil "outro")
+TEMPLATE_EXT = {".mogrt", ".aegraphic", ".prfpset", ".drfx", ".setting", ".ffx", ".prset", ".epr", ".xmp"}
+PROJETO_EXT = {".prproj", ".aep", ".aet", ".drp", ".fcpxml", ".xml"}
+# cache que o Premiere/Audition criam ao lado da mídia: não é asset, nunca entra no catálogo
+SKIP_EXT = {".pek", ".cfa", ".pkf", ".ims", ".mcdb", ".lnk", ".ini", ".db", ".tmp"}
+
+
 def guess_type(p: Path) -> str:
     n = str(p).lower()
     ext = p.suffix.lower()
@@ -135,12 +147,16 @@ def guess_type(p: Path) -> str:
         return "fonte"
     if ext == ".onnx":
         return "modelo"
-    if "burn" in n or "film burn" in n:
+    if ext in AUDIO_EXT:   # áudio nunca é filmburn, mesmo com "burning" no nome
+        if re.search(MUSICA_RE, n):
+            return "musica"
+        return "sfx" if re.search(SFX_RE, n) else "musica"
+    if ext in TEMPLATE_EXT:
+        return "template"
+    if ext in PROJETO_EXT:
+        return "projeto"
+    if ("burn" in n or "film burn" in n) and ext in {".mp4", ".mov", ".mkv", ".webm", ".png", ".jpg"}:
         return "filmburn"
-    if re.search(r"click|clique|whoosh|swoosh|pop|efx|sfx|riser|hit|impact|transi", n) and ext in {".wav", ".mp3", ".aif", ".aiff", ".m4a"}:
-        return "sfx"
-    if ext in {".wav", ".mp3", ".aif", ".aiff", ".m4a", ".flac", ".ogg"}:
-        return "musica"
     if "logo" in n and ext in {".png", ".svg", ".pdf", ".ai"}:
         return "logo"
     if ext in {".mp4", ".mov", ".mkv", ".webm"}:
@@ -215,7 +231,8 @@ def cmd_drive_indexa(a):
     """indexa a estrutura fixa; avisa o que está fora do lugar (não mexe em nada no Drive)"""
     root = drive_root(); cat = load(); novos, fora = 0, []
     for f in sorted(root.rglob("*")):
-        if not f.is_file() or f.name in SKIP or f.name.startswith((".", "~", "._")) or f.suffix.lower() in {".txt", ".md", ".gdoc"}:
+        if (not f.is_file() or f.name in SKIP or f.name.startswith((".", "~", "._"))
+                or f.suffix.lower() in {".txt", ".md", ".gdoc"} | SKIP_EXT):
             continue
         parts = f.relative_to(root).parts
         if parts[0] == "_global" and len(parts) >= 3:
@@ -335,7 +352,7 @@ def cmd_index(a):
     root = Path(a.pasta).expanduser().resolve()
     n0 = len(cat["items"])
     for p in sorted(root.rglob("*")):
-        if p.is_file() and p.name not in SKIP and not p.name.startswith("._"):
+        if p.is_file() and p.name not in SKIP and not p.name.startswith("._") and p.suffix.lower() not in SKIP_EXT:
             add_one(cat, p, a.type, a.client, [t for t in (a.tags or "").split(",") if t], None, None, True)
     cat.setdefault("indexed_roots", [])
     if str(root) not in cat["indexed_roots"]:
@@ -556,6 +573,37 @@ def cmd_move(a):
           f"continua lá: apague só depois que o editor confirmar.")
 
 
+def cmd_reclassifica(a):
+    """refaz o tipo (e o ID, se o item nunca foi usado) dos itens `ref` sob RAIZ com o guess_type atual, sem reler os
+    arquivos; tira do catálogo o cache de NLE (SKIP_EXT). Só itens indexados, nunca os da biblioteca (editados à mão)."""
+    cat = load()
+    raiz = str(Path(a.raiz).expanduser().resolve()).lower()
+    mudou, tirou, novos = {}, 0, {}
+    for k, it in list(cat["items"].items()):
+        src = it.get("path") or it.get("source") or ""
+        if it.get("kind") != "ref" or not src.lower().startswith(raiz):
+            continue
+        p = Path(src)
+        if p.suffix.lower() in SKIP_EXT:
+            del cat["items"][k]; tirou += 1; continue
+        t, de = guess_type(p), it["type"]
+        if t == de:
+            continue
+        mudou[(de, t)] = mudou.get((de, t), 0) + 1
+        it["type"] = t
+        # ID automático (começa pelo tipo antigo) e nunca usado: ganha ID com o tipo certo
+        if not it.get("usos") and k.startswith(de + "-") and not a.manter_ids:
+            del cat["items"][k]
+            nk = new_id(cat, t, it["name"]); it["id"] = nk; cat["items"][nk] = it; novos[k] = nk
+    if a.dry:
+        print("(simulação, nada gravado)")
+    else:
+        save(cat)
+    print(f"{raiz}: {sum(mudou.values())} reclassificados, {tirou} arquivos de cache removidos, {len(novos)} IDs novos")
+    for (de, para), n in sorted(mudou.items(), key=lambda x: -x[1])[:12]:
+        print(f"  {de} -> {para}: {n}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sp = ap.add_subparsers(dest="cmd", required=True)
@@ -588,6 +636,8 @@ def main():
     p = sp.add_parser("drive-define"); p.add_argument("caminho"); p.set_defaults(f=cmd_drive_define)
     p = sp.add_parser("drive-indexa"); p.set_defaults(f=cmd_drive_indexa)
     p = sp.add_parser("dupes"); p.set_defaults(f=cmd_dupes)
+    p = sp.add_parser("reclassifica"); p.add_argument("raiz"); p.add_argument("--dry", action="store_true")
+    p.add_argument("--manter-ids", action="store_true"); p.set_defaults(f=cmd_reclassifica)
     a = ap.parse_args()
     a.f(a)
 

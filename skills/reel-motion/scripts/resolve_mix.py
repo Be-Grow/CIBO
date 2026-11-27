@@ -8,7 +8,7 @@ if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client
     import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import re, shutil, struct, sys, tempfile, zipfile
 from pathlib import Path
-sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import DaVinciResolveScript as dvr
 
 PRE, POS = '800a1d087c38004a0f085f1a0b0a0911', '4a004a004a004a00'      # forma gravada pelo Resolve (volume do clipe)

@@ -8,7 +8,7 @@ uso: qa_resolve.py [trecho do nome da timeline …]   (sem argumento: todas, men
 if __name__ == '__main__':   # saída curta + log completo em 05_qa/logs (client-router/scripts/saida_curta.py)
     import os as _o, sys as _s; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.realpath(__file__)), '../../client-router/scripts')); import saida_curta; saida_curta.curta()
 import sys, unicodedata
-sys.path.append("/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/Modules")
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import DaVinciResolveScript as dvr
 
 nfc = lambda x: unicodedata.normalize('NFC', x)

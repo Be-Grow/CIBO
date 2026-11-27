@@ -1,6 +1,7 @@
 # "Media Offline" no Resolve quando a camada de zoom (Fusion, V3) se sobrepõe à de tela dividida (Fusion, V4) — achado 27/10/2026.
 # Apara cada zoom na borda da tela dividida (termina quando ela começa / começa quando ela acaba), apaga as camadas de ajuste
 # da timeline e recria com o resolve_fx (sem render). uso: fx_sem_sobrepor.py "NOME DA TIMELINE" […]  (pacote = 07_davinci/<nome>)
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import json, os, sys, subprocess, DaVinciResolveScript as d
 P = __file__.rsplit('/04_work/', 1)[0]; FX = os.path.expanduser('~/.claude/skills/reel-motion/scripts/resolve_fx.py')
 p = d.scriptapp('Resolve').GetProjectManager().GetCurrentProject()
@@ -24,5 +25,5 @@ for nome in (sys.argv[1:] if __name__ == '__main__' else []):
     t = [p.GetTimelineByIndex(i + 1) for i in range(p.GetTimelineCount()) if p.GetTimelineByIndex(i + 1).GetName() == nome][0]; p.SetCurrentTimeline(t)
     aj = [it for k in range(1, t.GetTrackCount('video') + 1) for it in (t.GetItemListInTrack('video', k) or []) if not it.GetMediaPoolItem() and it.GetFusionCompCount()]
     t.DeleteClips(aj, False)
-    r = subprocess.run(['/opt/homebrew/bin/python3.14', FX, g], capture_output=True, text=True)
+    r = subprocess.run([("/opt/homebrew/bin/python3.14" if sys.platform == "darwin" else sys.executable), FX, g], capture_output=True, text=True)
     print(f'{nome}: {n} sobreposição(ões) aparada(s); {len(aj)} camadas refeitas →', (r.stdout.strip().splitlines() or ['?'])[-1][-60:])

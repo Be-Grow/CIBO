@@ -1,5 +1,6 @@
 # editor 27/10/2026: "pop" tira a seriedade → clique. Gera NN_click-*__rNN.wav ao lado de cada NN_pop-*__rNN.wav
 # (mesma duração, clique no início) e troca a mídia dos clipes no projeto aberto (ReplaceClip), renomeando
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import glob, subprocess, os, unicodedata, DaVinciResolveScript as d
 nfc = lambda s: unicodedata.normalize("NFC", s)
 P = __file__.rsplit('/04_work/', 1)[0]; K = '/Volumes/SSD/CIBO Acervo/sfx/_global/'

@@ -3,6 +3,7 @@
 Nasceu do r03 (09/11/2026): corta_trecho embaralhou câmera/voz/SFX entre A1–A4 depois da emenda.
 Clipe fora do lugar: desvincula do vídeo, guarda mídia + entrada/saída da fonte + posição, apaga e recoloca
 (AppendToTimeline com trackIndex/recordFrame, endFrame exclusivo). uso: arruma_audio.py "TIMELINE" [--dry]"""
+import os as _ro, sys as _rs; _rs.path.insert(0, _ro.path.join(_ro.path.dirname(_ro.path.realpath(__file__)), '../../../_shared')); import resolve_env  # noqa: E401,F401  (API do Resolve em Mac/Windows)
 import sys, DaVinciResolveScript as d
 NOME, DRY = sys.argv[1], '--dry' in sys.argv
 p = d.scriptapp('Resolve').GetProjectManager().GetCurrentProject(); mp = p.GetMediaPool()

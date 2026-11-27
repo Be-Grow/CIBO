@@ -38,6 +38,11 @@ def ffversion():
     return sh(["ffmpeg", "-version"]).stdout.split("\n")[0].split(" Copyright")[0]
 
 
+sys.path.insert(0, str(HERE))
+import plataforma  # noqa: E402  (o que muda de sistema para sistema mora lá; aqui só a interface)
+PLAT = plataforma.atual(SKILLS)
+
+
 def fixture() -> Path:
     fx = WORK / "fixture"
     stamp = fx / "ffmpeg.txt"
@@ -181,7 +186,7 @@ def teste_busca() -> list[str]:
     acv_conf.write_text(json.dumps({"library": str(acv / "lib")}))
     env = {**os.environ, "CIBO_BUSCA_MOCK": str(mock), "CIBO_ACERVO_CONF": str(acv_conf), "ANTHROPIC_API_KEY": "mock",
            "CIBO_BUSCA_CACHE": str(w / "cache")}
-    py = SKILLS / "busca-stock" / ".venv" / "bin" / "python"
+    py = PLAT.venv_py("busca-stock")
     bs = lambda *a: sh([str(py), str(SKILLS / "busca-stock" / "scripts" / "busca_stock.py"), *map(str, a)], env=env, timeout=TIMEOUT)
     erros = []
     if bs("checa", plano).returncode:
@@ -226,7 +231,7 @@ def teste_trilha() -> list[str]:
     acv_conf.write_text(json.dumps({"library": str(acv / "lib")}))
     env = {**os.environ, "CIBO_BUSCA_MOCK": str(mock), "CIBO_ACERVO_CONF": str(acv_conf), "CIBO_BUSCA_CACHE": str(w / "cache"),
            "FREESOUND_API_KEY": ""}
-    py = SKILLS / "busca-trilha" / ".venv" / "bin" / "python"
+    py = PLAT.venv_py("busca-trilha")
     bt = lambda *a: sh([str(py), str(SKILLS / "busca-trilha" / "scripts" / "busca_trilha.py"), *map(str, a)], env=env, timeout=TIMEOUT)
     for cmd in (("busca", brief, w / "r"), ("relatorio", w / "r", "--md", proj / "07_manifests" / "trilha.md"),
                 ("baixa", w / "r", 1, "--proj", proj)):
@@ -253,9 +258,9 @@ def teste_reel_motion():
     `verifica` (layout medido no DOM) tem que dar OK; depois dois defeitos plantados têm que ser acusados pelo nome:
     tempo obrigatório faltando (esquema) e texto que vaza do painel (medidor). Cobre os selos: `davinci` recusa sem eles.
     Precisa do SSD (node_modules e temporários do motor moram lá); sem ele o teste diz que não rodou."""
-    if not Path("/Volumes/SSD/CIBO/reel-motion/node_modules").exists():
-        return ["SSD fora (/Volumes/SSD/CIBO/reel-motion/node_modules): reel-motion NÃO testado"]
-    proj = Path("/Volumes/SSD/CIBO/tmp/regressao_reel_motion"); shutil.rmtree(proj, ignore_errors=True)
+    if not PLAT.reel_motion_deps().exists():
+        return [f"motor fora ({PLAT.reel_motion_deps()}): reel-motion NÃO testado"]
+    proj = PLAT.tmp_dir() / "regressao_reel_motion"; shutil.rmtree(proj, ignore_errors=True)
     W = proj / "04_work" / "t01"; W.mkdir(parents=True); (proj / "05_qa").mkdir()
     reel = SKILLS / "reel-motion" / "scripts" / "reel.py"
     palavras = "a marca tinha oitenta por cento do mercado e caiu para dezenove não foi a concorrência foi a categoria que mudou de formato de canal e de jeito de vender".split()
@@ -331,7 +336,8 @@ def main():
     if a.cmd == "list":
         print("\n".join(ENGINES))
         return
-    GOLDEN.mkdir(exist_ok=True)
+    gdir = PLAT.golden_dir()
+    gdir.mkdir(parents=True, exist_ok=True)
     falhas = 0
     for eng in a.engine or ENGINES:
         if eng in CHECKS:
@@ -340,7 +346,7 @@ def main():
             falhas += bool(erros)
             continue
         d, el, log = render(eng)
-        g = GOLDEN / f"{eng}.json"
+        g = gdir / f"{eng}.json"
         if a.cmd == "record":
             if "erro" in d:
                 print(f"ERRO   {eng}: {d['erro']}\n{log}")

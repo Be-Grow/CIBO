@@ -221,3 +221,35 @@ Devolve o projeto do editor no fim e apaga o importado. Como funciona por dentro
 - Prova visual fora do Resolve: quadro girado no ffmpeg (`rotate=-θ*PI/180`) com `drawgrid`, uma folha; a conferência final é
   no preview do editor.
 - `GetProperty` devolvendo tudo `None` (e `GetCurrentPage()` None) = Resolve com janela/diálogo aberto: não insista, peça para fechar.
+
+## Montagem nativa pela API (Resolve 21.1 Studio, Windows, reel teste Jansen, 26/11/2026)
+
+**Monte pela API, não pelo XML, quando o XML perde informação** (editor, 26/11/2026: "esse arquivo xml do final cut funciona até
+certo ponto, mas perde muita coisa… pro davinci vc vai usar o arquivo proprietário dele, pela api do davinci"). No Windows o
+FCPXML do pacote deixou a mídia **offline**, os brutos **deitados**, uma trilha de vídeo vazia e o áudio da câmera ligado. A mesma
+montagem pela API saiu certa de primeira. Receita (script de referência: `04_work/monta_resolve.py` do projeto Jansen 2026-11-26):
+- Projeto e bins: `resolve_projeto.abre("BeGrow/<Cliente>", "<Cliente> - <job>", fps)`; mídia com `MediaPool.ImportMedia` direto na
+  bin do tipo (`resolve_projeto.bin_`); timeline com `CreateEmptyTimeline` dentro de `00 TIMELINES/<formato>`; resolução antes:
+  `SetSetting('timelineResolutionWidth'/'Height' …)`.
+- **`ImportMedia` já aplica a rotação do arquivo** (Sony com rotação 90 entra 2160×3840): nunca some rotação por cima.
+- **`AppendToTimeline`:** `endFrame` é **exclusivo** (duração = endFrame − startFrame; com `fim − 1` cada clipe saiu 1 quadro curto);
+  `recordFrame` = `tl.GetStartFrame()` + quadro; `mediaType: 1` (só vídeo) para não trazer áudio da câmera, `2` para só áudio;
+  `trackIndex` escolhe a trilha (crie antes com `AddTrack('video')` / `AddTrack('audio', 'stereo')`).
+- **Velocidade: `TimelineItem.SetSpeed({'Percentage': 71.3})`.** Número solto devolve False e não muda nada. Ela **mantém a duração
+  na timeline** e lê N% de quadros da origem: entre com a duração FINAL e aplique a velocidade. Se a origem acaba antes de
+  entrada + duração, recue a entrada (a janela usada, duração × N%, continua dentro do bruto). `GetSpeed()` devolve o mesmo dict.
+- `SetProperty('RetimeProcess', 3)` = Optical Flow; `TimelineItem.Stabilize()` estabiliza (o Warp Stabilizer do Premiere);
+  `SetName('<código> …')` dá o código de 3 números ao clipe; `SetProperty('Volume', -10)` em clipe de áudio.
+- **Título em trilha de cima:** `InsertFusionTitleIntoTimeline('Text+')` sempre cai na V1 (com a V1 travada não insere; com a V1
+  desligada empurra o fundo). Gere o título como ProRes 4444 com alfa e use `AppendToTimeline` com `trackIndex`.
+- Acabamento com as ferramentas da CIBO: `resolve_cores.aplica(tl)` (cor e nome de faixa), `guarda_editor.marca(p, tl)` (assinatura
+  da CIBO, protege o que o editor mexer depois), `qa_resolve.py` (offline, deitado, mídia trocada).
+- **Arquivo do projeto (.drp) na pasta do job:** `ProjectManager.ExportProject(nome, '<proj>/07_davinci/<nome>.drp', True)` depois de
+  `SaveProject()`. É o "arquivo proprietário" que o editor pediu; o pacote de camadas continua sendo a origem das mídias.
+- **Pendente no Windows (melhoria #22):** `resolve_cores.tipo` e `resolve_projeto.organiza` testam caminho com `/`; no Windows o
+  File Path vem com `\` e tudo vira câmera/bruto (assinatura e flash em 01 BRUTO, trilha em 04 SFX). Até corrigir: dê o tipo pelo
+  código do nome (`resolve_cores.tipo = …`) e confira as bins com a árvore antes de entregar.
+
+**DaVinci portátil (máquina ARTHUR, Windows):** fica fora do caminho padrão; `CIBO_RESOLVE_DIR` (pasta `…\App\DaVinci Resolve`, com o
+manual em `Documents`), `RESOLVE_SCRIPT_API` e `RESOLVE_SCRIPT_LIB` gravadas nas variáveis do usuário. A versão portátil não traz o
+README da API: `doc_resolve.py api` não acha nada; use `doc_resolve.py manual` e `dir(objeto)` pela própria API para ver os métodos.

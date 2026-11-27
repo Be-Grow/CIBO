@@ -17,8 +17,9 @@ web (fórum da Blackmagic) e anote o achado em client-router/references/regras/d
 import re, subprocess, sys
 from pathlib import Path
 
-API = Path('/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/README.txt')
-PDF = Path('/Applications/DaVinci Resolve/DaVinci Resolve Manual.pdf')
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / '_shared')); import resolve_env  # noqa: E402
+API = Path(resolve_env.api_dir()) / 'README.txt'
+PDF = resolve_env.manual_pdf()
 CACHE = Path.home() / '.cache' / 'cibo' / 'resolve_manual.txt'
 CLASSES = ('Resolve', 'ProjectManager', 'Project', 'MediaStorage', 'MediaPool', 'Folder', 'MediaPoolItem', 'Timeline',
            'TimelineItem', 'Gallery', 'GalleryStillAlbum', 'Graph', 'ColorGroup')
