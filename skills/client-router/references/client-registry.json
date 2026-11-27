@@ -1,99 +1,109 @@
 {
- "bombordo-boreste": {
-  "aliases": [
-   "bombordo",
-   "boreste",
-   "bombordo e boreste",
-   "bombordo-boreste",
-   "portos"
-  ]
- },
- "content-hub": {
-  "aliases": [
-   "content hub",
-   "content-hub",
-   "contenthub",
-   "sebrae",
-   "thomas",
-   "vai lá e faz",
-   "vilena"
-  ]
- },
- "dr-energia": {
-  "aliases": [
-   "dr energia",
-   "dr. energia",
-   "drenergia",
-   "dr-energia",
-   "energia br cast"
-  ]
- },
- "fernanda-produto": {
-  "aliases": [
-   "fernanda",
-   "zeobody",
-   "zeodent",
-   "zeo"
-  ]
- },
- "malu-cortes": {
-  "aliases": [
-   "malu",
-   "turi-ita",
-   "turi ita"
-  ]
- },
- "joao-campos": {
-  "aliases": [
-   "joão",
-   "joao",
-   "jg campos",
-   "jgcampos",
-   "joão guilherme campos",
-   "begrow",
-   "vai lá e faz",
-   "podlilian",
-   "podgrazi"
-  ],
-  "skill": "podcast-reels",
-  "note": "Sem skill própria; ver linha João Campos no client-registry.md. Palestra dele sobre a Content Hub continua sendo job do João."
- },
- "priscilla-daher": {
-  "aliases": [
-   "priscilla",
-   "priscilla daher",
-   "priscila daher",
-   "priscilla-daher"
-  ]
- },
- "michelle": {
-  "aliases": [
-   "michelle gil",
-   "michele gil",
-   "eusoumichellegil",
-   "michelle",
-   "michele",
-   "gld - michelle",
-   "black despertar",
-   "mentora multidimensional"
-  ],
-  "skill": "reel-motion",
-  "tema": "michelle"
- },
- "andreia": {
-  "aliases": [
-   "andrea",
-   "andreia",
-   "andrea francomano",
-   "andreia francomano",
-   "francomano",
-   "mesa radiônica",
-   "mesa radionica",
-   "teatro acessos",
-   "mapa do invisível",
-   "mapa do invisivel"
-  ],
-  "skill": "reel-motion",
-  "tema": "andreia"
- }
+  "bombordo-boreste": {
+    "aliases": [
+      "bombordo",
+      "boreste",
+      "bombordo e boreste",
+      "bombordo-boreste",
+      "portos"
+    ]
+  },
+  "content-hub": {
+    "aliases": [
+      "content hub",
+      "content-hub",
+      "contenthub",
+      "sebrae",
+      "thomas",
+      "vai lá e faz",
+      "vilena"
+    ]
+  },
+  "dr-energia": {
+    "aliases": [
+      "dr energia",
+      "dr. energia",
+      "drenergia",
+      "dr-energia",
+      "energia br cast"
+    ]
+  },
+  "fernanda-produto": {
+    "aliases": [
+      "fernanda",
+      "zeobody",
+      "zeodent",
+      "zeo"
+    ]
+  },
+  "malu-cortes": {
+    "aliases": [
+      "malu",
+      "turi-ita",
+      "turi ita"
+    ]
+  },
+  "joao-campos": {
+    "aliases": [
+      "joão",
+      "joao",
+      "jg campos",
+      "jgcampos",
+      "joão guilherme campos",
+      "begrow",
+      "vai lá e faz",
+      "podlilian",
+      "podgrazi"
+    ],
+    "skill": "podcast-reels",
+    "note": "Sem skill própria; ver linha João Campos no client-registry.md. Palestra dele sobre a Content Hub continua sendo job do João."
+  },
+  "priscilla-daher": {
+    "aliases": [
+      "priscilla",
+      "priscilla daher",
+      "priscila daher",
+      "priscilla-daher"
+    ]
+  },
+  "michelle": {
+    "aliases": [
+      "michelle gil",
+      "michele gil",
+      "eusoumichellegil",
+      "michelle",
+      "michele",
+      "gld - michelle",
+      "black despertar",
+      "mentora multidimensional"
+    ],
+    "skill": "reel-motion",
+    "tema": "michelle"
+  },
+  "andreia": {
+    "aliases": [
+      "andrea",
+      "andreia",
+      "andrea francomano",
+      "andreia francomano",
+      "francomano",
+      "mesa radiônica",
+      "mesa radionica",
+      "teatro acessos",
+      "mapa do invisível",
+      "mapa do invisivel"
+    ],
+    "skill": "reel-motion",
+    "tema": "andreia"
+  },
+  "emerson": {
+    "aliases": [
+      "consultor de supermercado",
+      "emerson",
+      "gbrand",
+      "supermercado"
+    ],
+    "skill": "reel-motion",
+    "tema": "emerson"
+  }
 }

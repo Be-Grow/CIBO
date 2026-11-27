@@ -19,7 +19,7 @@
       "cortando a fala",
       "corte seco na fala"
     ],
-    "trava": "reel-motion: `reel.py cortes` barra borda em cima da voz (bordas.py + checa_takes), 23/11/2026"
+    "trava": "reel-motion: bordas.py pela palavra exata do MFA + fala colada (<80 ms) vira OUVIR; portão do pacote nunca libera 'cortes' (SELOS_OK/VERIFICA_OK/grosso), 26/11/2026"
   },
   "timeline-do-editor": {
     "descricao": "a CIBO apagou, reimportou ou fechou timeline que o editor já tinha ajustado",
@@ -118,6 +118,577 @@
       "já te mandei",
       "ja te mandei"
     ],
+    "trava": ""
+  },
+  "nao-recodificar-bruto": {
+    "descricao": "Editor (25/11): 'mas não é pra codificar, joga pro projeto que ele vai ser formatado' — fonte_2997 do davinci.py recodif",
+    "categorias": [
+      "render"
+    ],
+    "palavras": [],
+    "trava": ""
+  },
+  "abrir-projeto-pronto": {
+    "descricao": "Editor (25/11): 'tu precisa aprender a fazer o projeto e abrir ele sozinho' / 'tu ficou travado no DaVinci aberto sem en",
+    "categorias": [
+      "entrega"
+    ],
+    "palavras": [],
+    "trava": ""
+  },
+  "texto-no-rosto": {
+    "descricao": "título, motion, legenda ou capa cobrindo o rosto",
+    "categorias": [
+      "motion",
+      "capa",
+      "legenda"
+    ],
+    "palavras": [
+      "na cara dela",
+      "na cara dele",
+      "por cima do rosto",
+      "na frente da cara",
+      "sobre o rosto",
+      "cobrindo o rosto"
+    ],
+    "trava": ""
+  },
+  "texto-pulsando": {
+    "descricao": "texto mudando de tamanho/piscando quadro a quadro (fonte medida antes de carregar)",
+    "categorias": [
+      "motion"
+    ],
+    "palavras": [
+      "pulsando",
+      "piscando",
+      "pirando",
+      "measuretext",
+      "mudando de tamanho"
+    ],
+    "trava": "reel-motion: Root.tsx monta reel e capa só com a fonte do tema carregada (comFontes) e measureText com validateFontIsLoaded (fonte faltando = erro), 26/11/2026"
+  },
+  "sfx-errado": {
+    "descricao": "SFX faltando, repetido, alto, seco ou sem combinar com o tema",
+    "categorias": [
+      "audio",
+      "clique"
+    ],
+    "palavras": [
+      "sfx",
+      "whoosh",
+      "tigela",
+      "sino",
+      "clique",
+      "click",
+      "pop"
+    ],
+    "trava": ""
+  },
+  "trilha-volume": {
+    "descricao": "trilha alta ou baixa em relação à voz",
+    "categorias": [
+      "trilha"
+    ],
+    "palavras": [
+      "música muito alta",
+      "musica muito alta",
+      "fundo muito alto",
+      "trilha muito",
+      "música está baixa",
+      "acima da voz",
+      "competindo com a voz"
+    ],
+    "trava": ""
+  },
+  "trilha-tema": {
+    "descricao": "trilha sem relação com o tema ou a pegada do cliente",
+    "categorias": [
+      "trilha"
+    ],
+    "palavras": [
+      "nada a ver",
+      "sem relação com o tema",
+      "música marcante",
+      "pegada"
+    ],
+    "trava": ""
+  },
+  "trilha-sincronia": {
+    "descricao": "música subindo fora do quadro do evento (logo, impacto)",
+    "categorias": [
+      "trilha"
+    ],
+    "palavras": [
+      "música deveria aumentar",
+      "demora a aumentar",
+      "exato quadro"
+    ],
+    "trava": ""
+  },
+  "fora-do-davinci": {
+    "descricao": "entregou MP4/ffmpeg ou render queimado em vez de montar no DaVinci",
+    "categorias": [
+      "render",
+      "entrega"
+    ],
+    "palavras": [
+      "ffmpeg",
+      "usa o davinci",
+      "abriu no davinci",
+      "render queimado",
+      "xml com todas as camadas"
+    ],
+    "trava": ""
+  },
+  "conferencia-fora-preview": {
+    "descricao": "conferência fora do preview do DaVinci (render/PNG/cache em vez do editor olhar)",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [
+      "conferência",
+      "conferir",
+      "png",
+      "still do resolve"
+    ],
+    "trava": ""
+  },
+  "esqueceu-o-ensinado": {
+    "descricao": "regra ou jeito já ensinado não aplicado / skill certa não usada",
+    "categorias": [
+      "processo",
+      "skill"
+    ],
+    "palavras": [
+      "já tinha pedido",
+      "ficar te ensinando",
+      "como não gravou",
+      "sem eu apontar",
+      "toda vez",
+      "esquecido",
+      "usando mesmo a cibo"
+    ],
+    "trava": ""
+  },
+  "mesmo-nome-cache": {
+    "descricao": "arquivo de rodada/pacote anterior reaproveitado por ter o mesmo nome (cache)",
+    "categorias": [
+      "audio",
+      "skill",
+      "processo"
+    ],
+    "palavras": [
+      "mesmo nome",
+      "cache",
+      "rodada anterior",
+      "voz antiga"
+    ],
+    "trava": ""
+  },
+  "material-errado": {
+    "descricao": "editou arquivo ou projeto errado em vez de perguntar",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [
+      "vídeos errados",
+      "videos errados",
+      "cópia antiga",
+      "mesmo nome (/",
+      "em vez de perguntar"
+    ],
+    "trava": ""
+  },
+  "sobra-no-corte": {
+    "descricao": "outra voz, retake, fala de bastidor ou olhada ficou dentro do corte",
+    "categorias": [
+      "corte",
+      "audio"
+    ],
+    "palavras": [
+      "2ª pessoa",
+      "retake",
+      "olhada",
+      "desabafo",
+      "pode ir, vai",
+      "sobreposta"
+    ],
+    "trava": ""
+  },
+  "corte-sem-contexto": {
+    "descricao": "trecho ficou sem contexto depois de remover algo",
+    "categorias": [
+      "corte"
+    ],
+    "palavras": [
+      "sem contexto"
+    ],
+    "trava": ""
+  },
+  "selecao-trecho": {
+    "descricao": "escolha de trecho/gancho fora do que o editor ou cliente pediu",
+    "categorias": [
+      "corte"
+    ],
+    "palavras": [
+      "preciso de 3",
+      "começar na fala",
+      "gancho tirado"
+    ],
+    "trava": ""
+  },
+  "capa-quadro-ruim": {
+    "descricao": "capa com quadro ruim (borrado, olho fechado, repetido, rosto mal detectado)",
+    "categorias": [
+      "capa"
+    ],
+    "palavras": [
+      "capa ruim",
+      "capas ruins",
+      "borrada",
+      "horríveis",
+      "olho apertado",
+      "idênticas"
+    ],
+    "trava": ""
+  },
+  "capa-um-quadro": {
+    "descricao": "capa entrou na timeline com mais de 1 quadro",
+    "categorias": [
+      "capa"
+    ],
+    "palavras": [
+      "150 quadros",
+      "1 quadro"
+    ],
+    "trava": ""
+  },
+  "capa-layout": {
+    "descricao": "logo, título ou cartão da capa mal posicionado ou fora do padrão",
+    "categorias": [
+      "capa"
+    ],
+    "palavras": [
+      "logo",
+      "título da capa",
+      "subtítulo",
+      "quadrado preto"
+    ],
+    "trava": ""
+  },
+  "enquadramento-falante": {
+    "descricao": "falante fora do centro, baixo, cortado ou plano errado para quem fala",
+    "categorias": [
+      "enquadramento",
+      "corte",
+      "motion"
+    ],
+    "palavras": [
+      "fora do centro",
+      "muito pra baixo",
+      "centralizada",
+      "enquadrar",
+      "cortando o topo",
+      "reenquadrar",
+      "não aparece o"
+    ],
+    "trava": ""
+  },
+  "metadado-fonte": {
+    "descricao": "rotação, timecode ou metadado da fonte ignorado (vídeo deitado, ffprobe quebrado)",
+    "categorias": [
+      "render",
+      "skill"
+    ],
+    "palavras": [
+      "deitado",
+      "rotationangle",
+      "tmcd"
+    ],
+    "trava": ""
+  },
+  "motion-generico": {
+    "descricao": "motion igual em tudo, pesado ou sem relação com a fala",
+    "categorias": [
+      "motion",
+      "skill"
+    ],
+    "palavras": [
+      "tudo igual",
+      "todas do mesmo jeito",
+      "sobrecarregada",
+      "ruinzinha",
+      "mais qualidade"
+    ],
+    "trava": ""
+  },
+  "motion-bug-visual": {
+    "descricao": "elemento de motion vazando, sobrepondo ou com borda/recorte errado",
+    "categorias": [
+      "motion"
+    ],
+    "palavras": [
+      "sobrepondo",
+      "saiu do cartão",
+      "borda retangular"
+    ],
+    "trava": ""
+  },
+  "transicao-faltando": {
+    "descricao": "troca de painel/câmera sem burn ou transição",
+    "categorias": [
+      "motion"
+    ],
+    "palavras": [
+      "sem burn",
+      "sem conexão",
+      "transição de burn"
+    ],
+    "trava": ""
+  },
+  "insercao": {
+    "descricao": "falta ou sobra de imagem real / vídeo de inserção",
+    "categorias": [
+      "motion"
+    ],
+    "palavras": [
+      "vídeos de inserção",
+      "imagem real",
+      "stock"
+    ],
+    "trava": ""
+  },
+  "identidade-cliente": {
+    "descricao": "cor, nome ou identidade do cliente errados",
+    "categorias": [
+      "cor",
+      "outro",
+      "motion"
+    ],
+    "palavras": [
+      "identidade",
+      "roxo",
+      "nome da cliente"
+    ],
+    "trava": ""
+  },
+  "pacote-davinci-formato": {
+    "descricao": "pacote do DaVinci no formato errado (elementos juntos ou fragmentado demais)",
+    "categorias": [
+      "motion",
+      "tokens",
+      "processo"
+    ],
+    "palavras": [
+      "pacote davinci",
+      "componentes únicos",
+      "fragmentado",
+      "separava os elementos"
+    ],
+    "trava": ""
+  },
+  "davinci-desorganizado": {
+    "descricao": "projeto/camadas no DaVinci sem organização (cores, nomes)",
+    "categorias": [
+      "entrega"
+    ],
+    "palavras": [
+      "organizado",
+      "colorir as camadas"
+    ],
+    "trava": ""
+  },
+  "asset-errado": {
+    "descricao": "asset trocado ou fora da medida (foto, QR)",
+    "categorias": [
+      "asset"
+    ],
+    "palavras": [
+      "foto aleatória",
+      "qr"
+    ],
+    "trava": ""
+  },
+  "legenda-layout": {
+    "descricao": "legenda fora da zona segura ou desalinhada",
+    "categorias": [
+      "legenda"
+    ],
+    "palavras": [
+      "próxima da borda",
+      "tortinha"
+    ],
+    "trava": ""
+  },
+  "render-lento": {
+    "descricao": "render lento / encoder",
+    "categorias": [
+      "render"
+    ],
+    "palavras": [
+      "gpu",
+      "encoder",
+      "demora muito"
+    ],
+    "trava": ""
+  },
+  "api-resolve-chute": {
+    "descricao": "chamada da API do Resolve chutada sem consultar a doc",
+    "categorias": [
+      "skill"
+    ],
+    "palavras": [
+      "não existe",
+      "deletetimelines"
+    ],
+    "trava": ""
+  },
+  "afirmou-sem-medir": {
+    "descricao": "afirmou algo sobre o material sem medir",
+    "categorias": [
+      "skill"
+    ],
+    "palavras": [
+      "sem medir"
+    ],
+    "trava": ""
+  },
+  "nao-perguntou": {
+    "descricao": "decisão do editor tomada ou travada sem perguntar",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [
+      "perguntar decisões",
+      "n em perguntou",
+      "automático demais"
+    ],
+    "trava": ""
+  },
+  "audio-nao-mexer": {
+    "descricao": "tratou áudio que o editor trata no DaVinci",
+    "categorias": [
+      "audio"
+    ],
+    "palavras": [
+      "n mexe no audio",
+      "próprio áudio"
+    ],
+    "trava": ""
+  },
+  "desperdicio": {
+    "descricao": "RAM, tokens, espera ou download desnecessários; tentativa e erro",
+    "categorias": [
+      "processo",
+      "tokens"
+    ],
+    "palavras": [
+      "ram",
+      "tokens",
+      "tentativa e erro",
+      "dois shells",
+      "arquivo inteiro",
+      "em lote"
+    ],
+    "trava": ""
+  },
+  "preferencia-fluxo": {
+    "descricao": "preferência de fluxo do editor/cliente não seguida (ClickUp, roteiro, simplicidade)",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [
+      "clickup",
+      "roteiro",
+      "simples",
+      "chrome"
+    ],
+    "trava": ""
+  },
+  "arquitetura-motor": {
+    "descricao": "pedido de motor generalista / componentes reutilizáveis",
+    "categorias": [
+      "processo",
+      "motion"
+    ],
+    "palavras": [
+      "motor generalista",
+      "reutilizáveis"
+    ],
+    "trava": ""
+  },
+  "fusion-movimento": {
+    "descricao": "movimento de câmera no Fusion sem shutter/ease",
+    "categorias": [
+      "motion"
+    ],
+    "palavras": [
+      "ease",
+      "shutter",
+      "curvas"
+    ],
+    "trava": ""
+  },
+  "generalizou-regra": {
+    "descricao": "tratou regra de um episódio como fixa",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [
+      "só naquele ep"
+    ],
+    "trava": ""
+  },
+  "emenda-nao-conferida": {
+    "descricao": "emendas de episódio longo não conferidas uma a uma",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [
+      "emenda"
+    ],
+    "trava": ""
+  },
+  "tmp-compartilhado": {
+    "descricao": "limpeza apagou arquivo de outro job no TMP compartilhado",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [
+      "tmp compartilhado",
+      "bundle"
+    ],
+    "trava": ""
+  },
+  "camada-esquecida": {
+    "descricao": "camada de referência ou antiga ficou ligada na timeline",
+    "categorias": [
+      "motion",
+      "render"
+    ],
+    "palavras": [
+      "ligada por cima"
+    ],
+    "trava": ""
+  },
+  "davinci-audio-faixa": {
+    "descricao": "faixa de áudio errada na montagem pela API (voz crua no lugar da tratada)",
+    "categorias": [
+      "render",
+      "audio"
+    ],
+    "palavras": [
+      "faixa voz",
+      "áudio cru"
+    ],
+    "trava": ""
+  },
+  "correcao-por-pacote-inteiro": {
+    "descricao": "Correção pequena (uma palavra + legenda) virou pacote inteiro remontado; o certo era mexer só naquele trecho da timeline",
+    "categorias": [
+      "processo"
+    ],
+    "palavras": [],
     "trava": ""
   }
 }
