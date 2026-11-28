@@ -5,6 +5,10 @@ import {LottieOverlay} from './LottieOverlay';
 import {Audiogram, calcAudiogram} from './Audiogram';
 import {Reel, ReelProps} from './reel/Reel';
 import {Capa} from './reel/Capa';
+import {comFontes} from './reel/primitives';
+import {applyTheme} from './reel/theme';
+// reel e capa só montam com o tema aplicado e a fonte carregada (texto medido com a fonte certa, 26/11/2026)
+const ReelF = comFontes(Reel as any, applyTheme), CapaF = comFontes(Capa as any, applyTheme);
 import {CiboTestCompositions} from './CiboTestMotion';
 export const RemotionRoot: React.FC = () => (
   <>
@@ -17,21 +21,21 @@ export const RemotionRoot: React.FC = () => (
       width={1080} height={1920} defaultProps={{src: 'anel.json', x: 540, y: 960, width: 400}} />
     <Composition id="Audiogram" component={Audiogram} calculateMetadata={calcAudiogram} durationInFrames={300} fps={30}
       width={1080} height={1920} defaultProps={{audio: 'audio.wav', image: 'avatar.png', title: 'Título do episódio', subtitle: '@perfil', captions: []}} />
-    <Composition id="Reel" component={Reel as any} fps={29.97} width={1080} height={1920} durationInFrames={300}
+    <Composition id="Reel" component={ReelF as any} fps={29.97} width={1080} height={1920} durationInFrames={300}
       defaultProps={{camera: 'r01/camera.mov', duration: 10, split: [], panels: [], captions: []} as ReelProps}
       calculateMetadata={({props}) => ({durationInFrames: Math.round((props as ReelProps).duration * 29.97)})} />
     {/* versão horizontal 16:9 do mesmo reel (lado a lado: painel à esquerda, pessoa à direita; Andreia 19/10/2026) */}
-    <Composition id="ReelH" component={Reel as any} fps={29.97} width={1920} height={1080} durationInFrames={300}
+    <Composition id="ReelH" component={ReelF as any} fps={29.97} width={1920} height={1080} durationInFrames={300}
       defaultProps={{camera: 'r01h/camera.mov', duration: 10, split: [], panels: [], captions: []} as ReelProps}
       calculateMetadata={({props}) => ({durationInFrames: Math.round((props as ReelProps).duration * 29.97)})} />
-    <Composition id="CapaH" component={Capa as any} fps={30} width={1920} height={1080} durationInFrames={1}
+    <Composition id="CapaH" component={CapaF as any} fps={30} width={1920} height={1080} durationInFrames={1}
       defaultProps={{frame: 'r01h/capa_frame.png', l1: 'Ninguém sabe', l2: 'vender no', accent: 'TikTok'}} />
-    <Composition id="Capa" component={Capa as any} fps={30} width={1080} height={1920} durationInFrames={1}
+    <Composition id="Capa" component={CapaF as any} fps={30} width={1080} height={1920} durationInFrames={1}
       defaultProps={{frame: 'r01/capa_frame.png', l1: 'Ninguém sabe', l2: 'vender no', accent: 'TikTok'}} />
-    <Composition id="PriscillaReel" component={Reel as any} fps={29.97} width={1080} height={1920} durationInFrames={300}
+    <Composition id="PriscillaReel" component={ReelF as any} fps={29.97} width={1080} height={1920} durationInFrames={300}
       defaultProps={{camera: 'r01/camera.mov', duration: 10, split: [], panels: [], captions: []} as ReelProps}
       calculateMetadata={({props}) => ({durationInFrames: Math.round((props as ReelProps).duration * 29.97)})} />
-    <Composition id="PriscillaCapa" component={Capa as any} fps={30} width={1080} height={1920} durationInFrames={1}
+    <Composition id="PriscillaCapa" component={CapaF as any} fps={30} width={1080} height={1920} durationInFrames={1}
       defaultProps={{frame: 'r01/capa_frame.png', l1: 'Ninguém sabe', l2: 'vender no', accent: 'TikTok'}} />
   </>
 );

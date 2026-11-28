@@ -1,22 +1,35 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Img, AbsoluteFill, Easing, OffthreadVideo, Sequence, continueRender, delayRender, interpolate,
+  Img, AbsoluteFill, Easing, OffthreadVideo, Sequence, cancelRender, continueRender, delayRender, interpolate,
   staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion';
 import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, pop, M, cl, ramp, useT, sh} from './theme';
 
 // Peças reutilizáveis dos painéis. Painel novo = composição destas peças; só crie peça nova quando nenhuma serve.
 
-export const Fonts: React.FC = () => {
+// Fontes do tema ANTES de qualquer medida (26/11/2026, regra do remotion-best-practices "load fonts first"): antes o <Fonts />
+// ficava ao lado do conteúdo, que já media o texto com a fonte de reserva; em render com várias abas, os 1ºs quadros de cada
+// aba saíam com outro tamanho (título "pulsando" da Priscilla, 4x em nov/2026). Agora o conteúdo só monta com a fonte carregada,
+// measureText usa validateFontIsLoaded (fonte faltando = erro, não título errado) e o continueRender vem depois de o
+// conteúdo montar (os delayRender dele, como vídeo, já estão registrados).
+export const Fonts: React.FC<{children?: React.ReactNode}> = ({children}) => {
   const [h] = useState(() => delayRender('fontes'));
+  const [ok, setOk] = useState(false);
   useEffect(() => {
     const list = T.fonts.map((f) => new FontFace(f.family, `url(${staticFile(f.file)})`, {weight: f.weight ?? 'normal', style: f.style ?? 'normal'}));
     Promise.all(list.map((f) => f.load())).then((fs) => {
       fs.forEach((f) => (document.fonts as any).add(f));
-      continueRender(h);
-    });
+      setOk(true);
+    }).catch((e) => cancelRender(new Error(`fonte do tema não carregou (${T.fonts.map((f) => f.file).join(', ')}): ${e}`)));
   }, [h]);
-  return null;
+  useEffect(() => { if (ok) continueRender(h); }, [ok, h]);
+  return ok ? <>{children}</> : null;
+};
+
+// composição com o tema aplicado e as fontes carregadas antes de montar (Root.tsx)
+export const comFontes = <P extends {theme?: any}>(Comp: React.FC<P>, aplica: (th?: any) => void): React.FC<P> => (p) => {
+  aplica(p.theme);
+  return <Fonts><Comp {...p} /></Fonts>;
 };
 
 // filtro de blur só na vertical, proporcional à velocidade (motion blur da troca de layout)

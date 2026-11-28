@@ -35,6 +35,7 @@ def opt(n, d=None):
     return a[a.index(n) + 1] if n in a else d
 APLICA = '--aplica' in a
 MAXF, MAXI, RABO, FOLGA = 0.6, 0.4, 0.15, 0.04
+COLADA = 0.08            # palavras com menos que isso entre elas = fala colada: cortar ali soa como palavra comida (João 25/11)
 
 
 def acha_palavras(W):
@@ -81,7 +82,7 @@ for k, seg in enumerate(S):
 # janelas de alinhamento: bordas próximas (< 40 s) dividem uma janela
 ts = sorted(t for _, _, t in bordas); janelas = []
 for t in ts:
-    if janelas and t - janelas[-1][1] < 40: janelas[-1][1] = t
+    if janelas and t - janelas[-1][1] < 40 and t - janelas[-1][0] < 40: janelas[-1][1] = t   # janela ≤ ~46 s: MFA falhou em 64 s (Emerson r09)
     else: janelas.append([t, t])
 janelas = [(round(max(0, x - 3), 2), round(y + 3, 2)) for x, y in janelas]
 
@@ -132,7 +133,10 @@ def vizinhas(t):
 novo = [list(s) for s in S]; mexe, ouvir, linhas = set(), 0, {}
 for k, lado, t in bordas:
     dentro, antes, depois = vizinhas(t); nota = None
-    ant_lim = float(S[k - 1][1]) if k else 0.0; prox_lim = float(S[k + 1][0]) if k + 1 < len(S) else n / 100
+    # vizinho na LISTA só limita se também é vizinho na FONTE (gancho tirado do fim e posto no começo: trechos fora de ordem,
+    # Emerson 26/11/2026 — o começo do trecho andou para o fim do anterior e o segs ficou com fim < começo)
+    ant_lim = float(S[k - 1][1]) if k and float(S[k - 1][1]) <= t + 1e-3 else 0.0
+    prox_lim = float(S[k + 1][0]) if k + 1 < len(S) and float(S[k + 1][0]) >= t - 1e-3 else n / 100
     if lado == 'fim':
         if dentro:
             alvo = rabo(dentro[1], min(depois[0] if depois and depois[0] > dentro[1] else 1e9, prox_lim))
@@ -141,7 +145,10 @@ for k, lado, t in bordas:
             else: nota = f"fim {t:.2f}→{alvo:.2f} (+{alvo - t:.2f} s; cortava '{dentro[2]}')"; novo[k][1] = alvo; mexe.add(k)
         elif antes:
             ok_ate = rabo(antes[1], min(depois[0] if depois else 1e9, prox_lim))
-            if t < min(ok_ate, depois[0] if depois else 1e9) - 0.01:
+            if depois and depois[0] - antes[1] < COLADA:
+                nota = (f"fim {t:.2f} em fala colada: '{antes[2]}' emenda em '{depois[2]}' sem pausa (soa como palavra comida); "
+                        f"mover para uma pausa ou OUVIR"); ouvir += 1
+            elif t < min(ok_ate, depois[0] if depois else 1e9) - 0.03:
                 alvo = min(ok_ate, prox_lim)
                 nota = f"fim {t:.2f}→{alvo:.2f} (+{alvo - t:.2f} s; rabo de '{antes[2]}' soando)"; novo[k][1] = alvo; mexe.add(k)
     else:
@@ -149,9 +156,12 @@ for k, lado, t in bordas:
             alvo = round(max(dentro[0] - 0.02, antes[1] if antes else 0, ant_lim), 2)
             if t - alvo > MAXI: nota = f"começo {t:.2f} corta '{dentro[2]}' ({dentro[0]:.2f}-{dentro[1]:.2f}); incluir é -{t - alvo:.2f} s: OUVIR"; ouvir += 1
             else: nota = f"começo {t:.2f}→{alvo:.2f} (-{t - alvo:.2f} s; cortava '{dentro[2]}')"; novo[k][0] = alvo; mexe.add(k)
+        elif depois and antes and depois[0] - antes[1] < COLADA:
+            nota = (f"começo {t:.2f} em fala colada: '{antes[2]}' emenda em '{depois[2]}' sem pausa (soa como palavra comida); "
+                    f"mover para uma pausa ou OUVIR"); ouvir += 1
         elif depois and t > depois[0] - 0.005:
             alvo = round(max(depois[0] - FOLGA, antes[1] if antes else 0, ant_lim), 2)
-            if alvo < t - 0.005:
+            if alvo < t - 0.03:
                 nota = f"começo {t:.2f}→{alvo:.2f} (-{t - alvo:.2f} s; colado no ataque de '{depois[2]}')"; novo[k][0] = alvo; mexe.add(k)
     if nota: linhas.setdefault(k, []).append(nota)
 

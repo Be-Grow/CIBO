@@ -4,7 +4,7 @@ import {
   AbsoluteFill, Easing, OffthreadVideo, Sequence, continueRender, delayRender, interpolate,
   staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion';
-import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, M, cl, ramp, useT} from './theme';
+import {C, T, SPLIT, Panel, PanelProps, fTitle, z, fAcc, fLab, fCap, EASE, OUT, M, cl, ramp, useT, q} from './theme';
 import {Fonts, VBlur, Grain, Pill, I, Ambient} from './primitives';
 import {PANELS} from './panels';
 export {C, T, applyTheme, sh, scr} from './theme';
@@ -22,7 +22,7 @@ type Block = {s: number; e: number; words: Word[]};
 type Seg = {s: number; e: number; inv?: boolean};
 export type ReelProps = {
   camera: string; duration: number; split: Seg[]; panels: Panel[]; captions: Block[];
-  hook?: {s: number; e: number; l1: string; l2: string; accent: string; l2At?: number; aside?: string; asideAt?: number; strikeAt?: number};
+  hook?: {s: number; e: number; l1: string; l2: string; accent: string; l2At?: number; aside?: string; asideAt?: number; strikeAt?: number; hideCaps?: boolean; hideCapsUntil?: number};
   lower?: {s: number; e: number; name: string};
   endFade?: number;
   titles?: {s: number; e: number; l1: string; l2: string; accent: string; l2At?: number}[];
@@ -57,7 +57,7 @@ const laneTags = (tags: any[]) => {
   const out: any[] = [];
   for (const row of Object.values(rows)) {
     const sz0 = row[0].size ?? 28, GAP = 18, MAXW = 1000;
-    const wOf = (g: any, sz: number) => measureText({text: String(g.text).toUpperCase(), fontFamily: `'${T.label.family}'`, fontSize: sz,
+    const wOf = (g: any, sz: number) => measureText({validateFontIsLoaded: true, text: String(g.text).toUpperCase(), fontFamily: `'${T.label.family}'`, fontSize: sz,
       fontWeight: String(T.label.weight), letterSpacing: '2.2px'}).width + sz * 1.8;
     // autoTags "quebra" (motion.json, 10/11/2026): linha que não cabe no tamanho pedido QUEBRA em mais linhas em vez de encolher
     // até ficar ilegível; no topo do painel cresce para baixo, no resto cresce para cima (a última linha fica no y pedido)
@@ -110,7 +110,7 @@ const Captions: React.FC<{blocks: Block[]; t: number; sp: number; hide?: boolean
   const maxW = hz ? 1920 - left - right : L.capMaxW;
   if (maxW > 0) {   // zona segura: encolhe o bloco até caber na largura máxima (a interface do Instagram cobre as bordas)
     const txt = b.words.map((w) => w.t).join(' ');
-    const m = measureText({text: T.caption.upper ? txt.toUpperCase() : txt, fontFamily: `'${T.caption.family}'`, fontSize: size,
+    const m = measureText({validateFontIsLoaded: true, text: T.caption.upper ? txt.toUpperCase() : txt, fontFamily: `'${T.caption.family}'`, fontSize: size,
       fontWeight: String(T.caption.weight), letterSpacing: `${T.caption.ls}px`}).width * 1.06;
     if (m > maxW) size *= maxW / m;
   }
@@ -185,11 +185,14 @@ const Lower: React.FC<{l: NonNullable<ReelProps['lower']>; t: number; sp: number
   const a = ramp(t, l.s, 0.5, OUT), b = ramp(t, l.e - 0.4, 0.4);
   const p = a * (1 - b);
   if (p <= 0) return null;
-  const top = hz ? 820 : interpolate(sp, [0, 1], [1420, T.layout.splitH + 46]);
+  const top = hz ? 820 : interpolate(sp, [0, 1], [(T.layout as any).lowerY ?? 1420, T.layout.splitH + 46]);   // lowerY: altura do nome em tela cheia (Emerson 1711, editor 26/11/2026)
   return (
-    <div style={{position: 'absolute', left: 64 + (hz ? T.layoutH.panelW * sp : 0), top, display: 'flex', alignItems: 'center', gap: 18, opacity: p, filter: `blur(${(1 - p) * 8}px)`}}>
-      <div style={{width: 70 * p, height: 3, background: C.peach, borderRadius: 2}} />
-      <div style={{...fTitle(54), ...fAcc(), color: C.video, textShadow: '0 2px 14px rgba(0,0,0,0.5)', transform: `translateX(${(1 - p) * -16}px)`}}>{l.name}</div>
+    <div style={{position: 'absolute', left: ((T.layout as any).lowerX ?? 64) + (hz ? T.layoutH.panelW * sp : 0), top, display: 'flex', alignItems: 'center', gap: 18, opacity: p, filter: `blur(${(1 - p) * 8}px)`}}>
+      {(T as any).lower?.bar === 'vertical'
+        ? <div style={{width: 8, height: 64 * p, background: C.terra, borderRadius: 3}} />
+        : <div style={{width: 70 * p, height: 3, background: C.peach, borderRadius: 2}} />}
+      <div style={{...((T as any).lower?.family ? {fontFamily: q((T as any).lower.family), fontWeight: (T as any).lower.weight ?? 800, fontSize: 52, letterSpacing: '-0.01em'} : {...fTitle(54), ...fAcc()}),
+        color: C.video, textShadow: '0 2px 14px rgba(0,0,0,0.5)', transform: `translateX(${(1 - p) * -16}px)`}}>{l.name}</div>
     </div>
   );
 };
@@ -197,8 +200,10 @@ const Lower: React.FC<{l: NonNullable<ReelProps['lower']>; t: number; sp: number
 // ---------- palavra-chave e cartão final ----------
 // identidade Growth Leaders (manual da marca + convite do site, 18/10/2026): rótulo dourado espaçado, título creme em Metropolis,
 // destaque em texto com gradiente dourado (#F2A902 → #FFD575, sem caixa), filete dourado curto; véu marinho para leitura
-const GOLD = 'linear-gradient(90deg, #F2A902 0%, #FFD575 100%)';
-const goldText = (): React.CSSProperties => ({backgroundImage: GOLD, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+// tema pode trocar o dourado por um tom só ("ouro": cor ou gradiente CSS; Emerson 26/11/2026: "mantenha constância" no amarelo)
+const GOLD0 = 'linear-gradient(90deg, #F2A902 0%, #FFD575 100%)';
+const gold = () => (T as any).ouro ?? GOLD0;
+const goldText = (): React.CSSProperties => ({backgroundImage: (T as any).ouro ? `linear-gradient(${(T as any).ouro}, ${(T as any).ouro})` : GOLD0, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
   filter: 'drop-shadow(0 3px 14px rgba(0,8,30,0.55))'});
 // cartão de número sobre a pessoa em tela cheia (YouTube leve da Priscilla, 11/11/2026): um dado por vez, ao lado dela,
 // entra simples e sai. {s, e, num?, img? (logo), from?, label?, numAt?, side?: 'left'|'right', y?}. Sem véu, sem tela dividida.
@@ -228,7 +233,7 @@ const Keyword: React.FC<{k: Kw; t: number; hz?: boolean}> = ({k, t, hz}) => {
   const veil = ramp(t, k.s - 0.1, 0.35) * (1 - ramp(t, k.e - 0.05, 0.35));
   // tamanho em px reais (fTitle sem size); encolhe só o que não cabe em 920 px
   const fit = (txt: string, base: number) => {
-    const w = measureText({text: txt, fontFamily: `'${T.title.family}'`, fontSize: base, fontWeight: String(T.title.weight), letterSpacing: '0px'}).width * 1.06;
+    const w = measureText({validateFontIsLoaded: true, text: txt, fontFamily: `'${T.title.family}'`, fontSize: base, fontWeight: String(T.title.weight), letterSpacing: '0px'}).width * 1.06;
     const mx = hz ? 770 : 920;   // horizontal: coluna esquerda, longe do rosto
     return w > mx ? base * mx / w : base;
   };
@@ -237,14 +242,16 @@ const Keyword: React.FC<{k: Kw; t: number; hz?: boolean}> = ({k, t, hz}) => {
   const font: React.CSSProperties = {...fTitle(), textTransform: 'none', letterSpacing: '-0.01em', lineHeight: 1.02, textAlign: hz ? 'left' : 'center'};
   return (
     <>
+    {/* palavra na metade de baixo (Emerson, 26/11/2026): o véu sobe do rodapé, senão vira faixa escura no meio do quadro */}
     {k.veil !== false && <AbsoluteFill style={{background: hz ? `linear-gradient(90deg, ${scr(0.72)} 0%, ${scr(0.45)} 30%, ${scr(0)} 48%)`
-      : `linear-gradient(180deg, ${scr(0.78)} 0%, ${scr(0.5)} 21%, ${scr(0)} 38%)`, opacity: veil}} />}
-    <div style={{position: 'absolute', top: k.y ?? (hz ? 250 : 150), left: hz ? 110 : 40, right: hz ? 1040 : 40, display: 'flex', flexDirection: 'column', alignItems: hz ? 'flex-start' : 'center', gap: 12}}>
+      : `linear-gradient(${(k.y ?? (T.layout as any).kwY ?? 150) > 960 ? 0 : 180}deg, ${scr(0.78)} 0%, ${scr(0.5)} 21%, ${scr(0)} 38%)`, opacity: veil}} />}
+    <div style={{position: 'absolute', top: k.y ?? (hz ? 250 : ((T.layout as any).kwY ?? 150)), left: hz ? 110 : 40, right: hz ? 1040 : 40, display: 'flex', flexDirection: 'column', alignItems: hz ? 'flex-start' : 'center', gap: 12}}>
       {k.sub && <div style={{...fTitle(), fontSize: 34, letterSpacing: '0.3em', textTransform: 'uppercase', color: C.terra, ...lift(sub, 18),
         textShadow: '0 2px 12px rgba(0,8,30,0.6)'}}>{k.sub}</div>}
       {k.text && <div style={{...font, fontSize: fit(k.text, 112 * (T.title.punch ?? 1)), color: C.video, ...lift(a), textShadow: '0 3px 22px rgba(0,8,30,0.6)'}}>{k.text}</div>}
-      {k.accent && <div style={{...font, fontSize: fit(k.accent, 138 * (T.title.punch ?? 1)), ...lift(b), ...goldText(), padding: '0 6px 6px'}}>{k.accent}</div>}
-      <div style={{width: 120 * rule, height: 4, borderRadius: 2, background: GOLD, opacity: 1 - out, marginTop: 6}} />
+      {/* folga em cima: o acento da maiúscula (BABÁ, MILHÕES) passava da caixa e o texto-recortado não pintava (Emerson 26/11/2026) */}
+      {k.accent && <div style={{...font, fontSize: fit(k.accent, 138 * (T.title.punch ?? 1) * ((k as any).big ?? 1)), ...lift(b), ...goldText(), padding: '0.2em 6px 6px', marginTop: '-0.2em'}}>{k.accent}</div>}
+      <div style={{width: 120 * rule, height: 4, borderRadius: 2, background: gold(), opacity: 1 - out, marginTop: 6}} />
     </div>
     </>
   );
@@ -263,7 +270,7 @@ const EndCard: React.FC<{c: NonNullable<ReelProps['endCard']>; t: number}> = ({c
         transform: `rotate(${-12 + 10 * sym}deg) scale(${0.92 + 0.08 * sym})`, filter: 'grayscale(1) brightness(2.2)'}} />}
       <AbsoluteFill style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 30, paddingBottom: 120}}>
         {c.logo && <img src={staticFile(c.logo)} style={{width: 700, ...up(lg), transform: `translateY(${(1 - lg) * 22}px) scale(${0.94 + 0.06 * lg})`}} />}
-        <div style={{width: 140 * rule, height: 4, borderRadius: 2, background: GOLD, marginTop: 14}} />
+        <div style={{width: 140 * rule, height: 4, borderRadius: 2, background: gold(), marginTop: 14}} />
         {c.l1 && <div style={{...fTitle(), fontSize: 44, textTransform: 'none', letterSpacing: '0.01em', color: C.video, ...up(l1)}}>{c.l1}</div>}
         {c.l2 && <div style={{...fTitle(), fontSize: 30, letterSpacing: '0.3em', textTransform: 'uppercase', color: C.terra, ...up(l2)}}>{c.l2}</div>}
       </AbsoluteFill>
@@ -322,7 +329,6 @@ export const Reel: React.FC<ReelProps> = (props) => {
   const tit = (id: string) => on('titulos') || V || (L === 'titulo' && E === id);
   return (
     <AbsoluteFill data-vf-root="" style={{background: !L || L === 'camera' ? C.bg : V ? '#777' : 'transparent'}}>
-      <Fonts />
       <VBlur id="vb" amount={blurPx} x={HZ} />
       {on('camera') && <AbsoluteFill style={{transform: HZ ? `translateX(${camDX * sp}px)` : `translateY(${camY}px)`, filter: blurPx > 0.3 ? 'url(#vb)' : undefined}}>
         <OffthreadVideo src={staticFile(props.camera)} muted style={{width: VW, height: VH, filter: `blur(${endF * 14}px)`}} />
@@ -392,7 +398,7 @@ export const Reel: React.FC<ReelProps> = (props) => {
       {tit('lower') && props.lower && <Lower l={props.lower} t={t} sp={sp} hz={HZ} />}
       {(props.keywords || []).map((k, i) => tit(`k${i}`) && <Keyword key={`k${i}`} k={k} t={t} hz={HZ} />)}
       {((props as any).cartoes || []).map((c: any, i: number) => tit(`c${i}`) && <Cartao key={`c${i}`} c={c} t={t} hz={HZ} />)}
-      {on('legenda') && <Captions blocks={props.captions} t={t} sp={sp} inv={inv} hz={HZ} hide={(!!panel && panel.hideCapsFrom !== undefined && t >= panel.hideCapsFrom && t < panel.e) || (props.keywords || []).some((k) => k.hideCaps && t >= k.s && t < k.e + 0.2) || (!!props.endCard && t >= props.endCard.s)} />}
+      {on('legenda') && <Captions blocks={props.captions} t={t} sp={sp} inv={inv} hz={HZ} hide={(!!panel && panel.hideCapsFrom !== undefined && t >= panel.hideCapsFrom && t < panel.e) || (props.keywords || []).some((k) => k.hideCaps && t >= k.s - 0.12 && t < k.e + 0.4) || (!!props.hook && !!props.hook.hideCaps && t >= props.hook.s - 0.05 && t < (props.hook.hideCapsUntil ?? props.hook.e + 0.1)) || (!!props.endCard && t >= props.endCard.s)} />}
       {!L && (props.burns || []).map((b, k) => (
         <Sequence key={k} from={Math.round((b.t - b.peak) * fps)} durationInFrames={Math.round(b.dur * fps)} layout="none">
           <AbsoluteFill style={{mixBlendMode: 'screen', pointerEvents: 'none', opacity: T.burnOpacity}}>

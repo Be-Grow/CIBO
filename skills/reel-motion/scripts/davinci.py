@@ -171,6 +171,11 @@ fundos = [] if not (CAM / U('painel_fundo.mov')).exists() else pedacos(CAM / U('
                  lambda x, y: (lambda p: f"fundo {p['type']} {p.get('title', '')}" if p else 'fundo')(perto(pan, x, y)), 'paineis_fundo')
 cap = PR['captions']
 legenda = [] if not PR.get('captions') or not (CAM / U('legenda.mov')).exists() else pedacos(CAM / U('legenda.mov'), [fr(b['s']) for b in cap], lambda x, y: (lambda b: txt(b) if b else 'legenda')(perto(cap, x, y)), 'legenda')
+# pedaço de 1 quadro (legenda escondida por palavra-chave logo depois de começar) vira still no Resolve e o
+# ImportTimelineFromFile devolve None para a timeline INTEIRA (fallback entra todo offline; Emerson 02/03, 26/11/2026): fora
+_lasca = [x for x in fundos + legenda if x[2] < 2]
+if _lasca: print(f'tirei {len(_lasca)} pedaço(s) de 1 quadro (viram still e quebram a importação): ' + ', '.join(x[3][:30] for x in _lasca), flush=True)
+fundos = [x for x in fundos if x[2] >= 2]; legenda = [x for x in legenda if x[2] >= 2]
 # elementos isolados (um arquivo cada, renderizado só no seu trecho): o clipe vai do 1º ao último quadro visível
 elem = {}
 for m in json.load(open(CAM / 'elementos.json')):
@@ -499,7 +504,7 @@ def faixas(itens, tipo, grupo=''):
 BLUR = CROP and not HZ and RH * VW / min(RW, RH * 9 / 16) > RH * 1.001 and (PUB / R / 'camera.mov').exists()
 if BLUR:                                                      # fundo desfocado sob o bruto sem zoom (vertical): câmera editada, cobrindo o quadro
     bg = OUT / '_camadas' / U('fundo_desfocado.mov')
-    if not bg.exists():
+    if not bg.exists() or bg.stat().st_mtime < (PUB / R / 'camera.mov').stat().st_mtime:   # câmera refeita = fundo refeito
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(PUB / R / 'camera.mov'), '-an', '-vf',
                         f'scale={VW // 8}:{VH // 8}:force_original_aspect_ratio=increase,crop={VW // 8}:{VH // 8},gblur=sigma=6,eq=brightness=-0.06,scale={VW}:{VH}',
                         '-c:v', 'libx264', '-crf', '20', '-pix_fmt', 'yuv420p', '-r', '30000/1001', str(bg)], check=True)

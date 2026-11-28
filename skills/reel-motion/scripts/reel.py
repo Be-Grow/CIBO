@@ -621,7 +621,10 @@ def e_cortes():
         return 2
     bl = [l for l in b.stdout.splitlines() if 'corte no som' in l]
     ouv = C.get('cortes_ouvidos') or {}
-    pend = [l for l in r.stdout.splitlines() if ('<--' in l or 'corte no' in l)] + bl
+    # borda conferida pela palavra exata (MFA): o "meio da palavra" do checa_takes (voz a 0,35 s do corte) vira alarme falso em
+    # conversa e ensinava a ignorar aviso (João 26/11/2026); dele fica só a voz baixa da equipe
+    mfa = 'conferidas pela palavra' in b.stdout
+    pend = [l for l in r.stdout.splitlines() if '<--' in l or ('corte no' in l and not mfa)] + bl
     abertas = [l for l in pend if not str(ouv.get(l.split()[0], '')).strip()]
     for l in abertas:
         print(l[:180])
@@ -830,12 +833,20 @@ def e_davinci():
     O davinci.py monta a timeline (bruto em takes com alça, voz por take, SFX, burns, capa).
     `davinci X…` re-renderiza só as camadas/elementos cujo nome contém X (ex.: davinci painel_2 tag_2)."""
     # portões (10/11/2026): pacote só com os selos valendo para os arquivos de agora. Sem painel não há layout a conferir;
-    # aula no grosso segue livre. Liberar sem selo é decisão do editor: SELOS_OK=1 (VERIFICA_OK=1 continua valendo).
-    if not C.get('grosso') and os.environ.get('SELOS_OK') != '1' and os.environ.get('VERIFICA_OK') != '1':
-        ent = _entradas()
-        if not json.load(open(PUB / R / 'props.json')).get('panels'):
-            ent.pop('layout')
-        ent.pop('pacote'); falta = {n: e for n, e in selos.estado(W, ent).items() if not e.startswith('ok')}
+    # Liberar sem selo é decisão do editor: SELOS_OK=1 + "selos_liberados": "palavras dele" no reel.json; VERIFICA_OK=1 libera
+    # só o layout. O selo 'cortes' NUNCA é liberado (nem no grosso): os 5 pacotes do João (25/11/2026) saíram sem ele e com
+    # palavra comida. Borda intencional se assume trecho a trecho em cortes_ouvidos, com motivo.
+    if True:
+        ent = _entradas(); lib = os.environ.get('SELOS_OK') == '1' and str(C.get('selos_liberados', '')).strip()
+        if os.environ.get('SELOS_OK') == '1' and not lib:
+            print('SELOS_OK=1 sem "selos_liberados" (palavras do editor) no reel.json: ignorado', flush=True)
+        if C.get('grosso') or lib:
+            ent = {'cortes': ent['cortes']}
+        else:
+            if not json.load(open(PUB / R / 'props.json')).get('panels') or os.environ.get('VERIFICA_OK') == '1':
+                ent.pop('layout')
+            ent.pop('pacote')
+        falta = {n: e for n, e in selos.estado(W, ent).items() if not e.startswith('ok')}
         if falta:
             sys.exit('antes do pacote, faltam selos: ' + '; '.join(f"{n} ({e}) → reel.py PROJ {R} {selos.COMO[n]}" for n, e in falta.items())
                      + '. "velho" = o arquivo mudou depois do selo. Liberar sem selo é decisão do editor: SELOS_OK=1')

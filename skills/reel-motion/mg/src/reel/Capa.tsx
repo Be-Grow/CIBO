@@ -20,7 +20,7 @@ export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, 
     // cada linha cabe numa linha só: encolhe a fonte até a largura máxima (texto longo quebrava e invadia o logo)
     const fit = (txt: string, base: number, maxW: number) => {
       if (!txt) return base;
-      const w = measureText({text: T.title.upper ? txt.toUpperCase() : txt, fontFamily: `'${T.title.family}'`, fontSize: base,
+      const w = measureText({validateFontIsLoaded: true, text: T.title.upper ? txt.toUpperCase() : txt, fontFamily: `'${T.title.family}'`, fontSize: base,
         fontWeight: String(T.title.weight), letterSpacing: `${T.title.ls}px`}).width * 1.04;
       return w > maxW ? base * maxW / w : base;
     };
@@ -50,7 +50,7 @@ export const Capa: React.FC<CapaProps> = ({frame, l1, l1b, l2, accent, y = 170, 
   const {width: VW, height: VH} = useVideoConfig();
   // cada linha da manchete numa linha só (encolhe até 960 px; Andreia 01 quebrava "Diagnosticar a / dor")
   const fitW = (txt: string, base: number) => {
-    const w = measureText({text: T.title.upper ? txt.toUpperCase() : txt, fontFamily: `'${T.title.family}'`, fontSize: base,
+    const w = measureText({validateFontIsLoaded: true, text: T.title.upper ? txt.toUpperCase() : txt, fontFamily: `'${T.title.family}'`, fontSize: base,
       fontWeight: String(T.title.weight), letterSpacing: `${T.title.ls}px`}).width * 1.05;
     return w > 960 ? base * 960 / w : base;
   };

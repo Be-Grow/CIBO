@@ -179,7 +179,7 @@ if __name__ == '__main__':
     # da CIBO no projeto aberto (sem nome: todas). Rode ANTES de refazer qualquer coisa e conte ao editor em português.
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent)); import fusion_kit as K
-    r = K.resolve(); p = r.GetProjectManager().GetCurrentProject()
+    r, _pm, p = K.resolve()                                   # fusion_kit.resolve() devolve (resolve, gerente, projeto aberto)
     nomes = sys.argv[1:]
     for i in range(1, p.GetTimelineCount() + 1):
         tl = p.GetTimelineByIndex(i)
