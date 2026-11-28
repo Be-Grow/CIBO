@@ -3,6 +3,7 @@
 Resposta do editor a "o que você mudaria?" depois de cada entrega. Mais nova em cima.
 Leia antes de editar (client-router). Lição que vira regra fixa sobe para a rubrica ou para a skill.
 
+- 2026-11-27 (/Volumes/SSD/Movies/Edição/Mídia/andreia/depoimentosMapaDia1): Depoimento tirado de live gravada do Zoom (27/11/2026): cortar SÓ onde a depoente está em tela (o Zoom volta pra Andrea e demora a voltar); conferir com varredura de quadros e troca de cena; sem motion, legenda simples, capa CIBO do quadro que o editor marca (layout serif)
 - 2026-11-27 (/Volumes/SSD/Movies/Edição/Mídia/andreia/depoimentosMapaDia2): Capa de depoimento (27/11/2026): editor escolheu o quadro no preview do DaVinci; capa feita pela CIBO (so_capa, layout serif dela). Fonte de live/webcam: shift 220 (Carolina, título encostava na cabeça com 70); selfie em close shift 400
 - 2026-11-27 (/Volumes/SSD/Movies/Edição/Mídia/andreia/depoimentosMapaDia2): Depoimento de aluna tirado de live (26/11/2026): SEM motion (sem gancho, títulos, lower third) e legenda simples, sem destaque colorido
 - 2026-11-26 (/Volumes/SSD/Movies/Edição/Mídia/andreia/cortesVideoLongo): Capa feita no ChatGPT a partir do quadro que o editor escolhe (título serif 3 linhas, itálico dourado, degradê roxo, rodapé ANDREA FRANCOMANO): editor achou melhor assim; pediu também retoque para deixá-la mais bonita (não saiu por limite da conta gratuita).
