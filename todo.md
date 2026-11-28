@@ -37,6 +37,10 @@ Pendências de 12/10/2026 (detalhes em `skills/client-router/references/fontes-e
 - [ ] **`status.py` acusar render quebrado** (lição joao "ep 26", 04/11/2026): marcar reel sem MP4 em `06_deliverables`,
       `.mov`/`.mp4` com menos de 1 MB e `04_work/_bundle/rNN` que sobrou. O r05 e o r06 ficaram sem entrega sem alerta.
 
+## Fila de mudanças — Gaudêncio (28/11/2026)
+- [ ] reel-motion: painel/motion que entra sobre vídeo de referência em tela cheia deve EMPURRAR o vídeo (desce e desliza para a metade livre), nunca só cobrir o vídeo parado (#79). Depois de pronto, aplicar nos 7 cortes do Gaudêncio direto nas timelines existentes.
+- [ ] reel-motion: cobertura por enquadramento (rosto no centro, 4 amostras/s, cobre quadro 0 e fim) vira etapa do motor (#78).
+
 ## Viram trava (`feedback.py repetidos`, revisão semanal)
 
 - [x] **posicao-resolve**: trava desde 14/11/2026 (davinci.py, `posicao_resolve`); as 2 da Michelle eram Fusion/.drt.
