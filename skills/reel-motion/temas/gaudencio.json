@@ -55,7 +55,7 @@
   "grain": 0.05,
   "layout": {
    "splitH": 768,
-   "camShift": 460,
+   "camShift": 200,
    "capSplitY": 1370,
    "capFullY": 1300,
    "capMaxW": 820,
@@ -94,31 +94,30 @@
   "grupos": {
    "layout": [
     "Swoosh 01 - 02",
-    "Swoosh 04 - 02",
-    "Soft Slide 02 - Short 02"
+    "Swoosh 04 - 02"
    ],
    "burn": [
-    "Swoosh 04 - 02",
-    "Soft Slide 02 - Short 02"
+    "Swoosh 04 - 02"
    ],
    "brilho": [
-    "click-sharp",
-    "click-soft",
-    "click-soft-2"
+    "impact-soft-1",
+    "impact-soft-2",
+    "impact-soft-3"
    ],
    "marca": [
-    "click-sharp",
-    "click-soft-2"
+    "impact-soft-2",
+    "impact-soft-3",
+    "impact-soft-1"
    ]
   },
   "db": {
-   "layout": -16,
-   "burn": -16,
-   "brilho": -15,
-   "marca": -14
+   "layout": -14,
+   "burn": -14,
+   "brilho": -9,
+   "marca": -9
   },
   "abertura": true,
-  "nota": "piloto 27/11/2026: swoosh curto nas entradas de vídeo/painel, clique nas palavras de impacto amarelas; ajustar depois do piloto"
+  "nota": "27/11/2026: editor achou a trilha sem impacto; impacto grave suave em cada palavra amarela, swoosh só nas entradas de vídeo/painel"
  },
  "_identidade_pendente": "fontes, cores, capa e SFX ainda são genéricos (aprende.py --novo)",
  "_base": "joao-campos"
